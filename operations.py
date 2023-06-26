@@ -1,12 +1,7 @@
 import  torch
 import  torch.nn as nn
-
-
-
-
-
-
 # OPS is a set of layers with same input/output channel.
+
 
 OPS = {
     'none':         lambda C, stride, affine: Zero(stride),
@@ -34,7 +29,6 @@ class ReLUConvBN(nn.Module):
     """
     def __init__(self, C_in, C_out, kernel_size, stride, padding, affine=True):
         """
-
         :param C_in:
         :param C_out:
         :param kernel_size:
@@ -60,7 +54,6 @@ class DilConv(nn.Module):
     """
     def __init__(self, C_in, C_out, kernel_size, stride, padding, dilation, affine=True):
         """
-
         :param C_in:
         :param C_out:
         :param kernel_size:
@@ -90,7 +83,6 @@ class SepConv(nn.Module):
     """
     def __init__(self, C_in, C_out, kernel_size, stride, padding, affine=True):
         """
-
         :param C_in:
         :param C_out:
         :param kernel_size:
@@ -148,7 +140,6 @@ class FactorizedReduce(nn.Module):
 
     def __init__(self, C_in, C_out, affine=True):
         """
-
         :param C_in:
         :param C_out:
         :param affine:
