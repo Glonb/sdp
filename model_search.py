@@ -14,7 +14,6 @@ class MixedLayer(nn.Module):
     """
     def __init__(self, c, stride):
         """
-
         :param c: 16
         :param stride: 1
         """
@@ -45,7 +44,6 @@ class MixedLayer(nn.Module):
 
     def forward(self, x, weights):
         """
-
         :param x: data
         :param weights: alpha,[op_num:8], the output = sum of alpha * op(x)
         :return:
@@ -54,18 +52,12 @@ class MixedLayer(nn.Module):
         # element-wise add by torch.add
         res = sum(res)
         return res
-
-
-
-
-
-
+        
 
 class Cell(nn.Module):
 
     def __init__(self, steps, multiplier, cpp, cp, c, reduction, reduction_prev):
         """
-
         :param steps: 4, number of layers inside a cell
         :param multiplier: 4
         :param cpp: 48
@@ -109,7 +101,6 @@ class Cell(nn.Module):
 
     def forward(self, s0, s1, weights):
         """
-
         :param s0:
         :param s1:
         :param weights: [14, 8]
@@ -137,18 +128,12 @@ class Cell(nn.Module):
         return torch.cat(states[-self.multiplier:], dim=1) # 6 of [40, 16, 32, 32]
 
 
-
-
-
-
 class Network(nn.Module):
-
     """
     stack number:layer of cells and then flatten to fed a linear layer
     """
     def __init__(self, c, num_classes, layers, criterion, steps=4, multiplier=4, stem_multiplier=3):
         """
-
         :param c: 16
         :param num_classes: 10
         :param layers: number of cells of current network
@@ -280,7 +265,6 @@ class Network(nn.Module):
 
     def loss(self, x, target):
         """
-
         :param x:
         :param target:
         :return:
@@ -288,22 +272,15 @@ class Network(nn.Module):
         logits = self(x)
         return self.criterion(logits, target)
 
-
-
     def arch_parameters(self):
         return self._arch_parameters
 
-
-
-
     def genotype(self):
         """
-
         :return:
         """
         def _parse(weights):
             """
-
             :param weights: [14, 8]
             :return:
             """
