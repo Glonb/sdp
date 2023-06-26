@@ -58,7 +58,8 @@ class Arch:
         dtheta = concat(autograd.grad(loss, self.model.parameters())).data
         # indeed, here we implement a simple SGD with momentum and weight decay
         # theta = theta - eta * (moment + weight decay + dtheta)
-        theta = theta.sub(eta, moment + dtheta + self.wd * theta)
+        #theta = theta.sub(eta, moment + dtheta + self.wd * theta)
+        theta = theta.sub(moment + dtheta + self.wd * theta, eta)
         # construct a new model
         unrolled_model = self.construct_model_from_theta(theta)
 
