@@ -1,11 +1,9 @@
 from    collections import namedtuple
 
 
-
 Genotype = namedtuple('Genotype', 'normal normal_concat reduce reduce_concat')
 
-
-
+# 可选操作
 PRIMITIVES = [
     'none',
     'max_pool_3x3',
@@ -17,6 +15,7 @@ PRIMITIVES = [
     'dil_conv_5x5'
 ]
 
+# NASNet搜索到的cell结构
 NASNet = Genotype(
     normal=[
         ('sep_conv_5x5', 1),
@@ -46,6 +45,7 @@ NASNet = Genotype(
     reduce_concat=[4, 5, 6],
 )
 
+# AmoebaNet搜索到的cell结构
 AmoebaNet = Genotype(
     normal=[
         ('avg_pool_3x3', 0),
@@ -75,6 +75,7 @@ AmoebaNet = Genotype(
     reduce_concat=[3, 4, 6]
 )
 
+# DARTS搜索到的cell结构
 DARTS_V1 = Genotype(
     normal=[('sep_conv_3x3', 1), ('sep_conv_3x3', 0), ('skip_connect', 0), ('sep_conv_3x3', 1),
             ('skip_connect', 0),
@@ -83,7 +84,8 @@ DARTS_V1 = Genotype(
     reduce=[('max_pool_3x3', 0), ('max_pool_3x3', 1), ('skip_connect', 2), ('max_pool_3x3', 0),
             ('max_pool_3x3', 0),
             ('skip_connect', 2), ('skip_connect', 2), ('avg_pool_3x3', 0)],
-    reduce_concat=[2, 3, 4, 5])
+    reduce_concat=[2, 3, 4, 5]
+)
 DARTS_V2 = Genotype(
     normal=[('sep_conv_3x3', 0), ('sep_conv_3x3', 1), ('sep_conv_3x3', 0), ('sep_conv_3x3', 1),
             ('sep_conv_3x3', 1),
@@ -92,13 +94,18 @@ DARTS_V2 = Genotype(
     reduce=[('max_pool_3x3', 0), ('max_pool_3x3', 1), ('skip_connect', 2), ('max_pool_3x3', 1),
             ('max_pool_3x3', 0),
             ('skip_connect', 2), ('skip_connect', 2), ('max_pool_3x3', 1)],
-    reduce_concat=[2, 3, 4, 5])
+    reduce_concat=[2, 3, 4, 5]
+)
 
-
-
-MyDARTS = Genotype(normal=[('max_pool_3x3', 0), ('max_pool_3x3', 1), ('max_pool_3x3', 0), ('max_pool_3x3', 2), ('max_pool_3x3', 2), ('max_pool_3x3', 0), ('max_pool_3x3', 2), ('max_pool_3x3', 0)], normal_concat=range(2, 6), reduce=[('dil_conv_5x5', 1), ('dil_conv_5x5', 0), ('max_pool_3x3', 2), ('sep_conv_5x5', 1), ('dil_conv_5x5', 3), ('sep_conv_5x5', 0), ('dil_conv_5x5', 2), ('sep_conv_5x5', 3)], reduce_concat=range(2, 6))
-
-
-
+MyDARTS = Genotype(
+    normal=[('max_pool_3x3', 0), ('max_pool_3x3', 1), ('max_pool_3x3', 0), ('max_pool_3x3', 2), 
+            ('max_pool_3x3', 2), 
+            ('max_pool_3x3', 0), ('max_pool_3x3', 2), ('max_pool_3x3', 0)], 
+    normal_concat=range(2, 6), 
+    reduce=[('dil_conv_5x5', 1), ('dil_conv_5x5', 0), ('max_pool_3x3', 2), ('sep_conv_5x5', 1), 
+            ('dil_conv_5x5', 3), 
+            ('sep_conv_5x5', 0), ('dil_conv_5x5', 2), ('sep_conv_5x5', 3)], 
+    reduce_concat=range(2, 6)
+)
 
 DARTS = DARTS_V1
