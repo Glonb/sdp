@@ -13,9 +13,6 @@ from    model_search import Network
 from    arch import Arch
 
 
-
-
-
 parser = argparse.ArgumentParser("cifar")
 parser.add_argument('--data', type=str, default='../data', help='location of the data corpus')
 parser.add_argument('--batchsz', type=int, default=64, help='batch size')
@@ -52,10 +49,8 @@ fh.setFormatter(logging.Formatter(log_format))
 logging.getLogger().addHandler(fh)
 
 
-
 os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu)
 device = torch.device('cuda:0')
-
 
 
 def main():
@@ -91,7 +86,6 @@ def main():
     # ================================================
 
     args.unrolled = True
-
 
     logging.info('GPU device = %d' % args.gpu)
     logging.info("args = %s", args)
@@ -152,7 +146,6 @@ def main():
 
 def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
     """
-
     :param train_queue: train loader
     :param valid_queue: validate loader
     :param model: network
@@ -203,7 +196,6 @@ def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
 
 def infer(valid_queue, model, criterion):
     """
-
     :param valid_queue:
     :param model:
     :param criterion:
