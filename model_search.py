@@ -98,6 +98,12 @@ class Cell(nn.Module):
                 stride = 2 if reduction and j < 2 else 1
                 layer = MixedLayer(c, stride)
                 self.layers.append(layer)
+        '''
+        self.layers[0,1]代表的是内部节点0的前继操作
+        self.layers[2,3,4]代表的是内部节点1的前继操作
+        self.layers[5,6,7,8]代表的是内部节点2的前继操作
+        self.layers[9,10,11,12,13]代表的是内部节点3的前继操作
+        '''
 
     def forward(self, s0, s1, weights):
         """
