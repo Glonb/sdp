@@ -180,13 +180,15 @@ class Arch:
 
         for p, v in zip(self.model.parameters(), vector):
             # w- = (w+R*v) - 2R*v
-            p.data.sub_(2 * R, v)
+            #p.data.sub_(2 * R, v)
+            p.data.sub_(v, alpha=2 * R)
         loss = self.model.loss(x, target)
         grads_n = autograd.grad(loss, self.model.arch_parameters())
 
         for p, v in zip(self.model.parameters(), vector):
             # w = (w+R*v) - 2R*v + R*v
-            p.data.add_(R, v)
+            #p.data.add_(R, v)
+            p.data.add_(v, alpha=R)
 
         h= [(x - y).div_(2 * R) for x, y in zip(grads_p, grads_n)]
         # h len: 2 h0 torch.Size([14, 8])
