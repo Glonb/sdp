@@ -172,7 +172,7 @@ class Arch:
         for p, v in zip(self.model.parameters(), vector):
             # w+ = w + R * v
             #p.data.add_(R, v)
-            p.data.add_(R, alpha=v)
+            p.data.add_(v, alpha=R)
         loss = self.model.loss(x, target)
         # gradient with respect to alpha
         grads_p = autograd.grad(loss, self.model.arch_parameters())
