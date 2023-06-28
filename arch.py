@@ -125,7 +125,8 @@ class Arch:
 
         for g, ig in zip(dalpha, implicit_grads):
             # g = g - eta * ig, from Eq. 6
-            g.data.sub_(eta, ig.data)
+            #g.data.sub_(eta, ig.data)
+            g.data.sub_(ig.data, alpha=eta)
 
         # write updated alpha into original model
         for v, g in zip(self.model.arch_parameters(), dalpha):
