@@ -66,6 +66,7 @@ def main():
     total = int(total)
     used = int(used)
 
+    logging.info('Total GPU memory: %d used: %d' total, used)
     print('Total GPU mem:', total, 'used:', used)
 
 
@@ -80,7 +81,6 @@ def main():
     #     print(block_mem)
     #     x = torch.empty((256, 1024, int(block_mem))).cuda()
     #     del x
-    #
     #
     # print('reuse mem now ...')
     # ================================================
