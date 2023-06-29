@@ -8,7 +8,6 @@ class Cell(nn.Module):
 
     def __init__(self, genotype, C_prev_prev, C_prev, C, reduction, reduction_prev):
         """
-
         :param genotype:
         :param C_prev_prev:
         :param C_prev:
@@ -36,7 +35,6 @@ class Cell(nn.Module):
 
     def _compile(self, C, op_names, indices, concat, reduction):
         """
-
         :param C:
         :param op_names:
         :param indices:
@@ -59,7 +57,6 @@ class Cell(nn.Module):
 
     def forward(self, s0, s1, drop_prob):
         """
-
         :param s0:
         :param s1:
         :param drop_prob:
@@ -184,16 +181,6 @@ class NetworkCIFAR(nn.Module):
         out = self.global_pooling(s1)
         logits = self.classifier(out.view(out.size(0), -1))
         return logits, logits_aux
-
-
-
-
-
-
-
-
-
-
 
 
 class NetworkImageNet(nn.Module):
