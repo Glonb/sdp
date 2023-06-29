@@ -23,7 +23,6 @@ class AverageMeter:
 
 def accuracy(output, target, topk=(1,)):
     """
-
     :param output: logits, [b, classes]
     :param target: [b]
     :param topk:
@@ -68,7 +67,6 @@ class Cutout:
 
 def _data_transforms_cifar10(args):
     """
-
     :param args:
     :return:
     """
