@@ -66,7 +66,7 @@ def main():
     total = int(total)
     used = int(used)
 
-    logging.info('Total GPU memory: %d used: %d' total, used)
+    logging.info('Total GPU memory: %d used: %d', total, used)
     print('Total GPU mem:', total, 'used:', used)
 
 
