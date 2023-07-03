@@ -123,7 +123,7 @@ def main():
 
     for epoch in range(args.epochs):
 
-        scheduler.step()
+        # scheduler.step()
         # lr = scheduler.get_lr()[0]
         lr = scheduler.get_last_lr()
         logging.info('\nEpoch: %d lr: %e', epoch, lr)
@@ -137,6 +137,9 @@ def main():
         # training
         train_acc, train_obj = train(train_queue, valid_queue, model, arch, criterion, optimizer, lr)
         logging.info('train acc: %f', train_acc)
+
+        # update lr
+        scheduler.step()
 
         # validation
         valid_acc, valid_obj = infer(valid_queue, model, criterion)
