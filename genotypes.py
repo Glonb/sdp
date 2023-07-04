@@ -114,4 +114,17 @@ MyDARTS = Genotype(
     reduce_concat=range(2, 6)
 )
 
-DARTS = DARTS_V1
+DARTS_MINE = Genotype(
+    normal=[('sep_conv_3x3', 1), ('max_pool_3x3', 0), 
+            ('sep_conv_5x5', 0), ('sep_conv_5x5', 2), 
+            ('sep_conv_5x5', 2), ('sep_conv_5x5', 0), 
+            ('sep_conv_5x5', 2), ('sep_conv_5x5', 3)], 
+    normal_concat=range(2, 6), 
+    reduce=[('max_pool_3x3', 0), ('sep_conv_3x3', 1), 
+            ('sep_conv_5x5', 2), ('sep_conv_5x5', 0), 
+            ('sep_conv_5x5', 3), ('sep_conv_5x5', 2), 
+            ('dil_conv_5x5', 4), ('sep_conv_3x3', 3)], 
+    reduce_concat=range(2, 6)
+)
+
+DARTS = DARTS_MINE
