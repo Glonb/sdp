@@ -49,9 +49,7 @@ fh.setFormatter(logging.Formatter(log_format))
 logging.getLogger().addHandler(fh)
 
 
-
 def main():
-
 
     np.random.seed(args.seed)
     torch.cuda.set_device(args.gpu)
@@ -87,8 +85,9 @@ def main():
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, float(args.epochs))
 
     for epoch in range(args.epochs):
-        scheduler.step()
-        logging.info('epoch %d lr %e', epoch, scheduler.get_lr()[0])
+        # scheduler.step()
+      
+        logging.info('epoch %d lr %e', epoch, scheduler.get_last_lr()[0])
         model.drop_path_prob = args.drop_path_prob * epoch / args.epochs
 
         valid_acc, valid_obj = infer(valid_queue, model, criterion)
@@ -97,10 +96,8 @@ def main():
         train_acc, train_obj = train(train_queue, model, criterion, optimizer)
         logging.info('train_acc: %f', train_acc)
 
-
-
-
-
+        scheduler.step()
+      
         utils.save(model, os.path.join(args.save, 'trained.pt'))
         print('saved to: trained.pt')
 
