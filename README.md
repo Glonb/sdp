@@ -10,7 +10,7 @@ python train_search.py # search for optimized architecture
 
 python train.py --auxiliary --cutout # use seached architecture to optimize weights
 
-python test.py --auxiliary --model_path cifar10_model.pt # test
+python test.py --auxiliary # test
 ```
 
 This repo. is absolutely based on official impl. from https://github.com/quark0/darts with trivial modificatio to make it run on pytorch 0.4+ version.
