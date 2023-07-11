@@ -38,7 +38,7 @@ class MixedLayer(nn.Module):
             # append batchnorm after pool layer
             if 'pool' in primitive:
                 # disable affine w/b for batchnorm
-                layer = nn.Sequential(layer, nn.BatchNorm2d(c, affine=False))
+                layer = nn.Sequential(layer, nn.BatchNorm1d(c, affine=False))
 
             self.layers.append(layer)
 
@@ -163,8 +163,8 @@ class Network(nn.Module):
         c_curr = stem_multiplier * c # 3*16
         # stem network, convert 3 channel to c_curr
         self.stem = nn.Sequential( # 3 => 48
-            nn.Conv2d(3, c_curr, 3, padding=1, bias=False),
-            nn.BatchNorm2d(c_curr)
+            nn.Conv1d(3, c_curr, 3, padding=1, bias=False),
+            nn.BatchNorm1d(c_curr)
         )
 
         # c_curr means a factor of the output channels of current cell
@@ -192,7 +192,7 @@ class Network(nn.Module):
             cpp, cp = cp, multiplier * c_curr
 
         # adaptive pooling output size to 1x1
-        self.global_pooling = nn.AdaptiveAvgPool2d(1)
+        self.global_pooling = nn.AdaptiveAvgPool1d(1)
         # since cp records last cell's output channels
         # it indicates the input channel number
         self.classifier = nn.Linear(cp, num_classes)
