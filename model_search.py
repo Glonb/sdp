@@ -244,7 +244,7 @@ class Network(nn.Module):
         :param x:
         :return:
         """
-        # print('in:', x.shape)
+        print('in:', x.shape)
         # s0 & s1 means the last cells' output
         # s0 = s1 = self.stem(x) # [b, 3, 32, 32] => [b, 48, 32, 32]
         s0 = s1 = x
