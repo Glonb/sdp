@@ -137,8 +137,6 @@ class FactorizedReduce(nn.Module):
     def __init__(self, C_in, C_out, affine=True):
         super(FactorizedReduce, self).__init__()
 
-        assert C_in == C_out, "Input and output dimensions must match"
-
         self.relu = nn.ReLU(inplace=False)
         self.conv = nn.Conv1d(C_in, C_out, 1, stride=2, padding=0, bias=False)
         self.bn = nn.BatchNorm1d(C_out, affine=affine)
