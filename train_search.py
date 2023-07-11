@@ -60,7 +60,6 @@ def main():
     cudnn.enabled = True
     torch.manual_seed(args.seed)
 
-    # ================================================
     total, used = os.popen(
         'nvidia-smi --query-gpu=memory.total,memory.used --format=csv,nounits,noheader'
             ).read().split('\n')[args.gpu].split(',')
@@ -70,27 +69,10 @@ def main():
     logging.info('Total GPU memory: %d used: %d', total, used)
     print('Total GPU mem:', total, 'used:', used)
 
-
-    # try:
-    #     block_mem = 0.85 * (total - used)
-    #     print(block_mem)
-    #     x = torch.empty((256, 1024, int(block_mem))).cuda()
-    #     del x
-    # except RuntimeError as err:
-    #     print(err)
-    #     block_mem = 0.8 * (total - used)
-    #     print(block_mem)
-    #     x = torch.empty((256, 1024, int(block_mem))).cuda()
-    #     del x
-    #
-    # print('reuse mem now ...')
-    # ================================================
-
     args.unrolled = True
 
     logging.info('GPU device = %d' % args.gpu)
     logging.info("args = %s", args)
-
 
     criterion = nn.CrossEntropyLoss().to(device)
     model = Network(args.init_ch, 10, args.layers, criterion).to(device)
@@ -104,9 +86,9 @@ def main():
     # train_data = dset.CIFAR10(root=args.data, train=True, download=True, transform=train_transform)
     train_data = MyDataset('/kaggle/input/sdp-data/embeddings.npy', 'label.csv')
 
-    num_train = len(train_data) # 50000
+    num_train = len(train_data) 
     indices = list(range(num_train))
-    split = int(np.floor(args.train_portion * num_train)) # 25000
+    split = int(np.floor(args.train_portion * num_train))
 
     train_queue = torch.utils.data.DataLoader(
         train_data, batch_size=args.batchsz,
@@ -125,16 +107,11 @@ def main():
 
     for epoch in range(args.epochs):
 
-        # scheduler.step()
-        # lr = scheduler.get_lr()[0]
         lr = scheduler.get_last_lr()[0]
         logging.info('\nEpoch: %d lr: %e', epoch, lr)
 
         genotype = model.genotype()
         logging.info('Genotype: %s', genotype)
-
-        # print(F.softmax(model.alphas_normal, dim=-1))
-        # print(F.softmax(model.alphas_reduce, dim=-1))
 
         # training
         train_acc, train_obj = train(train_queue, valid_queue, model, arch, criterion, optimizer, lr)
