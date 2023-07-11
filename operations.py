@@ -5,8 +5,8 @@ import  torch.nn as nn
 
 OPS = {
     'none':         lambda C, stride, affine: Zero(stride),
-    'avg_pool_3x3': lambda C, stride, affine: nn.AvgPool2d(3, stride=stride, padding=1, count_include_pad=False),
-    'max_pool_3x3': lambda C, stride, affine: nn.MaxPool2d(3, stride=stride, padding=1),
+    'avg_pool_3x3': lambda C, stride, affine: nn.AvgPool1d(3, stride=stride, padding=1, count_include_pad=False),
+    'max_pool_3x3': lambda C, stride, affine: nn.MaxPool1d(3, stride=stride, padding=1),
     'skip_connect': lambda C, stride, affine: Identity() if stride == 1 else FactorizedReduce(C, C, affine=affine),
     'sep_conv_3x3': lambda C, stride, affine: SepConv(C, C, 3, stride, 1, affine=affine),
     'sep_conv_5x5': lambda C, stride, affine: SepConv(C, C, 5, stride, 2, affine=affine),
@@ -16,9 +16,9 @@ OPS = {
 
     'conv_7x1_1x7': lambda C, stride, affine: nn.Sequential(
         nn.ReLU(inplace=False),
-        nn.Conv2d(C, C, (1, 7), stride=(1, stride), padding=(0, 3), bias=False),
-        nn.Conv2d(C, C, (7, 1), stride=(stride, 1), padding=(3, 0), bias=False),
-        nn.BatchNorm2d(C, affine=affine)
+        nn.Conv1d(C, C, 7, stride=stride, padding=3, bias=False),
+        # nn.Conv2d(C, C, (7, 1), stride=(stride, 1), padding=(3, 0), bias=False),
+        nn.BatchNorm1d(C, affine=affine)
     ),
 }
 
@@ -40,8 +40,8 @@ class ReLUConvBN(nn.Module):
 
         self.op = nn.Sequential(
             nn.ReLU(inplace=False),
-            nn.Conv2d(C_in, C_out, kernel_size, stride=stride, padding=padding, bias=False),
-            nn.BatchNorm2d(C_out, affine=affine)
+            nn.Conv1d(C_in, C_out, kernel_size, stride=stride, padding=padding, bias=False),
+            nn.BatchNorm1d(C_out, affine=affine)
         )
 
     def forward(self, x):
@@ -66,11 +66,11 @@ class DilConv(nn.Module):
 
         self.op = nn.Sequential(
             nn.ReLU(inplace=False),
-            nn.Conv2d(C_in, C_in, kernel_size=kernel_size, stride=stride, padding=padding,
+            nn.Conv1d(C_in, C_in, kernel_size=kernel_size, stride=stride, padding=padding,
                       dilation=dilation,
                       groups=C_in, bias=False),
-            nn.Conv2d(C_in, C_out, kernel_size=1, padding=0, bias=False),
-            nn.BatchNorm2d(C_out, affine=affine),
+            nn.Conv1d(C_in, C_out, kernel_size=1, padding=0, bias=False),
+            nn.BatchNorm1d(C_out, affine=affine),
         )
 
     def forward(self, x):
@@ -94,15 +94,15 @@ class SepConv(nn.Module):
 
         self.op = nn.Sequential(
             nn.ReLU(inplace=False),
-            nn.Conv2d(C_in, C_in, kernel_size=kernel_size, stride=stride, padding=padding,
+            nn.Conv1d(C_in, C_in, kernel_size=kernel_size, stride=stride, padding=padding,
                       groups=C_in, bias=False),
-            nn.Conv2d(C_in, C_in, kernel_size=1, padding=0, bias=False),
-            nn.BatchNorm2d(C_in, affine=affine),
+            nn.Conv1d(C_in, C_in, kernel_size=1, padding=0, bias=False),
+            nn.BatchNorm1d(C_in, affine=affine),
             nn.ReLU(inplace=False),
-            nn.Conv2d(C_in, C_in, kernel_size=kernel_size, stride=1, padding=padding,
+            nn.Conv1d(C_in, C_in, kernel_size=kernel_size, stride=1, padding=padding,
                       groups=C_in, bias=False),
-            nn.Conv2d(C_in, C_out, kernel_size=1, padding=0, bias=False),
-            nn.BatchNorm2d(C_out, affine=affine),
+            nn.Conv1d(C_in, C_out, kernel_size=1, padding=0, bias=False),
+            nn.BatchNorm1d(C_out, affine=affine),
         )
 
     def forward(self, x):
@@ -149,9 +149,9 @@ class FactorizedReduce(nn.Module):
         assert C_out % 2 == 0
 
         self.relu = nn.ReLU(inplace=False)
-        self.conv_1 = nn.Conv2d(C_in, C_out // 2, 1, stride=2, padding=0, bias=False)
-        self.conv_2 = nn.Conv2d(C_in, C_out // 2, 1, stride=2, padding=0, bias=False)
-        self.bn = nn.BatchNorm2d(C_out, affine=affine)
+        self.conv_1 = nn.Conv1d(C_in, C_out // 2, 1, stride=2, padding=0, bias=False)
+        self.conv_2 = nn.Conv1d(C_in, C_out // 2, 1, stride=2, padding=0, bias=False)
+        self.bn = nn.BatchNorm1d(C_out, affine=affine)
 
     def forward(self, x):
         x = self.relu(x)
