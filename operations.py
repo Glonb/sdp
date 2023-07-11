@@ -137,17 +137,14 @@ class FactorizedReduce(nn.Module):
     def __init__(self, C_in, C_out, affine=True):
         super(FactorizedReduce, self).__init__()
 
-        assert C_out % 2 == 0
+        assert C_in == C_out, "Input and output dimensions must match"
 
         self.relu = nn.ReLU(inplace=False)
-        self.conv_1 = nn.Conv1d(C_in, C_out // 2, 1, stride=2, padding=0, bias=False)
-        self.conv_2 = nn.Conv1d(C_in, C_out // 2, 1, stride=2, padding=0, bias=False)
+        self.conv = nn.Conv1d(C_in, C_out, 1, stride=2, padding=0, bias=False)
         self.bn = nn.BatchNorm1d(C_out, affine=affine)
 
     def forward(self, x):
         x = self.relu(x)
-
-        # 对于三维数据（batch_size, channels, length）,在length维度上减半
-        out = torch.cat([self.conv_1(x), self.conv_2(x[:, :, 1:])], dim=2)
+        out = self.conv(x)
         out = self.bn(out)
         return out
