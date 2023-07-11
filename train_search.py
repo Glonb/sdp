@@ -11,6 +11,7 @@ import  torch.backends.cudnn as cudnn
 
 from    model_search import Network
 from    arch import Arch
+from my_dataset import MyDataset
 
 
 parser = argparse.ArgumentParser("cifar")
@@ -99,8 +100,9 @@ def main():
     # this is the optimizer to optimize
     optimizer = optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd)
 
-    train_transform, valid_transform = utils._data_transforms_cifar10(args)
-    train_data = dset.CIFAR10(root=args.data, train=True, download=True, transform=train_transform)
+    # train_transform, valid_transform = utils._data_transforms_cifar10(args)
+    # train_data = dset.CIFAR10(root=args.data, train=True, download=True, transform=train_transform)
+    train_data = MyDataset('embeddings.npy', 'label.csv')
 
     num_train = len(train_data) # 50000
     indices = list(range(num_train))
