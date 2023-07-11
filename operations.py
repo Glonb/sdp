@@ -130,7 +130,7 @@ class Zero(nn.Module):
     def forward(self, x):
         if self.stride == 1:
             return x.mul(0.)
-        return x[:, :, ::self.stride, ::self.stride].mul(0.)
+        return x[:, ::self.stride, :].mul(0.)
 
 
 class FactorizedReduce(nn.Module):
@@ -161,6 +161,6 @@ class FactorizedReduce(nn.Module):
         # conv2: []
         # out: torch.Size([32, 32, 16, 16])
 
-        out = torch.cat([self.conv_1(x), self.conv_2(x[:, :, 1:, 1:])], dim=1)
+        out = torch.cat([self.conv_1(x), self.conv_2(x[:, 1:, :])], dim=1)
         out = self.bn(out)
         return out
