@@ -49,7 +49,6 @@ class Cell(nn.Module):
         # preprocess1 deal with output from prev cell
         self.preprocess1 = ReLUConvBN(cp, c, 1, 1, 0, affine=False)
 
-        # steps inside a cell
         self.steps = steps # 4
         self.multiplier = multiplier # 4
 
@@ -63,12 +62,6 @@ class Cell(nn.Module):
                 stride = 2 if reduction and j < 2 else 1
                 layer = MixedLayer(c, stride)
                 self.layers.append(layer)
-        '''
-        self.layers[0,1]代表的是内部节点0的前继操作
-        self.layers[2,3,4]代表的是内部节点1的前继操作
-        self.layers[5,6,7,8]代表的是内部节点2的前继操作
-        self.layers[9,10,11,12,13]代表的是内部节点3的前继操作
-        '''
 
     def forward(self, s0, s1, weights):
        
@@ -121,8 +114,6 @@ class Network(nn.Module):
             else:
                 reduction = False
 
-            # [cp, h, h] => [multiplier*c_curr, h/h//2, h/h//2]
-            # the output channels = multiplier * c_curr
             cell = Cell(steps, multiplier, cpp, cp, c_curr, reduction, reduction_prev)
             # update reduction_prev
             reduction_prev = reduction
@@ -132,7 +123,7 @@ class Network(nn.Module):
             cpp, cp = cp, multiplier * c_curr
 
             print('cell:',i, cpp, cp, c, cell.reduction, cell.reduction_prev)
-            print('*********************************************************\n')
+            print('\n')
 
         # adaptive pooling output size to 1x1
         self.global_pooling = nn.AdaptiveAvgPool1d(1)
