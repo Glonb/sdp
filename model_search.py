@@ -168,6 +168,8 @@ class Network(nn.Module):
             else:
                 weights = F.softmax(self.alpha_normal, dim=-1)
             s0, s1 = s1, cell(s0, s1, weights)
+            print('cell:',i, s1.shape, cell.reduction, cell.reduction_prev)
+            print('\n')
 
         out = self.global_pooling(s1)
         logits = self.classifier(out.view(out.size(0), -1))
