@@ -145,7 +145,8 @@ class FactorizedReduce(nn.Module):
 
     def forward(self, x):
         x = self.relu(x)
-        out = torch.cat([self.conv_1(x), self.conv_2(x[:, :, 1:])], dim=1)
+        out = self.conv_1(x)
+        out += self.conv_2(x[:,:,1:])
         out = self.bn(out)
         return out
 
