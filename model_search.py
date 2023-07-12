@@ -73,22 +73,22 @@ class Cell(nn.Module):
     def forward(self, s0, s1, weights):
        
         print('s0:', s0.shape,end='=>')
-        s0 = self.preprocess0(s0) # [40, 48, 32, 32], [40, 16, 32, 32]
+        s0 = self.preprocess0(s0) 
         print(s0.shape, self.reduction_prev)
         print('s1:', s1.shape,end='=>')
-        s1 = self.preprocess1(s1) # [40, 48, 32, 32], [40, 16, 32, 32]
-        print('s1: ', s1.shape)
+        s1 = self.preprocess1(s1) 
+        print(s1.shape)
 
         states = [s0, s1]
         offset = 0
         # for each node, receive input from all previous intermediate nodes and s0, s1
         for i in range(self.steps): # 4
-            # [40, 16, 32, 32]
+            
             s = sum(self.layers[offset + j](h, weights[offset + j]) for j, h in enumerate(states))
             offset += len(states)
             # append one state since s is the elem-wise addition of all output
             states.append(s)
-            # print('node:',i, s.shape, self.reduction)
+            print('node:',i, s.shape, self.reduction)
 
         # concat along dim=channel
         return torch.cat(states[-self.multiplier:], dim=1) # 6 of [40, 16, 32, 32]
