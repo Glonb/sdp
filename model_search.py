@@ -98,7 +98,7 @@ class Network(nn.Module):
     """
     stack number:layer of cells and then flatten to fed a linear layer
     """
-    def __init__(self, c, num_classes, layers, criterion, steps=4, multiplier=4, stem_multiplier=3):
+    def __init__(self, c, num_classes, layers, criterion, steps=4, multiplier=4):
         
         super(Network, self).__init__()
 
@@ -109,7 +109,7 @@ class Network(nn.Module):
         self.steps = steps
         self.multiplier = multiplier
 
-        cpp, cp, c_curr = c, c, c
+        cpp, cp, c_curr = c * multiplier, c * multiplier, c
         self.cells = nn.ModuleList()
         reduction_prev = False
         for i in range(layers):
