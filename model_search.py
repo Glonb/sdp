@@ -6,32 +6,12 @@ from    genotypes import PRIMITIVES, Genotype
 
 
 class MixedLayer(nn.Module):
-    """
-    a mixtures output of 8 type of units.
-
-    we use weights to aggregate these outputs while training.
-    and softmax to select the strongest edges while inference.
-    """
     def __init__(self, c, stride):
-        """
-        :param c: 16
-        :param stride: 1
-        """
+        
         super(MixedLayer, self).__init__()
 
         self.layers = nn.ModuleList()
-        """
-        PRIMITIVES = [
-                    'none',
-                    'max_pool_3x3',
-                    'avg_pool_3x3',
-                    'skip_connect',
-                    'sep_conv_3x3',
-                    'sep_conv_5x5',
-                    'dil_conv_3x3',
-                    'dil_conv_5x5'
-                ]
-        """
+    
         for primitive in PRIMITIVES:
             # create corresponding layer
             layer = OPS[primitive](c, stride, False)
@@ -43,11 +23,6 @@ class MixedLayer(nn.Module):
             self.layers.append(layer)
 
     def forward(self, x, weights):
-        """
-        :param x: data
-        :param weights: alpha,[op_num:8], the output = sum of alpha * op(x)
-        :return:
-        """
         res = [w * layer(x) for w, layer in zip(weights, self.layers)]
         # element-wise add by torch.add
         res = sum(res)
@@ -57,17 +32,7 @@ class MixedLayer(nn.Module):
 class Cell(nn.Module):
 
     def __init__(self, steps, multiplier, cpp, cp, c, reduction, reduction_prev):
-        """
-        :param steps: 4, number of layers inside a cell
-        :param multiplier: 4
-        :param cpp: 48
-        :param cp: 48
-        :param c: 16
-        :param reduction: indicates whether to reduce the output maps width
-        :param reduction_prev: when previous cell reduced width, s1_d = s0_d//2
-        in order to keep same shape between s1 and s0, we adopt prep0 layer to
-        reduce the s0 width by half.
-        """
+       
         super(Cell, self).__init__()
 
         # indicating current cell is reduction or not
@@ -106,12 +71,7 @@ class Cell(nn.Module):
         '''
 
     def forward(self, s0, s1, weights):
-        """
-        :param s0:
-        :param s1:
-        :param weights: [14, 8]
-        :return:
-        """
+       
         # print('s0:', s0.shape,end='=>')
         s0 = self.preprocess0(s0) # [40, 48, 32, 32], [40, 16, 32, 32]
         # print(s0.shape, self.reduction_prev)
@@ -139,15 +99,7 @@ class Network(nn.Module):
     stack number:layer of cells and then flatten to fed a linear layer
     """
     def __init__(self, c, num_classes, layers, criterion, steps=4, multiplier=4, stem_multiplier=3):
-        """
-        :param c: 16
-        :param num_classes: 10
-        :param layers: number of cells of current network
-        :param criterion:
-        :param steps: nodes num inside cell
-        :param multiplier: output channel of cell = multiplier * ch
-        :param stem_multiplier: output channel of stem net = stem_multiplier * ch
-        """
+        
         super(Network, self).__init__()
 
         self.c = c
@@ -189,10 +141,6 @@ class Network(nn.Module):
         k = sum(1 for i in range(self.steps) for j in range(2 + i))
         num_ops = len(PRIMITIVES) # 8
 
-        # TODO
-        # this kind of implementation will add alpha into self.parameters()
-        # it has num k of alpha parameters, and each alpha shape: [num_ops]
-        # it requires grad and can be converted to cpu/gpu automatically
         self.alpha_normal = nn.Parameter(torch.randn(k, num_ops))
         self.alpha_reduce = nn.Parameter(torch.randn(k, num_ops))
         with torch.no_grad():
@@ -205,11 +153,7 @@ class Network(nn.Module):
         ]
 
     def new(self):
-        """
-        create a new model and initialize it with current alpha parameters.
-        However, its weights are left untouched.
-        :return:
-        """
+        
         model_new = Network(self.c, self.num_classes, self.layers, self.criterion).cuda()
         for x, y in zip(model_new.arch_parameters(), self.arch_parameters()):
             x.data.copy_(y.data)
@@ -239,14 +183,8 @@ class Network(nn.Module):
         return self._arch_parameters
 
     def genotype(self):
-        """
-        :return:
-        """
+
         def _parse(weights):
-            """
-            :param weights: [14, 8]
-            :return:
-            """
             gene = []
             n = 2
             start = 0
