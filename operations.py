@@ -134,15 +134,18 @@ class Zero(nn.Module):
 
 
 class FactorizedReduce(nn.Module):
+    def __init__(self, C_in, C_out, affine=True):
+        super(FactorizedReduce, self).__init__()
+        
+        self.relu = nn.ReLU(inplace=False)
+        # 修改卷积层的输出通道数为C_out // 2
+        self.conv_1 = nn.Conv1d(C_in, C_out // 2, 1, stride=2, padding=0, bias=False)
+        self.conv_2 = nn.Conv1d(C_in, C_out // 2, 1, stride=2, padding=0, bias=False) 
+        self.bn = nn.BatchNorm1d(C_out, affine=affine)
 
-  def __init__(self, C_in, C_out, affine=True):
-    super(FactorizedReduce, self).__init__()
-    self.relu = nn.ReLU(inplace=False)
-    self.conv = nn.Conv1d(C_in, C_out, 1, stride=2, padding=0, bias=False) 
-    self.bn = nn.BatchNorm1d(C_out, affine=affine)
+    def forward(self, x):
+        x = self.relu(x)
+        out = torch.cat([self.conv_1(x), self.conv_2(x[:, :, 1:])], dim=1)
+        out = self.bn(out)
+        return out
 
-  def forward(self, x):
-    x = self.relu(x)
-    out = self.conv(x)
-    out = self.bn(out)
-    return out
