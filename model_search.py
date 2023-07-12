@@ -131,6 +131,9 @@ class Network(nn.Module):
 
             cpp, cp = cp, multiplier * c_curr
 
+            print('cell:',i, cell.cpp, cell.cp, cell.c, cell.reduction, cell.reduction_prev)
+            print('*********************************************************\n')
+
         # adaptive pooling output size to 1x1
         self.global_pooling = nn.AdaptiveAvgPool1d(1)
         # since cp records last cell's output channels
