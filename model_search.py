@@ -72,12 +72,12 @@ class Cell(nn.Module):
 
     def forward(self, s0, s1, weights):
        
-        # print('s0:', s0.shape,end='=>')
+        print('s0:', s0.shape,end='=>')
         s0 = self.preprocess0(s0) # [40, 48, 32, 32], [40, 16, 32, 32]
-        # print(s0.shape, self.reduction_prev)
-        # print('s1:', s1.shape,end='=>')
+        print(s0.shape, self.reduction_prev)
+        print('s1:', s1.shape,end='=>')
         s1 = self.preprocess1(s1) # [40, 48, 32, 32], [40, 16, 32, 32]
-        # print(s1.shape)
+        print('s1: ', s1.shape)
 
         states = [s0, s1]
         offset = 0
