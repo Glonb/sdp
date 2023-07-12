@@ -115,15 +115,14 @@ class Network(nn.Module):
                 reduction = False
 
             cell = Cell(steps, multiplier, cpp, cp, c_curr, reduction, reduction_prev)
+            print('cell:',i, cpp, cp, c_curr, cell.reduction, cell.reduction_prev)
+            print('\n')
             # update reduction_prev
             reduction_prev = reduction
 
             self.cells += [cell]
 
             cpp, cp = cp, multiplier * c_curr
-
-            print('cell:',i, cpp, cp, c, cell.reduction, cell.reduction_prev)
-            print('\n')
 
         # adaptive pooling output size to 1x1
         self.global_pooling = nn.AdaptiveAvgPool1d(1)
