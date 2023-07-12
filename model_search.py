@@ -131,7 +131,7 @@ class Network(nn.Module):
 
             cpp, cp = cp, multiplier * c_curr
 
-            print('cell:',i, cell.cpp, cell.cp, cell.c, cell.reduction, cell.reduction_prev)
+            print('cell:',i, cpp, cp, c, cell.reduction, cell.reduction_prev)
             print('*********************************************************\n')
 
         # adaptive pooling output size to 1x1
