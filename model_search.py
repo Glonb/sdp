@@ -68,12 +68,12 @@ class Cell(nn.Module):
 
     def forward(self, s0, s1, weights):
        
-        print('s0:', s0.shape,end='=>')
+        # print('s0:', s0.shape,end='=>')
         s0 = self.preprocess0(s0) 
-        print(s0.shape, self.reduction_prev)
-        print('s1:', s1.shape,end='=>')
+        # print(s0.shape, self.reduction_prev)
+        # print('s1:', s1.shape,end='=>')
         s1 = self.preprocess1(s1) 
-        print(s1.shape)
+        # print(s1.shape)
 
         states = [s0, s1]
         offset = 0
@@ -84,7 +84,7 @@ class Cell(nn.Module):
             offset += len(states)
             # append one state since s is the elem-wise addition of all output
             states.append(s)
-            print('node:',i, s.shape, self.reduction)
+            # print('node:',i, s.shape, self.reduction)
 
         # concat along dim=channel
         return torch.cat(states[-self.multiplier:], dim=1) # 6 of [40, 16, 32, 32]
@@ -118,8 +118,8 @@ class Network(nn.Module):
                 reduction = False
 
             cell = Cell(steps, multiplier, cpp, cp, c_curr, reduction, reduction_prev)
-            print('cell:',i, cpp, cp, c_curr, cell.reduction, cell.reduction_prev)
-            print('\n')
+            # print('cell:',i, cpp, cp, c_curr, cell.reduction, cell.reduction_prev)
+            # print('\n')
             # update reduction_prev
             reduction_prev = reduction
 
@@ -164,8 +164,8 @@ class Network(nn.Module):
             else:
                 weights = F.softmax(self.alpha_normal, dim=-1)
             s0, s1 = s1, cell(s0, s1, weights)
-            print('cell:',i, s1.shape, cell.reduction, cell.reduction_prev)
-            print('\n')
+            # print('cell:',i, s1.shape, cell.reduction, cell.reduction_prev)
+            # print('\n')
 
         out = self.global_pooling(s1)
         logits = self.classifier(out.view(out.size(0), -1))
