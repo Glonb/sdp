@@ -23,6 +23,9 @@ class MixedLayer(nn.Module):
             self.layers.append(layer)
 
     def forward(self, x, weights):
+        for layer in self.layers:
+            print("after: ")
+            print(layer(x).shape)
         res = [w * layer(x) for w, layer in zip(weights, self.layers)]
         # element-wise add by torch.add
         res = sum(res)
