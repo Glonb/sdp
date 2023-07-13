@@ -145,8 +145,10 @@ class FactorizedReduce(nn.Module):
 
     def forward(self, x):
         x = self.relu(x)
+        x2 = F.pad(x[:,:,1:], (0,1))  # pad the last dimension with one zero
         out = self.conv_1(x)
-        out += self.conv_2(x[:,:,1:])
+        out += self.conv_2(x2)
+        # out += self.conv_2(x[:,:,1:])
         out = self.bn(out)
         return out
 
