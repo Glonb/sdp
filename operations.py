@@ -1,5 +1,6 @@
 import  torch
 import  torch.nn as nn
+import  torch.nn.functional as F
 # OPS is a set of layers with same input/output channel.
 
 
