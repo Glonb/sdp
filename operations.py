@@ -141,7 +141,7 @@ class FactorizedReduce(nn.Module):
         # 修改卷积层的输出通道数为C_out // 2
         self.conv_1 = nn.Conv1d(C_in, C_out // 2, 1, stride=2, padding=0, bias=False)
         self.conv_2 = nn.Conv1d(C_in, C_out // 2, 1, stride=2, padding=0, bias=False) 
-        self.bn = nn.BatchNorm1d(C_out, affine=affine)
+        self.bn = nn.BatchNorm1d(C_out // 2, affine=affine)
 
     def forward(self, x):
         x = self.relu(x)
