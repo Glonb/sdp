@@ -14,7 +14,7 @@ from    arch import Arch
 from    my_dataset import MyDataset
 
 
-parser = argparse.ArgumentParser("cifar")
+parser = argparse.ArgumentParser("SDP")
 parser.add_argument('--data', type=str, default='../data', help='location of the data corpus')
 parser.add_argument('--batchsz', type=int, default=32, help='batch size')
 parser.add_argument('--lr', type=float, default=0.025, help='init learning rate')
@@ -75,7 +75,7 @@ def main():
     logging.info("args = %s", args)
 
     criterion = nn.CrossEntropyLoss().to(device)
-    model = Network(args.init_ch, 10, args.layers, criterion).to(device)
+    model = Network(args.init_ch, 5, args.layers, criterion).to(device)
 
     logging.info("Total param size = %f MB", utils.count_parameters_in_MB(model))
 
