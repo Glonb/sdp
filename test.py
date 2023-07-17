@@ -10,6 +10,7 @@ import  torchvision.datasets as dset
 import  torch.backends.cudnn as cudnn
 
 from    model import NetworkCIFAR as Network
+from    my_dataset import MyDataset
 
 parser = argparse.ArgumentParser("cifar10")
 parser.add_argument('--data', type=str, default='../data', help='location of the data corpus')
@@ -51,9 +52,15 @@ def main():
     criterion = nn.CrossEntropyLoss().cuda()
 
     test_data = MyDataset('/kaggle/input/sdp-data/test/embeddings.npy', '/kaggle/input/sdp-data/test/label.csv')
+  
+    num_test = len(test_data) 
+    indices = list(range(num_test))
+    split = int(np.floor(0.2 * num_test))
 
     test_queue = torch.utils.data.DataLoader(
-        test_data, batch_size=args.batchsz, shuffle=False, pin_memory=True, num_workers=2)
+        test_data, batch_size=args.batchsz, 
+        sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[split:]), 
+        pin_memory=True, num_workers=2)
 
     model.drop_path_prob = args.drop_path_prob
     test_acc, test_obj = infer(test_queue, model, criterion)
