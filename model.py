@@ -142,12 +142,13 @@ class NetworkCIFAR(nn.Module):
         self._layers = layers
         self._auxiliary = auxiliary
 
-        stem_multiplier = 3
-        C_curr = stem_multiplier * C
-        self.stem = nn.Sequential(
-            nn.Conv2d(3, C_curr, 3, padding=1, bias=False),
-            nn.BatchNorm2d(C_curr)
-        )
+        # stem_multiplier = 3
+        # C_curr = stem_multiplier * C
+        # self.stem = nn.Sequential(
+        #     nn.Conv2d(3, C_curr, 3, padding=1, bias=False),
+        #     nn.BatchNorm2d(C_curr)
+        # )
+        C_curr = 4 * C
 
         C_prev_prev, C_prev, C_curr = C_curr, C_curr, C
         self.cells = nn.ModuleList()
@@ -167,12 +168,13 @@ class NetworkCIFAR(nn.Module):
 
         if auxiliary:
             self.auxiliary_head = AuxiliaryHeadCIFAR(C_to_auxiliary, num_classes)
-        self.global_pooling = nn.AdaptiveAvgPool2d(1)
+        self.global_pooling = nn.AdaptiveAvgPool1d(1)
         self.classifier = nn.Linear(C_prev, num_classes)
 
     def forward(self, input):
         logits_aux = None
-        s0 = s1 = self.stem(input)
+        # s0 = s1 = self.stem(input)
+        s0 = s1 = input
         for i, cell in enumerate(self.cells):
             s0, s1 = s1, cell(s0, s1, self.drop_path_prob)
             if i == 2 * self._layers // 3:
