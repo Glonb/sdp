@@ -59,7 +59,7 @@ def main():
 
     test_queue = torch.utils.data.DataLoader(
         test_data, batch_size=args.batchsz, 
-        sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[split:]), 
+        shuffle=False, 
         pin_memory=True, num_workers=2)
 
     model.drop_path_prob = args.drop_path_prob
