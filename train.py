@@ -23,7 +23,7 @@ parser.add_argument('--momentum', type=float, default=0.9, help='momentum')
 parser.add_argument('--wd', type=float, default=3e-4, help='weight decay')
 parser.add_argument('--report_freq', type=float, default=50, help='report frequency')
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
-parser.add_argument('--epochs', type=int, default=20, help='num of training epochs')
+parser.add_argument('--epochs', type=int, default=50, help='num of training epochs')
 parser.add_argument('--init_ch', type=int, default=40, help='num of init channels')
 parser.add_argument('--layers', type=int, default=8, help='total number of layers')
 parser.add_argument('--model_path', type=str, default='saved_models', help='path to save the model')
@@ -72,15 +72,20 @@ def main():
         weight_decay=args.wd
     )
 
-    train_transform, valid_transform = utils._data_transforms_cifar10(args)
-    train_data = dset.CIFAR10(root=args.data, train=True, download=True, transform=train_transform)
-    valid_data = dset.CIFAR10(root=args.data, train=False, download=True, transform=valid_transform)
+    train_data = MyDataset('/kaggle/input/sdp-data/embeddings.npy', 'label.csv')
+    valid_data = MyDataset('/kaggle/input/sdp-data/test/embeddings.npy', '/kaggle/input/sdp-data/test/label.csv')
+
+    num_valid = len(valid_data) 
+    indices = list(range(num_valid))
+    split = int(np.floor(0.2 * num_valid))
 
     train_queue = torch.utils.data.DataLoader(
         train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
 
     valid_queue = torch.utils.data.DataLoader(
-        valid_data, batch_size=args.batchsz, shuffle=False, pin_memory=True, num_workers=2)
+        valid_data, batch_size=args.batchsz,
+        sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[:split]),
+        pin_memory=True, num_workers=2)
 
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, float(args.epochs))
 
