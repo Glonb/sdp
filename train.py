@@ -14,6 +14,7 @@ import  torchvision.datasets as dset
 import  torch.backends.cudnn as cudnn
 
 from    model import NetworkCIFAR as Network
+from    my_dataset import MyDataset
 
 parser = argparse.ArgumentParser("cifar10")
 parser.add_argument('--data', type=str, default='../data', help='location of the data corpus')
