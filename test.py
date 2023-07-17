@@ -13,11 +13,11 @@ from    model import NetworkCIFAR as Network
 
 parser = argparse.ArgumentParser("cifar10")
 parser.add_argument('--data', type=str, default='../data', help='location of the data corpus')
-parser.add_argument('--batchsz', type=int, default=36, help='batch size')
+parser.add_argument('--batchsz', type=int, default=32, help='batch size')
 parser.add_argument('--report_freq', type=float, default=50, help='report frequency')
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
-parser.add_argument('--init_ch', type=int, default=36, help='num of init channels')
-parser.add_argument('--layers', type=int, default=20, help='total number of layers')
+parser.add_argument('--init_ch', type=int, default=40, help='num of init channels')
+parser.add_argument('--layers', type=int, default=8, help='total number of layers')
 parser.add_argument('--exp_path', type=str, default='exp/model.pt', help='path of pretrained model')
 parser.add_argument('--auxiliary', action='store_true', default=False, help='use auxiliary tower')
 parser.add_argument('--cutout', action='store_true', default=False, help='use cutout')
@@ -31,10 +31,7 @@ log_format = '%(asctime)s %(message)s'
 logging.basicConfig(stream=sys.stdout, level=logging.INFO,
                     format=log_format, datefmt='%m/%d %I:%M:%S %p')
 
-
-
 def main():
-
 
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
@@ -53,8 +50,8 @@ def main():
 
     criterion = nn.CrossEntropyLoss().cuda()
 
-    _, test_transform = utils._data_transforms_cifar10(args)
-    test_data = dset.CIFAR10(root=args.data, train=False, download=True, transform=test_transform)
+    test_data = MyDataset('/kaggle/input/sdp-data/test/embeddings.npy', 'test/label.csv')
+
     test_queue = torch.utils.data.DataLoader(
         test_data, batch_size=args.batchsz, shuffle=False, pin_memory=True, num_workers=2)
 
