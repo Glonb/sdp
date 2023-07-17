@@ -16,7 +16,7 @@ parser.add_argument('--data', type=str, default='../data', help='location of the
 parser.add_argument('--batchsz', type=int, default=32, help='batch size')
 parser.add_argument('--report_freq', type=float, default=50, help='report frequency')
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
-parser.add_argument('--init_ch', type=int, default=40, help='num of init channels')
+parser.add_argument('--init_ch', type=int, default=10, help='num of init channels')
 parser.add_argument('--layers', type=int, default=8, help='total number of layers')
 parser.add_argument('--exp_path', type=str, default='exp/model.pt', help='path of pretrained model')
 parser.add_argument('--auxiliary', action='store_true', default=False, help='use auxiliary tower')
@@ -50,7 +50,7 @@ def main():
 
     criterion = nn.CrossEntropyLoss().cuda()
 
-    test_data = MyDataset('/kaggle/input/sdp-data/test/embeddings.npy', 'test/label.csv')
+    test_data = MyDataset('/kaggle/input/sdp-data/test/embeddings.npy', '/kaggle/input/sdp-data/test/label.csv')
 
     test_queue = torch.utils.data.DataLoader(
         test_data, batch_size=args.batchsz, shuffle=False, pin_memory=True, num_workers=2)
