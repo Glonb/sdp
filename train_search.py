@@ -6,7 +6,6 @@ import  logging
 import  argparse
 import  torch.nn as nn
 from    torch import optim
-import  torchvision.datasets as dset
 import  torch.backends.cudnn as cudnn
 
 from    model_search import Network
@@ -126,16 +125,7 @@ def main():
 
 
 def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
-    """
-    :param train_queue: train loader
-    :param valid_queue: validate loader
-    :param model: network
-    :param arch: Arch class
-    :param criterion:
-    :param optimizer:
-    :param lr:
-    :return:
-    """
+    
     losses = utils.AverageMeter()
     top1 = utils.AverageMeter()
     top5 = utils.AverageMeter()
