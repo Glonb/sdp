@@ -17,15 +17,15 @@ from    model import NetworkCIFAR as Network
 
 parser = argparse.ArgumentParser("cifar10")
 parser.add_argument('--data', type=str, default='../data', help='location of the data corpus')
-parser.add_argument('--batchsz', type=int, default=96, help='batch size')
+parser.add_argument('--batchsz', type=int, default=64, help='batch size')
 parser.add_argument('--lr', type=float, default=0.025, help='init learning rate')
 parser.add_argument('--momentum', type=float, default=0.9, help='momentum')
 parser.add_argument('--wd', type=float, default=3e-4, help='weight decay')
 parser.add_argument('--report_freq', type=float, default=50, help='report frequency')
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
-parser.add_argument('--epochs', type=int, default=600, help='num of training epochs')
-parser.add_argument('--init_ch', type=int, default=36, help='num of init channels')
-parser.add_argument('--layers', type=int, default=20, help='total number of layers')
+parser.add_argument('--epochs', type=int, default=20, help='num of training epochs')
+parser.add_argument('--init_ch', type=int, default=40, help='num of init channels')
+parser.add_argument('--layers', type=int, default=8, help='total number of layers')
 parser.add_argument('--model_path', type=str, default='saved_models', help='path to save the model')
 parser.add_argument('--auxiliary', action='store_true', default=False, help='use auxiliary tower')
 parser.add_argument('--auxiliary_weight', type=float, default=0.4, help='weight for auxiliary loss')
@@ -60,7 +60,7 @@ def main():
     logging.info("args = %s", args)
 
     genotype = eval("genotypes.%s" % args.arch)
-    model = Network(args.init_ch, 10, args.layers, args.auxiliary, genotype).cuda()
+    model = Network(args.init_ch, 5, args.layers, args.auxiliary, genotype).cuda()
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
 
