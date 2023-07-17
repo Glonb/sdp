@@ -14,7 +14,7 @@ from    my_dataset import MyDataset
 
 parser = argparse.ArgumentParser("cifar10")
 parser.add_argument('--data', type=str, default='../data', help='location of the data corpus')
-parser.add_argument('--batchsz', type=int, default=32, help='batch size')
+parser.add_argument('--batchsz', type=int, default=64, help='batch size')
 parser.add_argument('--report_freq', type=float, default=50, help='report frequency')
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
 parser.add_argument('--init_ch', type=int, default=10, help='num of init channels')
