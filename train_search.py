@@ -74,7 +74,7 @@ def main():
     logging.info("args = %s", args)
 
     criterion = nn.CrossEntropyLoss().to(device)
-    model = Network(args.init_ch, 10, args.layers, criterion).to(device)
+    model = Network(args.init_ch, 15, args.layers, criterion).to(device)
 
     logging.info("Total param size = %f MB", utils.count_parameters_in_MB(model))
 
