@@ -16,7 +16,7 @@ import  torch.backends.cudnn as cudnn
 from    model import NetworkCIFAR as Network
 from    my_dataset import MyDataset
 
-parser = argparse.ArgumentParser("cifar10")
+parser = argparse.ArgumentParser("SDP")
 parser.add_argument('--data', type=str, default='../data', help='location of the data corpus')
 parser.add_argument('--batchsz', type=int, default=32, help='batch size')
 parser.add_argument('--lr', type=float, default=0.025, help='init learning rate')
@@ -33,7 +33,7 @@ parser.add_argument('--auxiliary_weight', type=float, default=0.4, help='weight 
 parser.add_argument('--cutout', action='store_true', default=False, help='use cutout')
 parser.add_argument('--cutout_length', type=int, default=16, help='cutout length')
 parser.add_argument('--drop_path_prob', type=float, default=0.2, help='drop path probability')
-parser.add_argument('--exp_path', type=str, default='exp/cifar10', help='experiment name')
+parser.add_argument('--exp_path', type=str, default='exp/sdp', help='experiment name')
 parser.add_argument('--seed', type=int, default=0, help='random seed')
 parser.add_argument('--arch', type=str, default='DARTS', help='which architecture to use')
 parser.add_argument('--grad_clip', type=float, default=5, help='gradient clipping')
@@ -61,7 +61,7 @@ def main():
     logging.info("args = %s", args)
 
     genotype = eval("genotypes.%s" % args.arch)
-    model = Network(args.init_ch, 10, args.layers, args.auxiliary, genotype).cuda()
+    model = Network(args.init_ch, 15, args.layers, args.auxiliary, genotype).cuda()
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
 
