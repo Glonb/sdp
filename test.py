@@ -12,13 +12,13 @@ import  torch.backends.cudnn as cudnn
 from    model import NetworkCIFAR as Network
 from    my_dataset import MyDataset
 
-parser = argparse.ArgumentParser("cifar10")
+parser = argparse.ArgumentParser("SDP")
 parser.add_argument('--data', type=str, default='../data', help='location of the data corpus')
-parser.add_argument('--batchsz', type=int, default=64, help='batch size')
+parser.add_argument('--batchsz', type=int, default=32, help='batch size')
 parser.add_argument('--report_freq', type=float, default=50, help='report frequency')
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
 parser.add_argument('--init_ch', type=int, default=10, help='num of init channels')
-parser.add_argument('--layers', type=int, default=8, help='total number of layers')
+parser.add_argument('--layers', type=int, default=5, help='total number of layers')
 parser.add_argument('--exp_path', type=str, default='exp/model.pt', help='path of pretrained model')
 parser.add_argument('--auxiliary', action='store_true', default=False, help='use auxiliary tower')
 parser.add_argument('--cutout', action='store_true', default=False, help='use cutout')
@@ -44,7 +44,7 @@ def main():
     # equal to: genotype = genotypes.DARTS_v2
     genotype = eval("genotypes.%s" % args.arch)
     print('Load genotype:', genotype)
-    model = Network(args.init_ch, 10, args.layers, args.auxiliary, genotype).cuda()
+    model = Network(args.init_ch, 15, args.layers, args.auxiliary, genotype).cuda()
     utils.load(model, args.exp_path)
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
