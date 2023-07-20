@@ -105,7 +105,7 @@ def main():
     for epoch in range(args.epochs):
 
         lr = scheduler.get_last_lr()[0]
-        logging.info('\nEpoch: %d lr: %e', epoch, lr)
+        logging.info('Epoch: %d lr: %e', epoch, lr)
 
         genotype = model.genotype()
         logging.info('Genotype: %s', genotype)
