@@ -20,7 +20,7 @@ parser.add_argument('--lr', type=float, default=0.025, help='init learning rate'
 parser.add_argument('--lr_min', type=float, default=0.001, help='min learning rate')
 parser.add_argument('--momentum', type=float, default=0.9, help='momentum')
 parser.add_argument('--wd', type=float, default=3e-4, help='weight decay')
-parser.add_argument('--report_freq', type=float, default=20, help='report frequency')
+parser.add_argument('--report_freq', type=float, default=10, help='report frequency')
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
 parser.add_argument('--epochs', type=int, default=10, help='num of training epochs')
 parser.add_argument('--init_ch', type=int, default=10, help='num of init channels')
@@ -81,7 +81,7 @@ def main():
     # this is the optimizer to optimize
     optimizer = optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd)
 
-    train_data = MyDataset('/kaggle/input/sdp-data/embeddings.npy', 'label.csv')
+    train_data = MyDataset('/kaggle/input/sdp-data/xalan5_embed.npy', '/kaggle/input/sdp-data/xalan5_label.csv')
 
     num_train = len(train_data) 
     indices = list(range(num_train))
