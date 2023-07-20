@@ -7,8 +7,6 @@ def concat(xs):
     """
     flatten all tensor from [d1,d2,...dn] to [d]
     and then concat all [d_1] to [d_1+d_2+d_3+...]
-    :param xs:
-    :return:
     """
     return torch.cat([x.view(-1) for x in xs])
 
@@ -16,10 +14,6 @@ def concat(xs):
 class Arch:
 
     def __init__(self, model, args):
-        """
-        :param model: network
-        :param args:
-        """
         self.momentum = args.momentum # momentum for optimizer of theta
         self.wd = args.wd # weight decay for optimizer of theta
         self.model = model # main model with respect to theta and alpha
@@ -32,11 +26,7 @@ class Arch:
     def comp_unrolled_model(self, x, target, eta, optimizer):
         """
         loss on train set and then update w_pi, not-in-place
-        :param x:
-        :param target:
-        :param eta:
         :param optimizer: optimizer of theta, not optimizer of alpha
-        :return:
         """
         # forward to get loss
         loss = self.model.loss(x, target)
@@ -65,14 +55,7 @@ class Arch:
     def step(self, x_train, target_train, x_valid, target_valid, eta, optimizer, unrolled):
         """
         update alpha parameter by manually computing the gradients
-        :param x_train:
-        :param target_train:
-        :param x_valid:
-        :param target_valid:
-        :param eta:
         :param optimizer: theta optimizer
-        :param unrolled:
-        :return:
         """
         # alpha optimizer
         self.optimizer.zero_grad()
@@ -90,9 +73,6 @@ class Arch:
     def backward_step(self, x_valid, target_valid):
         """
         simply train on validate set and backward
-        :param x_valid:
-        :param target_valid:
-        :return:
         """
         loss = self.model.loss(x_valid, target_valid)
         # both alpha and theta require grad but only alpha optimizer will
@@ -102,13 +82,8 @@ class Arch:
     def backward_step_unrolled(self, x_train, target_train, x_valid, target_valid, eta, optimizer):
         """
         train on validate set based on update w_pi
-        :param x_train:
-        :param target_train:
-        :param x_valid:
-        :param target_valid:
         :param eta: 0.01, according to author's comments
         :param optimizer: theta optimizer
-        :return:
         """
 
         # theta_pi = theta - lr * grad
@@ -163,10 +138,6 @@ class Arch:
         slightly touch vector value to estimate the gradient with respect to alpha
         refer to Eq. 7 for more details.
         :param vector: gradient.data of parameters theta
-        :param x:
-        :param target:
-        :param r:
-        :return:
         """
         R = r / concat(vector).norm()
 
