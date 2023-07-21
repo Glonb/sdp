@@ -128,7 +128,6 @@ def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
     
     losses = utils.AverageMeter()
     top1 = utils.AverageMeter()
-    # top5 = utils.AverageMeter()
 
     valid_iter = iter(valid_queue)
 
@@ -155,8 +154,7 @@ def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
 
         prec = utils.accuracy(logits, target, topk=(1,))
         losses.update(loss.item(), batchsz)
-        top1.update(prec.item(), batchsz)
-        # top5.update(prec5.item(), batchsz)
+        top1.update(prec, batchsz)
 
         if step % args.report_freq == 0:
             logging.info('Step:%03d loss:%f acc1:%f', step, losses.avg, top1.avg)
@@ -173,7 +171,6 @@ def infer(valid_queue, model, criterion):
     """
     losses = utils.AverageMeter()
     top1 = utils.AverageMeter()
-    # top5 = utils.AverageMeter()
 
     model.eval()
 
@@ -188,8 +185,7 @@ def infer(valid_queue, model, criterion):
 
             prec = utils.accuracy(logits, target, topk=(1,))
             losses.update(loss.item(), batchsz)
-            top1.update(prec.item(), batchsz)
-            # top5.update(prec5.item(), batchsz)
+            top1.update(prec, batchsz)
 
             if step % args.report_freq == 0:
                 logging.info('>> Validation: %3d %e %f', step, losses.avg, top1.avg)
