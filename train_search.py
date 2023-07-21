@@ -74,7 +74,7 @@ def main():
     logging.info("args = %s", args)
 
     criterion = nn.CrossEntropyLoss().to(device)
-    model = Network(args.init_ch, 15, args.layers, criterion).to(device)
+    model = Network(args.init_ch, 2, args.layers, criterion).to(device)
 
     logging.info("Total param size = %f MB", utils.count_parameters_in_MB(model))
 
@@ -128,7 +128,7 @@ def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
     
     losses = utils.AverageMeter()
     top1 = utils.AverageMeter()
-    top5 = utils.AverageMeter()
+    # top5 = utils.AverageMeter()
 
     valid_iter = iter(valid_queue)
 
@@ -153,13 +153,13 @@ def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
         nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
         optimizer.step()
 
-        prec1, prec5 = utils.accuracy(logits, target, topk=(1, 5))
+        prec1, prec5 = utils.accuracy(logits, target, topk=(1,))
         losses.update(loss.item(), batchsz)
         top1.update(prec1.item(), batchsz)
-        top5.update(prec5.item(), batchsz)
+        # top5.update(prec5.item(), batchsz)
 
         if step % args.report_freq == 0:
-            logging.info('Step:%03d loss:%f acc1:%f acc5:%f', step, losses.avg, top1.avg, top5.avg)
+            logging.info('Step:%03d loss:%f acc1:%f', step, losses.avg, top1.avg)
 
     return top1.avg, losses.avg
 
@@ -173,7 +173,7 @@ def infer(valid_queue, model, criterion):
     """
     losses = utils.AverageMeter()
     top1 = utils.AverageMeter()
-    top5 = utils.AverageMeter()
+    # top5 = utils.AverageMeter()
 
     model.eval()
 
@@ -186,13 +186,13 @@ def infer(valid_queue, model, criterion):
             logits = model(x)
             loss = criterion(logits, target)
 
-            prec1, prec5 = utils.accuracy(logits, target, topk=(1, 5))
+            prec1, prec5 = utils.accuracy(logits, target, topk=(1,))
             losses.update(loss.item(), batchsz)
             top1.update(prec1.item(), batchsz)
-            top5.update(prec5.item(), batchsz)
+            # top5.update(prec5.item(), batchsz)
 
             if step % args.report_freq == 0:
-                logging.info('>> Validation: %3d %e %f %f', step, losses.avg, top1.avg, top5.avg)
+                logging.info('>> Validation: %3d %e %f', step, losses.avg, top1.avg)
 
     return top1.avg, losses.avg
 
