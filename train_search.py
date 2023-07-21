@@ -153,9 +153,9 @@ def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
         nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
         optimizer.step()
 
-        prec1, prec5 = utils.accuracy(logits, target, topk=(1,))
+        prec = utils.accuracy(logits, target, topk=(1,))
         losses.update(loss.item(), batchsz)
-        top1.update(prec1.item(), batchsz)
+        top1.update(prec.item(), batchsz)
         # top5.update(prec5.item(), batchsz)
 
         if step % args.report_freq == 0:
@@ -186,9 +186,9 @@ def infer(valid_queue, model, criterion):
             logits = model(x)
             loss = criterion(logits, target)
 
-            prec1, prec5 = utils.accuracy(logits, target, topk=(1,))
+            prec = utils.accuracy(logits, target, topk=(1,))
             losses.update(loss.item(), batchsz)
-            top1.update(prec1.item(), batchsz)
+            top1.update(prec.item(), batchsz)
             # top5.update(prec5.item(), batchsz)
 
             if step % args.report_freq == 0:
