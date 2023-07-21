@@ -101,7 +101,6 @@ class Zero(nn.Module):
     """
     def __init__(self, stride):
         super(Zero, self).__init__()
-
         self.stride = stride
 
     def forward(self, x):
@@ -114,7 +113,9 @@ class FactorizedReduce(nn.Module):
 
   def __init__(self, C_in, C_out, affine=True):
     super(FactorizedReduce, self).__init__()
+    
     assert C_out % 2 == 0
+    
     self.relu = nn.ReLU(inplace=False)
     self.conv_1 = nn.Conv1d(C_in, C_out // 2, 1, stride=2, padding=0, bias=False)
     self.conv_2 = nn.Conv1d(C_in, C_out // 2, 1, stride=2, padding=0, bias=False)
