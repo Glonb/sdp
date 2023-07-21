@@ -11,8 +11,9 @@ PRIMITIVES = [
     'skip_connect',
     'sep_conv_3',
     'sep_conv_5',
-    'dil_conv_3',
-    'dil_conv_5'
+    'sep_conv_7'
+    # 'dil_conv_3',
+    # 'dil_conv_5'
 ]
 
 DARTS_MINE = Genotype(
