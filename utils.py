@@ -21,24 +21,20 @@ class AverageMeter:
         self.avg = self.sum / self.cnt
 
 
-def accuracy(output, target, topk=(1,)):
+def accuracy(output, target):
     """
     :param output: logits, [b, classes]
     :param target: [b]
-    :param topk:
     :return:
     """
-    maxk = max(topk)
     batch_size = target.size(0)
 
-    _, pred = output.topk(maxk, 1, True, True)
+    _, pred = output.topk(1, 1, True, True)
     pred = pred.t()
     correct = pred.eq(target.view(1, -1).expand_as(pred))
 
-    res = []
-    for k in topk:
-        correct_k = correct[:k].contiguous().view(-1).float().sum(0)
-        res.append(correct_k.mul_(100.0 / batch_size))
+    correct_1 = correct[:1].contiguous().view(-1).float().sum(0)
+    res = correct_1.mul_(100.0 / batch_size)
 
     return res
 
