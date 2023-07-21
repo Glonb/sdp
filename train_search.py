@@ -152,7 +152,7 @@ def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
         nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
         optimizer.step()
 
-        prec = utils.accuracy(logits, target, topk=(1,))
+        prec = utils.accuracy(logits, target)
         losses.update(loss.item(), batchsz)
         top1.update(prec, batchsz)
 
@@ -183,7 +183,7 @@ def infer(valid_queue, model, criterion):
             logits = model(x)
             loss = criterion(logits, target)
 
-            prec = utils.accuracy(logits, target, topk=(1,))
+            prec = utils.accuracy(logits, target)
             losses.update(loss.item(), batchsz)
             top1.update(prec, batchsz)
 
