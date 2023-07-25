@@ -21,6 +21,28 @@ class AverageMeter:
         self.avg = self.sum / self.cnt
 
 
+def metrics(output, target):
+    """
+    :param output: logits, [b, classes]
+    :param target: [b]
+    :return:
+    """
+    _, pred = output.topk(1, 1, True, True)
+    pred = pred.t()
+    
+    # Compute True Positives, False Positives, False Negatives
+    tp = (pred == target) & (target == 1)
+    fp = (pred == 1) & (target == 0)
+    fn = (pred == 0) & (target == 1)
+    
+    # Compute Precision, Recall, F1 Score
+    precision = tp.sum() / (tp.sum() + fp.sum() + 1e-10)
+    recall = tp.sum() / (tp.sum() + fn.sum() + 1e-10)
+    f1 = 2 * precision * recall / (precision + recall + 1e-10)
+    
+    return precision, recall, f1
+
+
 def accuracy(output, target):
     """
     :param output: logits, [b, classes]
