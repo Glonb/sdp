@@ -113,7 +113,7 @@ def main():
         # training
         train_prec, train_obj = train(train_queue, valid_queue, model, arch, criterion, optimizer, lr)
         logging.info('train precision: %f', train_prec)
-        print('train precision: ', train_prec)
+        print('train precision: ', train_prec.item())
 
         # update lr
         scheduler.step()
@@ -121,7 +121,7 @@ def main():
         # validation
         valid_prec, valid_obj = infer(valid_queue, model, criterion)
         logging.info('valid precision: %f', valid_prec)
-        print('valid precision: ', valid_prec)
+        print('valid precision: ', valid_prec.item())
 
         utils.save(model, os.path.join(args.exp_path, 'search.pt'))
 
