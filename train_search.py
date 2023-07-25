@@ -187,7 +187,7 @@ def infer(valid_queue, model, criterion):
             logits = model(x)
             loss = criterion(logits, target)
 
-            prec, rec, f1 = utils.accuracy(logits, target)
+            prec, rec, f1 = utils.metrics(logits, target)
             losses.update(loss.item(), batchsz)
             precision.update(prec, batchsz)
             recall.update(rec, batchsz)
