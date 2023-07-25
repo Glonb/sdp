@@ -130,7 +130,7 @@ def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
     # top1 = utils.AverageMeter()
     precision = utils.AverageMeter()
     recall = utils.AverageMeter()
-    F_measure = utils.AverageMeter()
+    f_measure = utils.AverageMeter()
 
     valid_iter = iter(valid_queue)
 
@@ -159,11 +159,11 @@ def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
         losses.update(loss.item(), batchsz)
         precision.update(prec, batchsz)
         recall.update(rec, batchsz)
-        F_measure.update(f1, batchsz)
+        f_measure.update(f1, batchsz)
 
         if step % args.report_freq == 0:
             logging.info('Step:%03d loss:%f precision:%f recall:%f f1:%f', 
-                         step, losses.avg, precision.avg, recall.avg, F_measure.avg)
+                         step, losses.avg, precision.avg, recall.avg, f_measure.avg)
 
     return precision.avg, losses.avg
 
@@ -174,7 +174,7 @@ def infer(valid_queue, model, criterion):
     # top1 = utils.AverageMeter()
     precision = utils.AverageMeter()
     recall = utils.AverageMeter()
-    F_measure = utils.AverageMeter()
+    f_measure = utils.AverageMeter()
 
     model.eval()
 
@@ -191,11 +191,11 @@ def infer(valid_queue, model, criterion):
             losses.update(loss.item(), batchsz)
             precision.update(prec, batchsz)
             recall.update(rec, batchsz)
-            F_measure.update(f1, batchsz)
+            f_measure.update(f1, batchsz)
 
             if step % args.report_freq == 0:
                 logging.info('>> Validation: %3d %e prec:%f recall:%f f1:%f', 
-                             step, losses.avg, precision.avg, recall.avg, F_measure.avg)
+                             step, losses.avg, precision.avg, recall.avg, f_measure.avg)
 
     return precision.avg, losses.avg
 
