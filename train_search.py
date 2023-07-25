@@ -111,15 +111,15 @@ def main():
         logging.info('Genotype: %s', genotype)
 
         # training
-        train_acc, train_obj = train(train_queue, valid_queue, model, arch, criterion, optimizer, lr)
-        logging.info('train acc: %f', train_acc)
+        train_prec, train_obj = train(train_queue, valid_queue, model, arch, criterion, optimizer, lr)
+        logging.info('train precision: %f', train_prec)
 
         # update lr
         scheduler.step()
 
         # validation
-        valid_acc, valid_obj = infer(valid_queue, model, criterion)
-        logging.info('valid acc: %f', valid_acc)
+        valid_prec, valid_obj = infer(valid_queue, model, criterion)
+        logging.info('valid precision: %f', valid_prec)
 
         utils.save(model, os.path.join(args.exp_path, 'search.pt'))
 
@@ -127,7 +127,10 @@ def main():
 def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
     
     losses = utils.AverageMeter()
-    top1 = utils.AverageMeter()
+    # top1 = utils.AverageMeter()
+    precision = utils.AverageMeter()
+    recall = utils.AverageMeter()
+    F-measure = utils.AverageMeter()
 
     valid_iter = iter(valid_queue)
 
@@ -152,25 +155,26 @@ def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
         nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
         optimizer.step()
 
-        prec = utils.accuracy(logits, target)
+        prec, rec, f1 = utils.metrics(logits, target)
         losses.update(loss.item(), batchsz)
-        top1.update(prec, batchsz)
+        precision.update(prec, batchsz)
+        recall.update(rec, batchsz)
+        F-measure.update(f1, batchsz)
 
         if step % args.report_freq == 0:
-            logging.info('Step:%03d loss:%f acc1:%f', step, losses.avg, top1.avg)
+            logging.info('Step:%03d loss:%f precision:%f recall:%f f1:%f', 
+                         step, losses.avg, precision.avg, recall.avg, F-measure.avg)
 
-    return top1.avg, losses.avg
+    return precision.avg, losses.avg
 
 
 def infer(valid_queue, model, criterion):
-    """
-    :param valid_queue:
-    :param model:
-    :param criterion:
-    :return:
-    """
+   
     losses = utils.AverageMeter()
-    top1 = utils.AverageMeter()
+    # top1 = utils.AverageMeter()
+    precision = utils.AverageMeter()
+    recall = utils.AverageMeter()
+    F-measure = utils.AverageMeter()
 
     model.eval()
 
@@ -183,14 +187,17 @@ def infer(valid_queue, model, criterion):
             logits = model(x)
             loss = criterion(logits, target)
 
-            prec = utils.accuracy(logits, target)
+            prec, rec, f1 = utils.accuracy(logits, target)
             losses.update(loss.item(), batchsz)
-            top1.update(prec, batchsz)
+            precision.update(prec, batchsz)
+            recall.update(rec, batchsz)
+            F-measure.update(f1, batchsz)
 
             if step % args.report_freq == 0:
-                logging.info('>> Validation: %3d %e %f', step, losses.avg, top1.avg)
+                logging.info('>> Validation: %3d %e prec:%f recall:%f f1:%f', 
+                             step, losses.avg, precision.avg, recall.avg, F-measure.avg)
 
-    return top1.avg, losses.avg
+    return precision.avg, losses.avg
 
 
 if __name__ == '__main__':
