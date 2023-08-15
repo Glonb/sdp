@@ -81,7 +81,7 @@ def main():
     # this is the optimizer to optimize
     optimizer = optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd)
 
-    train_data = MyDataset('/kaggle/input/sdp-data/xalan4_embed.npy', '/kaggle/input/sdp-data/xalan4_label.csv')
+    train_data = MyDataset('/kaggle/input/sdp-data/xalan6_embed.npy', '/kaggle/input/sdp-data/xalan6_label.csv')
 
     num_train = len(train_data) 
     indices = list(range(num_train))
