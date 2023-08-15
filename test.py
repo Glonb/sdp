@@ -44,7 +44,7 @@ def main():
     # equal to: genotype = genotypes.DARTS_v2
     genotype = eval("genotypes.%s" % args.arch)
     print('Load genotype:', genotype)
-    model = Network(args.init_ch, 15, args.layers, args.auxiliary, genotype).cuda()
+    model = Network(args.init_ch, 2, args.layers, args.auxiliary, genotype).cuda()
     utils.load(model, args.exp_path)
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
