@@ -74,7 +74,7 @@ def main():
     logging.info("args = %s", args)
 
     # the weights of classes
-    weights = torch.tensor([1, 1], dtype=torch.float)
+    # weights = torch.tensor([1, 1], dtype=torch.float)
 
     criterion = nn.BCEWithLogitsLoss().to(device)
     model = Network(args.init_ch, 2, args.layers, criterion).to(device)
@@ -151,7 +151,8 @@ def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
         arch.step(x, target, x_search, target_search, lr, optimizer, unrolled=args.unrolled)
 
         logits = model(x)
-        loss = criterion(logits, target.unsqueeze(1))
+        target = target.view(-1,1)
+        loss = criterion(logits, target)
 
         # 2. update weight
         optimizer.zero_grad()
@@ -188,7 +189,8 @@ def infer(valid_queue, model, criterion):
             batchsz = x.size(0)
 
             logits = model(x)
-            loss = criterion(logits, target.unsqueeze(1))
+            target = target.view(-1,1)
+            loss = criterion(logits, target)
 
             prec, rec, f1 = utils.metrics(logits, target)
             losses.update(loss.item(), batchsz)
