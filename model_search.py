@@ -168,16 +168,14 @@ class Network(nn.Module):
             # print('cell:',i, s1.shape, cell.reduction, cell.reduction_prev)
             # print('\n')
 
-        print('out shape:', s1.shape, end='=>')
         out = self.global_pooling(s1)
-        print(out.shape)
         logits = self.classifier(out.view(out.size(0), -1))
-        print('logits: ', logits)
-
+        
         return logits
 
     def loss(self, x, target):
         logits = self(x)
+        target = target.view(-1,1)
         return self.criterion(logits, target)
 
 
