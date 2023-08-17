@@ -132,7 +132,6 @@ def main():
 def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
     
     losses = utils.AverageMeter()
-    # top1 = utils.AverageMeter()
     precision = utils.AverageMeter()
     recall = utils.AverageMeter()
     f_measure = utils.AverageMeter()
@@ -176,7 +175,6 @@ def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
 def infer(valid_queue, model, criterion):
    
     losses = utils.AverageMeter()
-    # top1 = utils.AverageMeter()
     precision = utils.AverageMeter()
     recall = utils.AverageMeter()
     f_measure = utils.AverageMeter()
