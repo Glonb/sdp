@@ -170,9 +170,9 @@ class Network(nn.Module):
 
         print('out shape:', s1.shape, end='=>')
         out = self.global_pooling(s1)
-        print(out)
+        print(out.shape)
         logits = self.classifier(out.view(out.size(0), -1))
-        print('logits shape:', logits.shape)
+        print('logits: ', logits)
 
         return logits
 
