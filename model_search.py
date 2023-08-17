@@ -131,7 +131,8 @@ class Network(nn.Module):
         self.global_pooling = nn.AdaptiveAvgPool1d(1)
         # since cp records last cell's output channels
         # it indicates the input channel number
-        self.classifier = nn.Linear(cp, num_classes)
+        # self.classifier = nn.Linear(cp, num_classes)
+        self.classifier = nn.Linear(cp, 1)
 
         # k is the total number of edges inside single cell, 14
         k = sum(1 for i in range(self.steps) for j in range(2 + i))
