@@ -168,8 +168,11 @@ class Network(nn.Module):
             # print('cell:',i, s1.shape, cell.reduction, cell.reduction_prev)
             # print('\n')
 
+        print('out shape:', s1.shape, end='=>')
         out = self.global_pooling(s1)
+        print(out)
         logits = self.classifier(out.view(out.size(0), -1))
+        print('logits shape:', logits.shape)
 
         return logits
 
