@@ -76,7 +76,7 @@ def main():
     # the weights of classes
     weights = torch.tensor([1, 1], dtype=torch.float)
 
-    criterion = nn.BCELoss(weight = weights).to(device)
+    criterion = nn.BCEWithLogitsLoss(weight = weights).to(device)
     model = Network(args.init_ch, 2, args.layers, criterion).to(device)
 
     logging.info("Total param size = %f MB", utils.count_parameters_in_MB(model))
