@@ -29,6 +29,8 @@ def metrics(output, target):
     """
     _, pred = output.topk(1, 1, True, True)
     pred = pred.t()
+
+    target = target.round()
     
     # Compute True Positives, False Positives, False Negatives
     tp = (pred == target) & (target == 1)
