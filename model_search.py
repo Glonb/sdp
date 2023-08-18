@@ -94,12 +94,11 @@ class Network(nn.Module):
     """
     stack number:layer of cells and then flatten to fed a linear layer
     """
-    def __init__(self, c, num_classes, layers, criterion, steps=4, multiplier=4):
+    def __init__(self, c, layers, criterion, steps=4, multiplier=4):
         
         super(Network, self).__init__()
 
         self.c = c
-        self.num_classes = num_classes
         self.layers = layers
         self.criterion = criterion
         self.steps = steps
@@ -151,7 +150,7 @@ class Network(nn.Module):
 
     def new(self):
         
-        model_new = Network(self.c, self.num_classes, self.layers, self.criterion).cuda()
+        model_new = Network(self.c, self.layers, self.criterion).cuda()
         for x, y in zip(model_new.arch_parameters(), self.arch_parameters()):
             x.data.copy_(y.data)
         return model_new
