@@ -151,7 +151,6 @@ def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
         arch.step(x, target, x_search, target_search, lr, optimizer, unrolled=args.unrolled)
 
         logits = model(x)
-        target = target.view(-1,1)
         loss = criterion(logits, target)
 
         # 2. update weight
@@ -189,7 +188,6 @@ def infer(valid_queue, model, criterion):
             batchsz = x.size(0)
 
             logits = model(x)
-            target = target.view(-1,1)
             loss = criterion(logits, target)
 
             prec, rec, f1 = utils.metrics(logits, target)
