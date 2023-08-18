@@ -77,7 +77,7 @@ def main():
     pos_weight = torch.tensor([5])
 
     criterion = nn.BCEWithLogitsLoss(pos_weight = pos_weight).to(device)
-    model = Network(args.init_ch, 2, args.layers, criterion).to(device)
+    model = Network(args.init_ch, args.layers, criterion).to(device)
 
     logging.info("Total param size = %f MB", utils.count_parameters_in_MB(model))
 
