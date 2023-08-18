@@ -22,45 +22,22 @@ class AverageMeter:
 
 
 def metrics(output, target, threshold = 0.5):
-    """
-    :param output: logits, [b, classes]
-    :param target: [b]
-    :return:
-    """
-    # _, pred = output.topk(1, 1, True, True)
-    # pred = pred.t()
 
     pred = (output > threshold).long()
     
-    # Compute True Positives, False Positives, False Negatives
+    # Compute True Positives, False Positives, False Negatives, True Negatives
     tp = (pred == target) & (target == 1)
     fp = (pred == 1) & (target == 0)
     fn = (pred == 0) & (target == 1)
+    tn = (pred == target) & (target == 0)
     
-    # Compute Precision, Recall, F1 Score
+    # Compute Precision, Recall, F1 Score, Accuracy
+    accuracy = (tp.sum() + tn.sum()) / (tp.sum() + fp.sum() + fn.sum() + tn.sum() + 1e-10)
     precision = tp.sum() / (tp.sum() + fp.sum() + 1e-10)
     recall = tp.sum() / (tp.sum() + fn.sum() + 1e-10)
     f1 = 2 * precision * recall / (precision + recall + 1e-10)
     
-    return precision, recall, f1
-
-
-def accuracy(output, target):
-    """
-    :param output: logits, [b, classes]
-    :param target: [b]
-    :return:
-    """
-    batch_size = target.size(0)
-
-    _, pred = output.topk(1, 1, True, True)
-    pred = pred.t()
-    correct = pred.eq(target.view(1, -1).expand_as(pred))
-
-    correct_1 = correct[:1].contiguous().view(-1).float().sum(0)
-    res = correct_1.mul_(100.0 / batch_size)
-
-    return res
+    return accuracy, precision, recall, f1
 
 
 class Cutout:
