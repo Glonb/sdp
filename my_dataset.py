@@ -11,12 +11,11 @@ class MyDataset(Dataset):
         # 转化为FloatTensor类型
         self.data = torch.from_numpy(data).float()
         labels = pd.read_csv(label_file, usecols=['bug']).values
-        # self.labels = torch.from_numpy(labels).long()
-        self.labels = torch.from_numpy(labels).float()
+        self.labels = torch.from_numpy(labels)
 
     def __len__(self):
         return len(self.data)
 
     def __getitem__(self, idx):
-        return self.data[idx], self.labels[idx].item()
+        return self.data[idx], self.labels[idx]
 
