@@ -32,12 +32,12 @@ def metrics(output, target, threshold = 0.5):
     tn = (pred == target) & (target == 0)
     
     # Compute Precision, Recall, F1 Score, Accuracy
-    accuracy = (tp.sum() + tn.sum()) / (tp.sum() + fp.sum() + fn.sum() + tn.sum() + 1e-10)
+    # accuracy = (tp.sum() + tn.sum()) / (tp.sum() + fp.sum() + fn.sum() + tn.sum() + 1e-10)
     precision = tp.sum() / (tp.sum() + fp.sum() + 1e-10)
     recall = tp.sum() / (tp.sum() + fn.sum() + 1e-10)
     f1 = 2 * precision * recall / (precision + recall + 1e-10)
     
-    return accuracy, precision, recall, f1
+    return  precision, recall, f1
 
 
 class Cutout:
