@@ -21,16 +21,16 @@ class AverageMeter:
         self.avg = self.sum / self.cnt
 
 
-def metrics(output, target):
+def metrics(output, target, threshold = 0.5):
     """
     :param output: logits, [b, classes]
     :param target: [b]
     :return:
     """
-    _, pred = output.topk(1, 1, True, True)
-    pred = pred.t()
+    # _, pred = output.topk(1, 1, True, True)
+    # pred = pred.t()
 
-    target = target.round()
+    pred = (output > threshold).long()
     
     # Compute True Positives, False Positives, False Negatives
     tp = (pred == target) & (target == 1)
