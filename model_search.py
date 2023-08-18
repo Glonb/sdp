@@ -175,7 +175,6 @@ class Network(nn.Module):
 
     def loss(self, x, target):
         logits = self(x)
-        target = target.view(-1,1)
         return self.criterion(logits, target)
 
 
