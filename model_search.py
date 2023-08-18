@@ -175,7 +175,7 @@ class Network(nn.Module):
 
     def loss(self, x, target):
         logits = self(x)
-        return self.criterion(logits, target)
+        return self.criterion(logits, target.float())
 
 
     def arch_parameters(self):
