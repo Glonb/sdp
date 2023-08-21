@@ -106,7 +106,6 @@ def main():
         scheduler.step()
       
         utils.save(model, os.path.join(args.save, 'trained.pt'))
-        print('saved to: trained.pt')
 
 
 def train(train_queue, model, criterion, optimizer):
