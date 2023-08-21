@@ -93,16 +93,15 @@ def main():
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, float(args.epochs))
 
     for epoch in range(args.epochs):
-        # scheduler.step()
-      
+    
         logging.info('epoch %d lr %e', epoch, scheduler.get_last_lr()[0])
         model.drop_path_prob = args.drop_path_prob * epoch / args.epochs
 
-        train_acc, train_obj = train(train_queue, model, criterion, optimizer)
-        logging.info('train_acc: %f', train_acc)
+        train_prec, train_obj = train(train_queue, model, criterion, optimizer)
+        logging.info('train_prec: %f', train_prec)
 
-        valid_acc, valid_obj = infer(valid_queue, model, criterion)
-        logging.info('valid_acc: %f', valid_acc)
+        valid_prec, valid_obj = infer(valid_queue, model, criterion)
+        logging.info('valid_prec: %f', valid_prec)
 
         scheduler.step()
       
@@ -112,7 +111,7 @@ def main():
 
 def train(train_queue, model, criterion, optimizer):
 
-    objs = utils.AverageMeter()
+    losses = utils.AverageMeter()
     precision = utils.AverageMeter()
     recall = utils.AverageMeter()
     f_measure = utils.AverageMeter()
@@ -124,28 +123,31 @@ def train(train_queue, model, criterion, optimizer):
 
         optimizer.zero_grad()
         logits, logits_aux = model(x)
-        loss = criterion(logits, target)
+        loss = criterion(logits, target.float())
         loss.backward()
         nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
         optimizer.step()
 
-        prec1, prec5 = utils.metric(logits, target)
+        prec, rec, f1 = utils.metrics(logits, target)
         n = x.size(0)
-        objs.update(loss.item(), n)
-        top1.update(prec1.item(), n)
-        top5.update(prec5.item(), n)
+        losses.update(loss.item(), n)
+        precision.update(prec, n)
+        recall.update(rec, n)
+        f_measure.update(f1, n)
 
         if step % args.report_freq == 0:
-            logging.info('train %03d %e %f %f', step, objs.avg, top1.avg, top5.avg)
+            logging.info('Train %03d loss:%e prec:%f recall:%f f1:%f',
+                         step, losses.avg, precision.avg, recall.avg, f_measure.avg)
 
-    return top1.avg, objs.avg
+    return precision.avg, losses.avg
 
 
 def infer(valid_queue, model, criterion):
 
-    objs = utils.AverageMeter()
-    top1 = utils.AverageMeter()
-    top5 = utils.AverageMeter()
+    losses = utils.AverageMeter()
+    precision = utils.AverageMeter()
+    recall = utils.AverageMeter()
+    f_measure = utils.AverageMeter()
     model.eval()
 
     for step, (x, target) in enumerate(valid_queue):
@@ -154,18 +156,20 @@ def infer(valid_queue, model, criterion):
 
         with torch.no_grad():
             logits, _ = model(x)
-            loss = criterion(logits, target)
+            loss = criterion(logits, target.float())
 
-            prec1, prec5 = utils.accuracy(logits, target, topk=(1, 5))
+            prec, rec, f1 = utils.metrics(logits, target)
             n = x.size(0)
-            objs.update(loss.item(), n)
-            top1.update(prec1.item(), n)
-            top5.update(prec5.item(), n)
+            losses.update(loss.item(), n)
+            precision.update(prec, n)
+            recall.update(rec, n)
+            f_measure.update(f1, n)
 
         if step % args.report_freq == 0:
-            logging.info('>>Validation: %03d %e %f %f', step, objs.avg, top1.avg, top5.avg)
+            logging.info('>>Validation: %03d loss:%e precision:%f recall:%f f1:%f',
+                         step, losses.avg, precision.avg, recall.avg, f_measure.avg)
 
-    return top1.avg, objs.avg
+    return precision.avg, losses.avg
 
 
 if __name__ == '__main__':
