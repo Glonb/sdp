@@ -7,14 +7,7 @@ from    utils import drop_path
 class Cell(nn.Module):
 
     def __init__(self, genotype, C_prev_prev, C_prev, C, reduction, reduction_prev):
-        """
-        :param genotype:
-        :param C_prev_prev:
-        :param C_prev:
-        :param C:
-        :param reduction:
-        :param reduction_prev:
-        """
+        
         super(Cell, self).__init__()
 
         print(C_prev_prev, C_prev, C)
@@ -34,14 +27,7 @@ class Cell(nn.Module):
         self._compile(C, op_names, indices, concat, reduction)
 
     def _compile(self, C, op_names, indices, concat, reduction):
-        """
-        :param C:
-        :param op_names:
-        :param indices:
-        :param concat:
-        :param reduction:
-        :return:
-        """
+        
         assert len(op_names) == len(indices)
 
         self._steps = len(op_names) // 2
@@ -56,12 +42,7 @@ class Cell(nn.Module):
         self._indices = indices
 
     def forward(self, s0, s1, drop_prob):
-        """
-        :param s0:
-        :param s1:
-        :param drop_prob:
-        :return:
-        """
+        
         s0 = self.preprocess0(s0)
         s1 = self.preprocess1(s1)
 
@@ -109,31 +90,6 @@ class AuxiliaryHeadCIFAR(nn.Module):
         return x
 
 
-class AuxiliaryHeadImageNet(nn.Module):
-
-    def __init__(self, C, num_classes):
-        """assuming input size 14x14"""
-        super(AuxiliaryHeadImageNet, self).__init__()
-        self.features = nn.Sequential(
-            nn.ReLU(inplace=True),
-            nn.AvgPool2d(5, stride=2, padding=0, count_include_pad=False),
-            nn.Conv2d(C, 128, 1, bias=False),
-            nn.BatchNorm2d(128),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(128, 768, 2, bias=False),
-            # NOTE: This batchnorm was omitted in my earlier implementation due to a typo.
-            # Commenting it out for consistency with the experiments in the paper.
-            # nn.BatchNorm2d(768),
-            nn.ReLU(inplace=True)
-        )
-        self.classifier = nn.Linear(768, num_classes)
-
-    def forward(self, x):
-        x = self.features(x)
-        x = self.classifier(x.view(x.size(0), -1))
-        return x
-
-
 class NetworkCIFAR(nn.Module):
 
     def __init__(self, C, layers, auxiliary, genotype):
@@ -169,7 +125,7 @@ class NetworkCIFAR(nn.Module):
         if auxiliary:
             self.auxiliary_head = AuxiliaryHeadCIFAR(C_to_auxiliary, 2)
         self.global_pooling = nn.AdaptiveAvgPool1d(1)
-        self.classifier = nn.Linear(C_prev, num_classes)
+        self.classifier = nn.Linear(C_prev, 1)
 
     def forward(self, input):
         logits_aux = None
