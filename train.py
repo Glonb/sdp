@@ -61,11 +61,13 @@ def main():
     logging.info("args = %s", args)
 
     genotype = eval("genotypes.%s" % args.arch)
-    model = Network(args.init_ch, 2, args.layers, args.auxiliary, genotype).cuda()
+    model = Network(args.init_ch, args.layers, args.auxiliary, genotype).cuda()
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
 
-    criterion = nn.CrossEntropyLoss().cuda()
+    pos_weight = torch.tensor([1])
+  
+    criterion = nn.BCEWithLogitsLoss(pos_weight = pos_weight).cuda()
     optimizer = torch.optim.SGD(
         model.parameters(),
         args.lr,
@@ -73,8 +75,8 @@ def main():
         weight_decay=args.wd
     )
 
-    train_data = MyDataset('/kaggle/input/sdp-data/embeddings.npy', 'label.csv')
-    valid_data = MyDataset('/kaggle/input/sdp-data/test/embeddings.npy', '/kaggle/input/sdp-data/test/label.csv')
+    train_data = MyDataset('/kaggle/input/sdp-data/xalan5_embed.npy', '/kaggle/input/sdp-data/xalan5_label.csv')
+    valid_data = MyDataset('/kaggle/input/sdp-data/xalan6_embed.npy', '/kaggle/input/sdp-data/xalan6_label.csv')
 
     num_valid = len(valid_data) 
     indices = list(range(num_valid))
@@ -111,8 +113,9 @@ def main():
 def train(train_queue, model, criterion, optimizer):
 
     objs = utils.AverageMeter()
-    top1 = utils.AverageMeter()
-    top5 = utils.AverageMeter()
+    precision = utils.AverageMeter()
+    recall = utils.AverageMeter()
+    f_measure = utils.AverageMeter()
     model.train()
 
     for step, (x, target) in enumerate(train_queue):
@@ -122,14 +125,11 @@ def train(train_queue, model, criterion, optimizer):
         optimizer.zero_grad()
         logits, logits_aux = model(x)
         loss = criterion(logits, target)
-        if args.auxiliary:
-            loss_aux = criterion(logits_aux, target)
-            loss += args.auxiliary_weight * loss_aux
         loss.backward()
         nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
         optimizer.step()
 
-        prec1, prec5 = utils.accuracy(logits, target, topk=(1, 5))
+        prec1, prec5 = utils.metric(logits, target)
         n = x.size(0)
         objs.update(loss.item(), n)
         top1.update(prec1.item(), n)
