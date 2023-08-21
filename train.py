@@ -65,7 +65,7 @@ def main():
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
 
-    pos_weight = torch.tensor([1])
+    pos_weight = torch.tensor([2])
   
     criterion = nn.BCEWithLogitsLoss(pos_weight = pos_weight).cuda()
     optimizer = torch.optim.SGD(
