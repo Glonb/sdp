@@ -15,11 +15,11 @@ from    my_dataset import MyDataset
 parser = argparse.ArgumentParser("SDP")
 parser.add_argument('--data', type=str, default='../data', help='location of the data corpus')
 parser.add_argument('--batchsz', type=int, default=32, help='batch size')
-parser.add_argument('--report_freq', type=float, default=50, help='report frequency')
+parser.add_argument('--report_freq', type=float, default=10, help='report frequency')
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
 parser.add_argument('--init_ch', type=int, default=10, help='num of init channels')
 parser.add_argument('--layers', type=int, default=5, help='total number of layers')
-parser.add_argument('--exp_path', type=str, default='exp/model.pt', help='path of pretrained model')
+parser.add_argument('--exp_path', type=str, default='exp/trained.pt', help='path of pretrained model')
 parser.add_argument('--auxiliary', action='store_true', default=False, help='use auxiliary tower')
 parser.add_argument('--cutout', action='store_true', default=False, help='use cutout')
 parser.add_argument('--cutout_length', type=int, default=16, help='cutout length')
@@ -44,14 +44,14 @@ def main():
     # equal to: genotype = genotypes.DARTS_v2
     genotype = eval("genotypes.%s" % args.arch)
     print('Load genotype:', genotype)
-    model = Network(args.init_ch, 2, args.layers, args.auxiliary, genotype).cuda()
+    model = Network(args.init_ch, args.layers, args.auxiliary, genotype).cuda()
     utils.load(model, args.exp_path)
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
 
-    criterion = nn.CrossEntropyLoss().cuda()
+    criterion = nn.BCEWithLogitsLoss().cuda()
 
-    test_data = MyDataset('/kaggle/input/sdp-data/test/embeddings.npy', '/kaggle/input/sdp-data/test/label.csv')
+    test_data = MyDataset('/kaggle/input/sdp-data/xalan6_embed.npy', '/kaggle/input/sdp-data/xalan6_label.csv')
   
     num_test = len(test_data) 
     indices = list(range(num_test))
@@ -63,17 +63,17 @@ def main():
         pin_memory=True, num_workers=2)
 
     model.drop_path_prob = args.drop_path_prob
-    test_acc, test_obj = infer(test_queue, model, criterion)
-    logging.info('test_acc %f', test_acc)
-    print('test_acc:')
-    print(test_acc)
+    test_prec, test_obj = infer(test_queue, model, criterion)
+    logging.info('test_prec %f', test_prec)
+    print('test_prec: ', test_prec)
 
 
 def infer(test_queue, model, criterion):
 
-    objs = utils.AverageMeter()
-    top1 = utils.AverageMeter()
-    top5 = utils.AverageMeter()
+    losses = utils.AverageMeter()
+    precision = utils.AverageMeter()
+    recall = utils.AverageMeter()
+    f_measure = utils.AverageMeter()
     model.eval()
 
     with torch.no_grad():
@@ -83,18 +83,20 @@ def infer(test_queue, model, criterion):
             x, target = x.cuda(), target.cuda(non_blocking=True)
 
             logits, _ = model(x)
-            loss = criterion(logits, target)
+            loss = criterion(logits, target.float())
 
-            prec1, prec5 = utils.accuracy(logits, target, topk=(1, 5))
+            prec, rec, f1 = utils.metrics(logits, target)
             batchsz = x.size(0)
-            objs.update(loss.item(), batchsz)
-            top1.update(prec1.item(), batchsz)
-            top5.update(prec5.item(), batchsz)
+            losses.update(loss.item(), batchsz)
+            precision.update(prec, batchsz)
+            recall.update(rec, batchsz)
+            f_measure.update(f1, batchsz)
 
             if step % args.report_freq == 0:
-                logging.info('test %03d %e %f %f', step, objs.avg, top1.avg, top5.avg)
+                logging.info('test %03d loss:%e prec:%f recall:%f f1:%f',
+                             step, losses.avg, precision.avg, recall.avg, f_measure.avg)
 
-    return top1.avg, objs.avg
+    return precision.avg, losses.avg
 
 
 if __name__ == '__main__':
