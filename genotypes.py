@@ -21,17 +21,16 @@ PRIMITIVES = [
 ]
 
 SDP_Genotype = Genotype(
-    normal=[('sep_conv_5', 1), ('sep_conv_7', 0), 
-            ('sep_conv_7', 2), ('sep_conv_7', 0), 
-            ('sep_conv_5', 3), ('sep_conv_3', 2), 
-            ('sep_conv_3', 3), ('sep_conv_3', 4)], 
+    normal=[('max_pool_7', 1), ('sep_conv_3', 0), 
+            ('sep_conv_3', 0), ('max_pool_7', 1), 
+            ('sep_conv_7', 3), ('sep_conv_3', 2), 
+            ('sep_conv_3', 3), ('sep_conv_3', 2)], 
     normal_concat=range(2, 6), 
-    reduce=[('sep_conv_5', 1), ('avg_pool_5', 0),
-            ('sep_conv_7', 1), ('sep_conv_3', 2), 
-            ('sep_conv_5', 0), ('sep_conv_3', 1), 
-            ('sep_conv_5', 2), ('sep_conv_7', 4)], 
+    reduce=[('max_pool_7', 1), ('sep_conv_5', 0), 
+            ('max_pool_7', 1), ('sep_conv_3', 0), 
+            ('sep_conv_3', 0), ('max_pool_7', 3), 
+            ('sep_conv_7', 0), ('sep_conv_7', 4)], 
     reduce_concat=range(2, 6)
 )
-
 
 DARTS = SDP_Genotype
