@@ -39,7 +39,7 @@ parser.add_argument('--arch_wd', type=float, default=1e-3, help='weight decay fo
 args = parser.parse_args()
 
 args.exp_path += str(args.gpu)
-utils.create_exp_dir(args.exp_path, scripts_to_save=glob.glob('*.py'))
+utils.create_exp_dir(args.exp_path)
 
 log_format = '%(asctime)s %(message)s'
 logging.basicConfig(stream=sys.stdout, level=logging.INFO,
@@ -114,7 +114,7 @@ def main():
         logging.info('Genotype: %s', genotype)
 
         # training
-        train_prec, train_obj = train(train_queue, valid_queue, model, arch, criterion, optimizer, lr)
+        train_prec, train_loss = train(train_queue, valid_queue, model, arch, criterion, optimizer, lr)
         logging.info('train precision: %f', train_prec)
         print('train precision: ', train_prec.item())
 
@@ -122,7 +122,7 @@ def main():
         scheduler.step()
 
         # validation
-        valid_prec, valid_obj = infer(valid_queue, model, criterion)
+        valid_prec, valid_loss = infer(valid_queue, model, criterion)
         logging.info('valid precision: %f', valid_prec)
         print('valid precision: ', valid_prec.item())
 
