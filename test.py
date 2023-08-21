@@ -65,7 +65,7 @@ def main():
     model.drop_path_prob = args.drop_path_prob
     test_prec, test_obj = infer(test_queue, model, criterion)
     logging.info('test_prec %f', test_prec)
-    print('test_prec: ', test_prec)
+    print('test_prec: ', test_prec.item())
 
 
 def infer(test_queue, model, criterion):
