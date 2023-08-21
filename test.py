@@ -49,7 +49,9 @@ def main():
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
 
-    criterion = nn.BCEWithLogitsLoss().cuda()
+    pos_weight = torch.tensor([2])
+  
+    criterion = nn.BCEWithLogitsLoss(pos_weight = pos_weight).cuda()
 
     test_data = MyDataset('/kaggle/input/sdp-data/xalan6_embed.npy', '/kaggle/input/sdp-data/xalan6_label.csv')
   
