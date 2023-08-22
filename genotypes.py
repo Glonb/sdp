@@ -22,12 +22,11 @@ PRIMITIVES = [
 
 SDP_Genotype = Genotype(
     geno=[('avg_pool_5', 0), 
-          ('sep_conv_7', 1), 
+          ('sep_conv_7', 1),
           ('sep_conv_5', 2), 
-          ('sep_conv_5', 2), 
+          ('sep_conv_3', 2), 
           ('sep_conv_7', 4), 
           ('sep_conv_5', 4)], 
-    geno_concat=range(2, 8)
+    geno_concat=range(1, 7)
 )
-
 DARTS = SDP_Genotype
