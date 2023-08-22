@@ -74,7 +74,7 @@ def main():
     logging.info("args = %s", args)
 
     # the pos_weight
-    pos_weight = torch.tensor([4])
+    pos_weight = torch.tensor([3])
 
     criterion = nn.BCEWithLogitsLoss(pos_weight = pos_weight).to(device)
     model = Network(args.init_ch, args.layers, criterion).to(device)
