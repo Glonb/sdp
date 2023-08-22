@@ -20,16 +20,13 @@ def plot(genotype, filename):
         g.node(str(i), fillcolor='lightblue')
 
     for i in range(steps):
-        for k in [2 * i, 2 * i + 1]:
-            op, j = genotype[k]
-            if j == 0:
-                u = "c_{k-2}"
-            elif j == 1:
-                u = "c_{k-1}"
-            else:
-                u = str(j - 2)
-            v = str(i)
-            g.edge(u, v, label=op, fillcolor="gray")
+        op, j = genotype[i]
+        if j == 0:
+            u = "input"
+        else:
+            u = str(j - 1)
+        v = str(i)
+        g.edge(u, v, label=op, fillcolor="gray")
 
     g.node("output", fillcolor='palegoldenrod')
     for i in range(steps):
