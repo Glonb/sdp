@@ -95,7 +95,7 @@ class Network(nn.Module):
             # append one state since s is the elem-wise addition of all output
             states.append(s)
 
-            print('node:',i, s.shape)
+            # print('node:',i, s.shape)
 
         # concat along dim=channel
         res = torch.cat(states[-self.steps:], dim=1) 
