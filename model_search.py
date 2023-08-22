@@ -117,16 +117,16 @@ class Network(nn.Module):
 
         def _parse(weights):
             gene = []
-            n = 2
+            n = 1
             start = 0
             for i in range(self.steps): # for each node
                 end = start + n
-                W = weights[start:end].copy() # [2, 8], [3, 8], ...
+                W = weights[start:end].copy() # [1, 8], [2, 8], ...
                 edges = sorted(range(i + 1), # i+1 is the number of connection for node i
                             key=lambda x: -max(W[x][k] # by descending order
                                                for k in range(len(W[x])) # get strongest ops
                                                if k != PRIMITIVES.index('none'))
-                               )[:2] # only has two inputs
+                               )[:1] # only has two inputs
                 for j in edges: # for every input nodes j of current node i
                     k_best = None
                     for k in range(len(W[j])): # get strongest ops for current input j->i
