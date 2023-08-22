@@ -75,7 +75,7 @@ class Network(nn.Module):
 
     def new(self):
         
-        model_new = Network(self.c, self.layers, self.criterion).cuda()
+        model_new = Network(self.c, self.steps, self.criterion).cuda()
         for x, y in zip(model_new.arch_parameters(), self.arch_parameters()):
             x.data.copy_(y.data)
         return model_new
