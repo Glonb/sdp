@@ -1,7 +1,7 @@
 import  torch
 from    torch import nn
 import  torch.nn.functional as F
-from    operations import OPS, FactorizedReduce, ReLUConvBN
+from    operations import OPS
 from    genotypes import PRIMITIVES, Genotype
 
 
@@ -13,8 +13,10 @@ class MixedLayer(nn.Module):
         self.layers = nn.ModuleList()
     
         for primitive in PRIMITIVES:
+            
             # create corresponding layer
             layer = OPS[primitive](c, stride, False)
+            
             # append batchnorm after pool layer
             if 'pool' in primitive:
                 # disable affine w/b for batchnorm
@@ -27,126 +29,49 @@ class MixedLayer(nn.Module):
         #     print("after: " , i)
         #     print(layer(x).shape)
         res = [w * layer(x) for w, layer in zip(weights, self.layers)]
+        
         # element-wise add by torch.add
         res = sum(res)
+        
         return res
         
 
-class Cell(nn.Module):
-
-    def __init__(self, steps, multiplier, cpp, cp, c, reduction, reduction_prev):
-       
-        super(Cell, self).__init__()
-
-        # indicating current cell is reduction or not
-        self.reduction = reduction
-        self.reduction_prev = reduction_prev
-
-        # preprocess0 deal with output from prev_prev cell
-        if reduction_prev:
-            # if prev cell has reduced channel/double width,
-            # it will reduce width by half
-            self.preprocess0 = FactorizedReduce(cpp, c, affine=False)
-        else:
-            self.preprocess0 = ReLUConvBN(cpp, c, 1, 1, 0, affine=False)
-        # preprocess1 deal with output from prev cell
-        self.preprocess1 = ReLUConvBN(cp, c, 1, 1, 0, affine=False)
-
-        self.steps = steps # 4
-        self.multiplier = multiplier # 4
-
-        self.layers = nn.ModuleList()
-
-        for i in range(self.steps):
-            # for each i inside cell, it connects with all previous output
-            # plus previous two cells' output
-            for j in range(2 + i):
-                # for reduction cell, it will reduce the heading 2 inputs only
-                stride = 2 if reduction and j < 2 else 1
-                layer = MixedLayer(c, stride)
-                self.layers.append(layer)
-
-    def forward(self, s0, s1, weights):
-       
-        # print('s0:', s0.shape,end='=>')
-        s0 = self.preprocess0(s0) 
-        # print(s0.shape, self.reduction_prev)
-        # print('s1:', s1.shape,end='=>')
-        s1 = self.preprocess1(s1) 
-        # print(s1.shape)
-
-        states = [s0, s1]
-        offset = 0
-        # for each node, receive input from all previous intermediate nodes and s0, s1
-        for i in range(self.steps): # 4
-            
-            s = sum(self.layers[offset + j](h, weights[offset + j]) for j, h in enumerate(states))
-            offset += len(states)
-            # append one state since s is the elem-wise addition of all output
-            states.append(s)
-            # print('node:',i, s.shape, self.reduction)
-
-        # concat along dim=channel
-        return torch.cat(states[-self.multiplier:], dim=1) # 6 of [40, 16, 32, 32]
-
-
 class Network(nn.Module):
     """
-    stack number:layer of cells and then flatten to fed a linear layer
+    stack number:layer of nodes and then flatten to fed a linear layer
     """
-    def __init__(self, c, layers, criterion, steps=4, multiplier=4):
+    def __init__(self, c, steps, criterion):
         
         super(Network, self).__init__()
 
         self.c = c
-        self.layers = layers
+        self.steps = steps 
         self.criterion = criterion
-        self.steps = steps
-        self.multiplier = multiplier
+        
+        self.layers = nn.ModuleList()
 
-        cpp, cp, c_curr = c * multiplier, c * multiplier, c
-        self.cells = nn.ModuleList()
-        reduction_prev = False
-        for i in range(layers):
-
-            # for layer in the middle [1/3, 2/3], reduce via stride=2
-            if i in [layers // 3, 2 * layers // 3]:
-                c_curr *= 2
-                reduction = True
-            else:
-                reduction = False
-
-            cell = Cell(steps, multiplier, cpp, cp, c_curr, reduction, reduction_prev)
-            # print('cell:',i, cpp, cp, c_curr, cell.reduction, cell.reduction_prev)
-            # print('\n')
-            # update reduction_prev
-            reduction_prev = reduction
-
-            self.cells += [cell]
-
-            cpp, cp = cp, multiplier * c_curr
+        for i in range(self.steps):
+            
+            # for each i, it connects with all previous output
+            for j in range(1 + i):
+                stride = 1
+                layer = MixedLayer(c, stride)
+                self.layers.append(layer)
 
         # adaptive pooling output size to 1x1
         self.global_pooling = nn.AdaptiveAvgPool1d(1)
-        # since cp records last cell's output channels
-        # it indicates the input channel number
-        # self.classifier = nn.Linear(cp, num_classes)
-        self.classifier = nn.Linear(cp, 1)
+        
+        self.classifier = nn.Linear(c * steps, 1)
 
-        # k is the total number of edges inside single cell, 14
-        k = sum(1 for i in range(self.steps) for j in range(2 + i))
-        num_ops = len(PRIMITIVES) # 8
+        # k is the total number of edges
+        k = sum(1 for i in range(self.steps) for j in range(1 + i))
+        num_ops = len(PRIMITIVES) 
 
-        self.alpha_normal = nn.Parameter(torch.randn(k, num_ops))
-        self.alpha_reduce = nn.Parameter(torch.randn(k, num_ops))
+        self.alpha = nn.Parameter(torch.randn(k, num_ops))
         with torch.no_grad():
             # initialize to smaller value
-            self.alpha_normal.mul_(1e-3)
-            self.alpha_reduce.mul_(1e-3)
-        self._arch_parameters = [
-            self.alpha_normal,
-            self.alpha_reduce,
-        ]
+            self.alpha.mul_(1e-3)
+        self._arch_parameters = [self.alpha]
 
     def new(self):
         
@@ -156,18 +81,26 @@ class Network(nn.Module):
         return model_new
 
     def forward(self, x):
-        s0 = s1 = x
 
-        for i, cell in enumerate(self.cells):
-            if cell.reduction:
-                weights = F.softmax(self.alpha_reduce, dim=-1)
-            else:
-                weights = F.softmax(self.alpha_normal, dim=-1)
-            s0, s1 = s1, cell(s0, s1, weights)
-            # print('cell:',i, s1.shape, cell.reduction, cell.reduction_prev)
-            # print('\n')
+        states = [x]
+        offset = 0
+        
+        # for each node, receive input from all previous intermediate nodes and x
+        for i in range(self.steps):
+            
+            weights = F.softmax(self.alpha, dim=-1)
+            s = sum(self.layers[offset + j](h, weights[offset + j]) for j, h in enumerate(states))
+            offset += len(states)
+            
+            # append one state since s is the elem-wise addition of all output
+            states.append(s)
 
-        out = self.global_pooling(s1)
+            print('node:',i, s.shape)
+
+        # concat along dim=channel
+        res = torch.cat(states[-self.steps:], dim=1) 
+
+        out = self.global_pooling(res)
         logits = self.classifier(out.view(out.size(0), -1))
         
         return logits
@@ -205,13 +138,11 @@ class Network(nn.Module):
                 n += 1
             return gene
 
-        gene_normal = _parse(F.softmax(self.alpha_normal, dim=-1).data.cpu().numpy())
-        gene_reduce = _parse(F.softmax(self.alpha_reduce, dim=-1).data.cpu().numpy())
+        gene = _parse(F.softmax(self.alpha, dim=-1).data.cpu().numpy())
 
-        concat = range(2 + self.steps - self.multiplier, self.steps + 2)
+        concat = range(2, self.steps + 2)
         genotype = Genotype(
-            normal=gene_normal, normal_concat=concat,
-            reduce=gene_reduce, reduce_concat=concat
+            geno=gene, geno_concat=concat
         )
 
         return genotype
