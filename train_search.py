@@ -114,17 +114,19 @@ def main():
         logging.info('Genotype: %s', genotype)
 
         # training
-        train_prec, train_loss = train(train_queue, valid_queue, model, arch, criterion, optimizer, lr)
-        logging.info('train precision: %f', train_prec)
-        print('train precision: ', train_prec.item())
+        train_prec, train_rec, train_f1 = train(train_queue, valid_queue, model, arch, criterion, optimizer, lr)
+        logging.info('train precision: %f recall: %f f_measure: %f', train_prec, train_rec, train_f1)
+        print('train precision: %5f recall: %5f f_measure: %5f', 
+              train_prec.item(), train_rec.item(), train_f1.item())
 
         # update lr
         scheduler.step()
 
         # validation
-        valid_prec, valid_loss = infer(valid_queue, model, criterion)
-        logging.info('valid precision: %f', valid_prec)
-        print('valid precision: ', valid_prec.item())
+        valid_prec, valid_rec, valid_f1 = infer(valid_queue, model, criterion)
+        logging.info('valid precision: %f recall: %f f_measure: %f', valid_prec, valid_rec, valid_f1)
+        print('valid precision: %5f recall: %5f f_measure: %5f', 
+              valid_prec.item(), valid_rec.item(), valid_f1.item())
 
         utils.save(model, os.path.join(args.exp_path, 'search.pt'))
 
@@ -169,7 +171,7 @@ def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
             logging.info('Step:%03d loss:%f prec:%f recall:%f f1:%f', 
                          step, losses.avg, precision.avg, recall.avg, f_measure.avg)
 
-    return precision.avg, losses.avg
+    return precision.avg, recall.avg, f_measure.avg
 
 
 def infer(valid_queue, model, criterion):
@@ -200,7 +202,7 @@ def infer(valid_queue, model, criterion):
                 logging.info('>> Validation: %3d %e prec:%f recall:%f f1:%f', 
                              step, losses.avg, precision.avg, recall.avg, f_measure.avg)
 
-    return precision.avg, losses.avg
+    return precision.avg, recall.avg, f_measure.avg
 
 
 if __name__ == '__main__':
