@@ -122,7 +122,7 @@ class Network(nn.Module):
             for i in range(self.steps): # for each node
                 end = start + n
                 W = weights[start:end].copy() # [2, 8], [3, 8], ...
-                edges = sorted(range(i + 2), # i+2 is the number of connection for node i
+                edges = sorted(range(i + 1), # i+1 is the number of connection for node i
                             key=lambda x: -max(W[x][k] # by descending order
                                                for k in range(len(W[x])) # get strongest ops
                                                if k != PRIMITIVES.index('none'))
