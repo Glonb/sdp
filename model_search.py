@@ -126,7 +126,7 @@ class Network(nn.Module):
                             key=lambda x: -max(W[x][k] # by descending order
                                                for k in range(len(W[x])) # get strongest ops
                                                if k != PRIMITIVES.index('none'))
-                               )[:1] # only has two inputs
+                               )[:1] # only has one inputs
                 for j in edges: # for every input nodes j of current node i
                     k_best = None
                     for k in range(len(W[j])): # get strongest ops for current input j->i
@@ -140,7 +140,7 @@ class Network(nn.Module):
 
         gene = _parse(F.softmax(self.alpha, dim=-1).data.cpu().numpy())
 
-        concat = range(2, self.steps + 2)
+        concat = range(1, self.steps + 1)
         genotype = Genotype(
             geno=gene, geno_concat=concat
         )
