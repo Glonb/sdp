@@ -67,7 +67,7 @@ def main():
         pin_memory=True, num_workers=2)
 
     model.drop_path_prob = args.drop_path_prob
-    test_prec, test_loss = infer(test_queue, model, criterion)
+    test_prec, test_rec, test_f1 = infer(test_queue, model, criterion)
     
     print('test_precision: ', test_prec.item())
 
@@ -113,7 +113,7 @@ def infer(test_queue, model, criterion):
                              step, losses.avg, precision.avg, recall.avg, fpr.avg, fnr.avg
                              f_measure.avg, g_measure.avg, mcc.avg)
   
-    return precision.avg, losses.avg
+    return precision.avg, recall.avg, f_measure.avg
 
 
 if __name__ == '__main__':
