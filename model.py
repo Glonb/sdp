@@ -66,55 +66,19 @@ class Cell(nn.Module):
         return torch.cat([states[i] for i in self._concat], dim=1)
 
 
-class AuxiliaryHeadCIFAR(nn.Module):
+class Network(nn.Module):
 
-    def __init__(self, C, num_classes):
-        """assuming input size 8x8"""
-        super(AuxiliaryHeadCIFAR, self).__init__()
-
-        self.features = nn.Sequential(
-            nn.ReLU(inplace=True),
-            nn.AvgPool2d(5, stride=3, padding=0, count_include_pad=False),  # image size = 2 x 2
-            nn.Conv2d(C, 128, 1, bias=False),
-            nn.BatchNorm2d(128),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(128, 768, 2, bias=False),
-            nn.BatchNorm2d(768),
-            nn.ReLU(inplace=True)
-        )
-        self.classifier = nn.Linear(768, num_classes)
-
-    def forward(self, x):
-        x = self.features(x)
-        x = self.classifier(x.view(x.size(0), -1))
-        return x
-
-
-class NetworkCIFAR(nn.Module):
-
-    def __init__(self, C, layers, auxiliary, genotype):
-        super(NetworkCIFAR, self).__init__()
+    def __init__(self, C, layers, genotype):
+        super(Network, self).__init__()
 
         self._layers = layers
-        self._auxiliary = auxiliary
-
-        # stem_multiplier = 3
-        # C_curr = stem_multiplier * C
-        # self.stem = nn.Sequential(
-        #     nn.Conv2d(3, C_curr, 3, padding=1, bias=False),
-        #     nn.BatchNorm2d(C_curr)
-        # )
+    
+        
         C_curr = 4 * C
 
         C_prev_prev, C_prev, C_curr = C_curr, C_curr, C
-        self.cells = nn.ModuleList()
-        reduction_prev = False
+        self.nodes = nn.ModuleList()
         for i in range(layers):
-            if i in [layers // 3, 2 * layers // 3]:
-                C_curr *= 2
-                reduction = True
-            else:
-                reduction = False
             cell = Cell(genotype, C_prev_prev, C_prev, C_curr, reduction, reduction_prev)
             reduction_prev = reduction
             self.cells += [cell]
@@ -122,8 +86,7 @@ class NetworkCIFAR(nn.Module):
             if i == 2 * layers // 3:
                 C_to_auxiliary = C_prev
 
-        if auxiliary:
-            self.auxiliary_head = AuxiliaryHeadCIFAR(C_to_auxiliary, 2)
+        
         self.global_pooling = nn.AdaptiveAvgPool1d(1)
         self.classifier = nn.Linear(C_prev, 1)
 
