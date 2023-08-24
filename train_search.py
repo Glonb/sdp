@@ -115,7 +115,7 @@ def main():
 
         # training
         train_prec, train_rec, train_f1 = train(train_queue, valid_queue, model, arch, criterion, optimizer, lr)
-        logging.info('train precision: %.3f recall: %.3f f_measure: %.3f', train_prec, train_rec, train_f1)
+        # logging.info('train precision: %.3f recall: %.3f f_measure: %.3f', train_prec, train_rec, train_f1)
         print('train precision: %.5f' %train_prec.item())
 
         # update lr
@@ -123,7 +123,7 @@ def main():
 
         # validation
         valid_prec, valid_rec, valid_f1 = infer(valid_queue, model, criterion)
-        logging.info('valid precision: %.3f recall: %.3f f_measure: %.3f', valid_prec, valid_rec, valid_f1)
+        # logging.info('valid precision: %.3f recall: %.3f f_measure: %.3f', valid_prec, valid_rec, valid_f1)
         print('valid precision: %.5f' %valid_prec.item())
 
         utils.save(model, os.path.join(args.exp_path, 'search.pt'))
