@@ -38,8 +38,7 @@ def metrics(output, target, threshold = 0.5):
     fnr = fn.sum() / (fn.sum() + tn.sum() + 1e-10)
     f1 = 2 * precision * recall / (precision + recall + 1e-10)
     g1 = 2 * recall * (1 - fpr) / (recall - fpr + 1)
-    mcc = (tp.sum() * tn.sum() - fp.sum() * fn.sum()) / 
-        (torch.sqrt((tp.sum() + fp.sum()) * (tp.sum() + fn.sum()) * (tn.sum() + fp.sum()) * (tn.sum() + fn.sum()))+ 1e-10)
+    mcc = (tp.sum() * tn.sum() - fp.sum() * fn.sum()) / (torch.sqrt((tp.sum() + fp.sum()) * (tp.sum() + fn.sum()) * (tn.sum() + fp.sum()) * (tn.sum() + fn.sum()))+ 1e-10)
     
     return  precision, recall, fpr, fnr, f1, g1, mcc
 
