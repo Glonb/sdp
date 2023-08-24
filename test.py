@@ -9,7 +9,7 @@ import  genotypes
 import  torchvision.datasets as dset
 import  torch.backends.cudnn as cudnn
 
-from    model import NetworkCIFAR as Network
+from    model import Network
 from    my_dataset import MyDataset
 
 parser = argparse.ArgumentParser("SDP")
@@ -17,8 +17,8 @@ parser.add_argument('--data', type=str, default='../data', help='location of the
 parser.add_argument('--batchsz', type=int, default=32, help='batch size')
 parser.add_argument('--report_freq', type=float, default=10, help='report frequency')
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
-parser.add_argument('--init_ch', type=int, default=10, help='num of init channels')
-parser.add_argument('--layers', type=int, default=5, help='total number of layers')
+parser.add_argument('--init_ch', type=int, default=40, help='num of init channels')
+parser.add_argument('--layers', type=int, default=6, help='total number of layers')
 parser.add_argument('--exp_path', type=str, default='exp/trained.pt', help='path of pretrained model')
 parser.add_argument('--auxiliary', action='store_true', default=False, help='use auxiliary tower')
 parser.add_argument('--cutout', action='store_true', default=False, help='use cutout')
@@ -48,23 +48,18 @@ def main():
     logging.info('gpu device = %d' % args.gpu)
     logging.info("args = %s", args)
 
-    # equal to: genotype = genotypes.DARTS_v2
     genotype = eval("genotypes.%s" % args.arch)
     print('Load genotype:', genotype)
-    model = Network(args.init_ch, args.layers, args.auxiliary, genotype).cuda()
+    model = Network(args.init_ch, genotype).cuda()
     utils.load(model, args.exp_path)
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
 
-    pos_weight = torch.tensor([2])
+    pos_weight = torch.tensor([3])
   
     criterion = nn.BCEWithLogitsLoss(pos_weight = pos_weight).cuda()
 
     test_data = MyDataset('/kaggle/input/sdp-data/xalan6_embed.npy', '/kaggle/input/sdp-data/xalan6_label.csv')
-  
-    num_test = len(test_data) 
-    indices = list(range(num_test))
-    split = int(np.floor(0.2 * num_test))
 
     test_queue = torch.utils.data.DataLoader(
         test_data, batch_size=args.batchsz, 
@@ -72,9 +67,9 @@ def main():
         pin_memory=True, num_workers=2)
 
     model.drop_path_prob = args.drop_path_prob
-    test_prec, test_obj = infer(test_queue, model, criterion)
-    logging.info('test_prec %f', test_prec)
-    print('test_prec: ', test_prec.item())
+    test_prec, test_loss = infer(test_queue, model, criterion)
+    
+    print('test_precision: ', test_prec.item())
 
 
 def infer(test_queue, model, criterion):
@@ -82,7 +77,11 @@ def infer(test_queue, model, criterion):
     losses = utils.AverageMeter()
     precision = utils.AverageMeter()
     recall = utils.AverageMeter()
+    fpr = utils.AverageMeter()
+    fnr = utils.AverageMeter()
     f_measure = utils.AverageMeter()
+    g_measure = utils.AverageMeter()
+    mcc = utils.AverageMeter()
     model.eval()
 
     with torch.no_grad():
@@ -94,17 +93,26 @@ def infer(test_queue, model, criterion):
             logits, _ = model(x)
             loss = criterion(logits, target.float())
 
-            prec, rec, f1 = utils.metrics(logits, target)
             batchsz = x.size(0)
+            prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(logits, target)
             losses.update(loss.item(), batchsz)
             precision.update(prec, batchsz)
             recall.update(rec, batchsz)
+            fpr.update(FPR, batchsz)
+            fnr.update(FNR, batchsz)
             f_measure.update(f1, batchsz)
+            g_measure.update(g1, batchsz)
+            mcc.update(MCC, batchsz)
 
             if step % args.report_freq == 0:
-                logging.info('test %03d loss:%e prec:%f recall:%f f1:%f',
-                             step, losses.avg, precision.avg, recall.avg, f_measure.avg)
+                logging.info('test %03d loss:%e prec:%.3f recall:%.3f fpr:%.3f fnr:%.3f f1:%.3f g1:%.3f mcc:%.3f',
+                             step, losses.avg, precision.avg, recall.avg, fpr.avg, fnr.avg
+                             f_measure.avg, g_measure.avg, mcc.avg)
 
+    logging.info('test %03d loss:%e prec:%.3f recall:%.3f fpr:%.3f fnr:%.3f f1:%.3f g1:%.3f mcc:%.3f',
+                             step, losses.avg, precision.avg, recall.avg, fpr.avg, fnr.avg
+                             f_measure.avg, g_measure.avg, mcc.avg)
+  
     return precision.avg, losses.avg
 
 
