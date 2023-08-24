@@ -13,7 +13,7 @@ import  torch.utils
 import  torchvision.datasets as dset
 import  torch.backends.cudnn as cudnn
 
-from    model import NetworkCIFAR as Network
+from    model import Network
 from    my_dataset import MyDataset
 
 parser = argparse.ArgumentParser("SDP")
@@ -61,11 +61,11 @@ def main():
     logging.info("args = %s", args)
 
     genotype = eval("genotypes.%s" % args.arch)
-    model = Network(args.init_ch, args.layers, args.auxiliary, genotype).cuda()
+    model = Network(args.init_ch, genotype).cuda()
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
 
-    pos_weight = torch.tensor([2])
+    pos_weight = torch.tensor([3])
   
     criterion = nn.BCEWithLogitsLoss(pos_weight = pos_weight).cuda()
     optimizer = torch.optim.SGD(
