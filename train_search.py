@@ -178,6 +178,10 @@ def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
                          step, losses.avg, precision.avg, recall.avg, fpr.avg, 
                          fnr.avg, f_measure.avg, g_measure.avg, mcc.avg)
 
+    logging.info('Step:%03d loss:%.3f prec:%.3f recall:%.3f fpr:%.3f fnr:%.3f f1:%.3f g1:%.3f mcc:%.3f', 
+                         step, losses.avg, precision.avg, recall.avg, fpr.avg, 
+                         fnr.avg, f_measure.avg, g_measure.avg, mcc.avg)
+
     return precision.avg, recall.avg, f_measure.avg
 
 
@@ -218,6 +222,10 @@ def infer(valid_queue, model, criterion):
                              step, losses.avg, precision.avg, recall.avg, fpr.avg,
                              fnr.avg, f_measure.avg, g_measure.avg, mcc.avg)
 
+    logging.info('>> Validation: %3d %e prec:%.3f recall:%.3f fpr:%.3f fnr:%.3f f1:%.3f g1:%.3f mcc:%.3f', 
+                             step, losses.avg, precision.avg, recall.avg, fpr.avg,
+                             fnr.avg, f_measure.avg, g_measure.avg, mcc.avg)
+  
     return precision.avg, recall.avg, f_measure.avg
 
 
