@@ -25,6 +25,7 @@ parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
 parser.add_argument('--epochs', type=int, default=10, help='num of training epochs')
 parser.add_argument('--init_ch', type=int, default=40, help='num of init channels')
 parser.add_argument('--layers', type=int, default=6, help='total number of layers')
+parser.add_argument("--pos_weight", type=float, default=1, help="Positive class weight")
 parser.add_argument('--model_path', type=str, default='saved_models', help='path to save the model')
 parser.add_argument('--cutout', action='store_true', default=False, help='use cutout')
 parser.add_argument('--cutout_len', type=int, default=16, help='cutout length')
@@ -73,10 +74,7 @@ def main():
     logging.info('GPU device = %d' % args.gpu)
     logging.info("args = %s", args)
 
-    # the pos_weight
-    pos_weight = torch.tensor([2])
-
-    criterion = nn.BCEWithLogitsLoss(pos_weight = pos_weight).to(device)
+    criterion = nn.BCEWithLogitsLoss(pos_weight = args.pos_weight).to(device)
     model = Network(args.init_ch, args.layers, criterion).to(device)
 
     logging.info("Total param size = %f MB", utils.count_parameters_in_MB(model))
