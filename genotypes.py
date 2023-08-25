@@ -13,11 +13,14 @@ PRIMITIVES = [
     'avg_pool_5',
     'avg_pool_7',
     'skip_connect',
+    'smp_conv_3',
+    'smp_conv_5',
+    'smp_conv_7',
     'sep_conv_3',
     'sep_conv_5',
-    'sep_conv_7'
-    # 'dil_conv_3',
-    # 'dil_conv_5'
+    'sep_conv_7',
+    'dil_conv_3',
+    'dil_conv_5'
 ]
 
 SDP_Genotype = Genotype(
