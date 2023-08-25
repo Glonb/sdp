@@ -19,6 +19,7 @@ parser.add_argument('--report_freq', type=float, default=10, help='report freque
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
 parser.add_argument('--init_ch', type=int, default=40, help='num of init channels')
 parser.add_argument('--layers', type=int, default=6, help='total number of layers')
+parser.add_argument('--pos_weight', type=float, default=1, help='Positive class weight')
 parser.add_argument('--exp_path', type=str, default='exp/trained.pt', help='path of pretrained model')
 parser.add_argument('--auxiliary', action='store_true', default=False, help='use auxiliary tower')
 parser.add_argument('--cutout', action='store_true', default=False, help='use cutout')
@@ -55,7 +56,7 @@ def main():
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
 
-    pos_weight = torch.tensor([3])
+    pos_weight = torch.tensor([args.pos_weight])
   
     criterion = nn.BCEWithLogitsLoss(pos_weight = pos_weight).cuda()
 
