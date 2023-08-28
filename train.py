@@ -29,8 +29,6 @@ parser.add_argument('--init_ch', type=int, default=40, help='num of init channel
 parser.add_argument('--layers', type=int, default=6, help='total number of layers')
 parser.add_argument('--pos_weight', type=float, default=1, help='Positive class weight')
 parser.add_argument('--model_path', type=str, default='saved_models', help='path to save the model')
-parser.add_argument('--auxiliary', action='store_true', default=False, help='use auxiliary tower')
-parser.add_argument('--auxiliary_weight', type=float, default=0.4, help='weight for auxiliary loss')
 parser.add_argument('--cutout', action='store_true', default=False, help='use cutout')
 parser.add_argument('--cutout_length', type=int, default=16, help='cutout length')
 parser.add_argument('--drop_path_prob', type=float, default=0.2, help='drop path probability')
