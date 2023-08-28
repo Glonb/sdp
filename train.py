@@ -170,7 +170,7 @@ def infer(valid_queue, model, criterion):
         target = target.cuda(non_blocking=True)
 
         with torch.no_grad():
-            logits, _ = model(x)
+            logits = model(x)
             loss = criterion(logits, target.float())
 
             prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(logits, target)
