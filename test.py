@@ -107,11 +107,11 @@ def infer(test_queue, model, criterion):
 
             if step % args.report_freq == 0:
                 logging.info('test %03d loss:%e prec:%.3f recall:%.3f fpr:%.3f fnr:%.3f f1:%.3f g1:%.3f mcc:%.3f',
-                             step, losses.avg, precision.avg, recall.avg, fpr.avg, fnr.avg
+                             step, losses.avg, precision.avg, recall.avg, fpr.avg, fnr.avg,
                              f_measure.avg, g_measure.avg, mcc.avg)
 
     logging.info('test %03d loss:%e prec:%.3f recall:%.3f fpr:%.3f fnr:%.3f f1:%.3f g1:%.3f mcc:%.3f',
-                             step, losses.avg, precision.avg, recall.avg, fpr.avg, fnr.avg
+                             step, losses.avg, precision.avg, recall.avg, fpr.avg, fnr.avg,
                              f_measure.avg, g_measure.avg, mcc.avg)
   
     return precision.avg, recall.avg, f_measure.avg
