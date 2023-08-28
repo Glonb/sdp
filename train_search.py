@@ -27,9 +27,7 @@ parser.add_argument('--init_ch', type=int, default=40, help='num of init channel
 parser.add_argument('--layers', type=int, default=6, help='total number of layers')
 parser.add_argument('--pos_weight', type=float, default=1, help='Positive class weight')
 parser.add_argument('--model_path', type=str, default='saved_models', help='path to save the model')
-parser.add_argument('--cutout', action='store_true', default=False, help='use cutout')
-parser.add_argument('--cutout_len', type=int, default=16, help='cutout length')
-parser.add_argument('--drop_path_prob', type=float, default=0.3, help='drop path probability')
+parser.add_argument('--dropouts_prob', type=float, default=0.4, help='dropouts probability')
 parser.add_argument('--exp_path', type=str, default='search', help='experiment name')
 parser.add_argument('--seed', type=int, default=2, help='random seed')
 parser.add_argument('--grad_clip', type=float, default=5, help='gradient clipping range')
@@ -115,7 +113,6 @@ def main():
 
         # training
         train_prec, train_rec, train_f1 = train(train_queue, valid_queue, model, arch, criterion, optimizer, lr)
-        # logging.info('train precision: %.3f recall: %.3f f_measure: %.3f', train_prec, train_rec, train_f1)
         print('train precision: %.5f' %train_prec.item())
 
         # update lr
@@ -123,7 +120,6 @@ def main():
 
         # validation
         valid_prec, valid_rec, valid_f1 = infer(valid_queue, model, criterion)
-        # logging.info('valid precision: %.3f recall: %.3f f_measure: %.3f', valid_prec, valid_rec, valid_f1)
         print('valid precision: %.5f' %valid_prec.item())
 
         utils.save(model, os.path.join(args.exp_path, 'search.pt'))
@@ -195,7 +191,6 @@ def infer(valid_queue, model, criterion):
     f_measure = utils.AverageMeter()
     g_measure = utils.AverageMeter()
     mcc = utils.AverageMeter()
-
     model.eval()
 
     with torch.no_grad():
