@@ -17,6 +17,7 @@ class Arch:
         self.momentum = args.momentum # momentum for optimizer of theta
         self.wd = args.wd # weight decay for optimizer of theta
         self.model = model # main model with respect to theta and alpha
+        
         # this is the optimizer to optimize alpha parameter
         self.optimizer = optim.Adam(self.model.arch_parameters(),
                                           lr=args.arch_lr,
@@ -32,7 +33,6 @@ class Arch:
         loss = self.model.loss(x, target)
         # flatten current weights
         theta = concat(self.model.parameters()).detach()
-        # theta: torch.Size([1930618])
         # print('theta:', theta.shape)
         try:
             # fetch momentum data from theta optimizer
@@ -45,7 +45,6 @@ class Arch:
         dtheta = concat(autograd.grad(loss, self.model.parameters())).data
         # indeed, here we implement a simple SGD with momentum and weight decay
         # theta = theta - eta * (moment + weight decay + dtheta)
-        #theta = theta.sub(eta, moment + dtheta + self.wd * theta)
         theta = torch.sub(theta, moment + dtheta + self.wd * theta, alpha=eta)
         # construct a new model
         unrolled_model = self.construct_model_from_theta(theta)
@@ -100,7 +99,6 @@ class Arch:
 
         for g, ig in zip(dalpha, implicit_grads):
             # g = g - eta * ig, from Eq. 6
-            #g.data.sub_(eta, ig.data)
             g.data.sub_(ig.data, alpha=eta)
 
         # write updated alpha into original model
@@ -143,7 +141,6 @@ class Arch:
 
         for p, v in zip(self.model.parameters(), vector):
             # w+ = w + R * v
-            #p.data.add_(R, v)
             p.data.add_(v, alpha=R)
         loss = self.model.loss(x, target)
         # gradient with respect to alpha
@@ -152,17 +149,14 @@ class Arch:
 
         for p, v in zip(self.model.parameters(), vector):
             # w- = (w+R*v) - 2R*v
-            #p.data.sub_(2 * R, v)
             p.data.sub_(v, alpha=2 * R)
         loss = self.model.loss(x, target)
         grads_n = autograd.grad(loss, self.model.arch_parameters())
 
         for p, v in zip(self.model.parameters(), vector):
             # w = (w+R*v) - 2R*v + R*v
-            #p.data.add_(R, v)
             p.data.add_(v, alpha=R)
 
         h= [(x - y).div_(2 * R) for x, y in zip(grads_p, grads_n)]
-        # h len: 2 h0 torch.Size([14, 8])
         # print('h len:', len(h), 'h0', h[0].shape)
         return h
