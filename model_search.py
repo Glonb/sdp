@@ -1,7 +1,7 @@
 import  torch
 from    torch import nn
 import  torch.nn.functional as F
-from    operations import OPS
+from    operations import OPS, Flatten
 from    genotypes import PRIMITIVES, Genotype
 
 
@@ -101,7 +101,8 @@ class Network(nn.Module):
         res = torch.cat(states[-self.steps:], dim=1) 
 
         out = self.global_pooling(res)
-        logits = self.classifier(out.view(out.size(0), -1))
+        
+        logits = self.classifier(Flatten(out))
         
         return logits
 
