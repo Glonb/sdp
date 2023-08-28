@@ -103,3 +103,11 @@ class Zero(nn.Module):
         if self.stride == 1:
             return x.mul(0.)
         return x[:, :, ::self.stride].mul(0.)
+
+class Flatten(nn.Module):
+    def __init__(self):
+        super(Flatten, self).__init__()
+        
+    def forward(self, x):
+        return x.view(x.size(0), -1)
+
