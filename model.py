@@ -14,7 +14,7 @@ class Network(nn.Module):
         self._compile(C, op_names, indices, concat)
             
         self.global_pooling = nn.AdaptiveAvgPool1d(1)
-        self.classifier = nn.Linear(C, 1)
+        self.classifier = nn.Linear(C * len(op_names), 1)
 
     def _compile(self, C, op_names, indices, concat):
         
