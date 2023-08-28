@@ -25,8 +25,9 @@ parser.add_argument('--wd', type=float, default=3e-4, help='weight decay')
 parser.add_argument('--report_freq', type=float, default=10, help='report frequency')
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
 parser.add_argument('--epochs', type=int, default=10, help='num of training epochs')
-parser.add_argument('--init_ch', type=int, default=10, help='num of init channels')
-parser.add_argument('--layers', type=int, default=5, help='total number of layers')
+parser.add_argument('--init_ch', type=int, default=40, help='num of init channels')
+parser.add_argument('--layers', type=int, default=6, help='total number of layers')
+parser.add_argument('--pos_weight', type=float, default=1, help='Positive class weight')
 parser.add_argument('--model_path', type=str, default='saved_models', help='path to save the model')
 parser.add_argument('--auxiliary', action='store_true', default=False, help='use auxiliary tower')
 parser.add_argument('--auxiliary_weight', type=float, default=0.4, help='weight for auxiliary loss')
@@ -65,7 +66,7 @@ def main():
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
 
-    pos_weight = torch.tensor([3])
+    pos_weight = torch.tensor([args.pos_weight])
   
     criterion = nn.BCEWithLogitsLoss(pos_weight = pos_weight).cuda()
     optimizer = torch.optim.SGD(
@@ -113,7 +114,11 @@ def train(train_queue, model, criterion, optimizer):
     losses = utils.AverageMeter()
     precision = utils.AverageMeter()
     recall = utils.AverageMeter()
+    fpr = utils.AverageMeter()
+    fnr = utils.AverageMeter()
     f_measure = utils.AverageMeter()
+    g_measure = utils.AverageMeter()
+    mcc = utils.AverageMeter()
     model.train()
 
     for step, (x, target) in enumerate(train_queue):
@@ -121,22 +126,31 @@ def train(train_queue, model, criterion, optimizer):
         target = target.cuda(non_blocking=True)
 
         optimizer.zero_grad()
-        logits, logits_aux = model(x)
+        logits = model(x)
         loss = criterion(logits, target.float())
         loss.backward()
         nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
         optimizer.step()
 
-        prec, rec, f1 = utils.metrics(logits, target)
-        n = x.size(0)
-        losses.update(loss.item(), n)
-        precision.update(prec, n)
-        recall.update(rec, n)
-        f_measure.update(f1, n)
+        prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(logits, target)
+        batchsz = x.size(0)
+        losses.update(loss.item(), batchsz)
+        precision.update(prec, batchsz)
+        recall.update(rec, batchsz)
+        fpr.update(FPR, batchsz)
+        fnr.update(FNR, batchsz)
+        f_measure.update(f1, batchsz)
+        g_measure.update(g1, batchsz)
+        mcc.update(MCC, batchsz)
 
         if step % args.report_freq == 0:
-            logging.info('Train %03d loss:%e prec:%f recall:%f f1:%f',
-                         step, losses.avg, precision.avg, recall.avg, f_measure.avg)
+            logging.info('Step:%03d loss:%.3f prec:%.3f recall:%.3f fpr:%.3f fnr:%.3f f1:%.3f g1:%.3f mcc:%.3f', 
+                         step, losses.avg, precision.avg, recall.avg, fpr.avg, 
+                         fnr.avg, f_measure.avg, g_measure.avg, mcc.avg)
+          
+    logging.info('Train %03d loss:%.3f prec:%.3f recall:%.3f fpr:%.3f fnr:%.3f f1:%.3f g1:%.3f mcc:%.3f', 
+                         step, losses.avg, precision.avg, recall.avg, fpr.avg, 
+                         fnr.avg, f_measure.avg, g_measure.avg, mcc.avg)
 
     return precision.avg, losses.avg
 
@@ -146,7 +160,11 @@ def infer(valid_queue, model, criterion):
     losses = utils.AverageMeter()
     precision = utils.AverageMeter()
     recall = utils.AverageMeter()
+    fpr = utils.AverageMeter()
+    fnr = utils.AverageMeter()
     f_measure = utils.AverageMeter()
+    g_measure = utils.AverageMeter()
+    mcc = utils.AverageMeter()
     model.eval()
 
     for step, (x, target) in enumerate(valid_queue):
@@ -157,16 +175,25 @@ def infer(valid_queue, model, criterion):
             logits, _ = model(x)
             loss = criterion(logits, target.float())
 
-            prec, rec, f1 = utils.metrics(logits, target)
-            n = x.size(0)
-            losses.update(loss.item(), n)
-            precision.update(prec, n)
-            recall.update(rec, n)
-            f_measure.update(f1, n)
+            prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(logits, target)
+            batchsz = x.size(0)
+            losses.update(loss.item(), batchsz)
+            precision.update(prec, batchsz)
+            recall.update(rec, batchsz)
+            fpr.update(FPR, batchsz)
+            fnr.update(FNR, batchsz)
+            f_measure.update(f1, batchsz)
+            g_measure.update(g1, batchsz)
+            mcc.update(MCC, batchsz)
 
         if step % args.report_freq == 0:
-            logging.info('>>Validation: %03d loss:%e precision:%f recall:%f f1:%f',
-                         step, losses.avg, precision.avg, recall.avg, f_measure.avg)
+            logging.info('>> Validation: %3d %e prec:%.3f recall:%.3f fpr:%.3f fnr:%.3f f1:%.3f g1:%.3f mcc:%.3f', 
+                             step, losses.avg, precision.avg, recall.avg, fpr.avg,
+                             fnr.avg, f_measure.avg, g_measure.avg, mcc.avg)
+          
+    logging.info('>> Validation: %3d %e prec:%.3f recall:%.3f fpr:%.3f fnr:%.3f f1:%.3f g1:%.3f mcc:%.3f', 
+                             step, losses.avg, precision.avg, recall.avg, fpr.avg,
+                             fnr.avg, f_measure.avg, g_measure.avg, mcc.avg)
 
     return precision.avg, losses.avg
 
