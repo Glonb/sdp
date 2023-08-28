@@ -60,6 +60,8 @@ class Network(nn.Module):
 
         # adaptive pooling output size to 1x1
         self.global_pooling = nn.AdaptiveAvgPool1d(1)
+
+        self.flatten = Flatten()
         
         self.classifier = nn.Linear(c * steps, 1)
 
@@ -102,7 +104,7 @@ class Network(nn.Module):
 
         out = self.global_pooling(res)
         
-        logits = self.classifier(Flatten(out))
+        logits = self.classifier(self.flatten(out))
         
         return logits
 
