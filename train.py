@@ -39,7 +39,7 @@ parser.add_argument('--grad_clip', type=float, default=5, help='gradient clippin
 args = parser.parse_args()
 
 args.save = args.exp_path + '-' + time.strftime("%Y%m%d-%H%M%S")
-utils.create_exp_dir(args.save, scripts_to_save=glob.glob('*.py'))
+utils.create_exp_dir(args.save)
 
 log_format = '%(asctime)s %(message)s'
 logging.basicConfig(stream=sys.stdout, level=logging.INFO,
