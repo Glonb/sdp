@@ -18,9 +18,9 @@ class MixedLayer(nn.Module):
             layer = OPS[primitive](c, stride, False)
             
             # append batchnorm after pool layer
-            if 'pool' in primitive:
-                # disable affine w/b for batchnorm
-                layer = nn.Sequential(layer, nn.BatchNorm1d(c, affine=False))
+            # if 'pool' in primitive:
+            #     # disable affine w/b for batchnorm
+            #     layer = nn.Sequential(layer, nn.BatchNorm1d(c, affine=False))
 
             self.layers.append(layer)
 
