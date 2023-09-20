@@ -60,8 +60,11 @@ class Network(nn.Module):
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
 
         self.flatten = Flatten()
-        
-        self.classifier = nn.Linear(c * steps, 1)
+
+        hidden_size = 128
+        self.bilstm = nn.LSTM(input_size=c * steps, hidden_size=hidden_size, bidirectional=True, batch_first=True)
+
+        # self.classifier = nn.Linear(c * steps, 1)
 
         # k is the total number of edges
         k = sum(1 for i in range(self.steps) for j in range(1 + i))
@@ -100,9 +103,12 @@ class Network(nn.Module):
         # concat along dim=channel
         res = torch.cat(states[1:], dim=1)
 
-        out = self.global_pooling(res)
-        
-        logits = self.classifier(self.flatten(out))
+        pooled_out = self.global_pooling(res)
+        pooled_out = pooled_out.permute(0, 2, 1)
+        bilstm_out, _ = self.bilstm(pooled_out)
+        flattened_out = self.flatten(out)
+        fc_layer = nn.Linear(flattened_output.size(1), 1)
+        logits = fc_layer(flattened_output)
         
         return logits
 
