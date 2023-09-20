@@ -106,7 +106,7 @@ class Network(nn.Module):
         print(res.shape)
         
         bilstm_out, _ = self.bilstm(res)
-        print(bilstm_out)
+        print(bilstm_out.shape)
         out = self.global_pooling(bilstm_out)
         print(out.shape)
         
