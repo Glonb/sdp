@@ -24,7 +24,7 @@ parser.add_argument('--report_freq', type=float, default=10, help='report freque
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
 parser.add_argument('--epochs', type=int, default=10, help='num of training epochs')
 parser.add_argument('--init_ch', type=int, default=40, help='num of init channels')
-parser.add_argument('--layers', type=int, default=6, help='total number of layers')
+parser.add_argument('--layers', type=int, default=4, help='total number of layers')
 parser.add_argument('--pos_weight', type=float, default=1, help='Positive class weight')
 parser.add_argument('--model_path', type=str, default='saved_models', help='path to save the model')
 parser.add_argument('--dropouts_prob', type=float, default=0.4, help='dropouts probability')
