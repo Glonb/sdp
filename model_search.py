@@ -57,7 +57,7 @@ class Network(nn.Module):
                 self.layers.append(layer)
 
         # adaptive pooling output size to 1x1
-        self.global_pooling = nn.AdaptiveAvgPool1d(1)
+        self.global_pooling = nn.AdaptiveMaxPool1d(1)
 
         self.flatten = Flatten()
         
@@ -99,6 +99,7 @@ class Network(nn.Module):
 
         # concat along dim=channel
         res = torch.cat(states[1:], dim=1)
+        print(res.shape)
 
         out = self.global_pooling(res)
         
