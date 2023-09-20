@@ -107,8 +107,8 @@ class Network(nn.Module):
         pooled_out = pooled_out.permute(0, 2, 1)
         bilstm_out, _ = self.bilstm(pooled_out)
         flattened_out = self.flatten(bilstm_out)
-        fc_layer = nn.Linear(flattened_output.size(1), 1)
-        logits = fc_layer(flattened_output)
+        fc_layer = nn.Linear(flattened_out.size(1), 1)
+        logits = fc_layer(flattened_out)
         
         return logits
 
