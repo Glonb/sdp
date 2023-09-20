@@ -103,12 +103,12 @@ class Network(nn.Module):
         # concat along dim=channel
         res = torch.cat(states[1:], dim=1)
         res = res.permute(0, 2, 1)
-        print(res.shape)
+        # print(res.shape)
         
         bilstm_out, _ = self.bilstm(res)
-        print(bilstm_out.shape)
-        out = self.global_pooling(bilstm_out)
-        print(out.shape)
+        # print(bilstm_out.shape)
+        out = self.global_pooling(bilstm_out.permute(0, 2, 1))
+        # print(out.shape)
         
         logits = self.classifier(self.flatten(out))
         
