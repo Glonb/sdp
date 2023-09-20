@@ -37,9 +37,7 @@ class MixedLayer(nn.Module):
         
 
 class Network(nn.Module):
-    """
-    stack number:layer of nodes and then flatten to fed a linear layer
-    """
+    
     def __init__(self, c, steps, criterion):
         
         super(Network, self).__init__()
@@ -100,7 +98,7 @@ class Network(nn.Module):
             # print('node:',i, s.shape)
 
         # concat along dim=channel
-        res = torch.cat(states[-self.steps:], dim=1) 
+        res = torch.cat(states[1:self.steps], dim=1) 
 
         out = self.global_pooling(res)
         
