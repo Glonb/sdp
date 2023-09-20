@@ -64,7 +64,7 @@ class Network(nn.Module):
         hidden_size = 128
         self.bilstm = nn.LSTM(input_size=c * steps, hidden_size=hidden_size, bidirectional=True, batch_first=True)
 
-        # self.classifier = nn.Linear(c * steps, 1)
+        self.classifier = nn.Linear(2 * hidden_size, 1)
 
         # k is the total number of edges
         k = sum(1 for i in range(self.steps) for j in range(1 + i))
@@ -105,12 +105,10 @@ class Network(nn.Module):
 
         pooled_out = self.global_pooling(res)
         pooled_out = pooled_out.permute(0, 2, 1)
-        print(pooled_out.shape)
+        
         bilstm_out, _ = self.bilstm(pooled_out)
-        print(bilstm_out.shape)
-        flattened_out = self.flatten(bilstm_out)
-        fc_layer = nn.Linear(flattened_out.size(1), 1)
-        logits = fc_layer(flattened_out)
+        
+        logits = self.classifier(self.flatten(bilstm_out))
         
         return logits
 
