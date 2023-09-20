@@ -98,11 +98,11 @@ class Network(nn.Module):
             # print('node:',i, s.shape)
 
         # concat along dim=channel
-        res = torch.cat(states[1:self.steps], dim=1)
-        print(res.shape)
+        res = torch.cat(states[1:], dim=1)
+        # print(res.shape)
 
         out = self.global_pooling(res)
-        print(out.shape)
+        # print(out.shape)
         
         logits = self.classifier(self.flatten(out))
         
