@@ -61,7 +61,7 @@ class Network(nn.Module):
 
         self.flatten = Flatten()
 
-        hidden_size = 128
+        hidden_size = 64
         self.bilstm = nn.LSTM(input_size=c * steps, hidden_size=hidden_size, bidirectional=True, batch_first=True)
 
         self.classifier = nn.Linear(2 * hidden_size, 1)
