@@ -152,7 +152,7 @@ def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
         # 2. update weight
         optimizer.zero_grad()
         loss.backward()
-        nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
+        # nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
         optimizer.step()
 
         prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(logits, target)
