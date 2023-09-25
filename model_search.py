@@ -113,7 +113,7 @@ class Network(nn.Module):
         out = self.global_pooling(out)
         print(out.shape)
 
-        flattened_out = out.view(out.szie(0), -1)
+        flattened_out = out.view(out.size(0), -1)
         print(flattened_out.shape)
         
         logits = self.classifier(flattened_out)
