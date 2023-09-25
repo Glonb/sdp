@@ -106,7 +106,7 @@ class Network(nn.Module):
         # hidden_size = 64
         # self.bilstm = nn.LSTM(input_size=x.size(2), hidden_size=hidden_size, bidirectional=True, batch_first=True)
         bilstm_out, (h_n, c_n) = self.bilstm(x)
-        # print(cnn_out.shape)
+        print(cnn_out.shape)
         print(bilstm_out.shape)
         
         out = self.global_pooling(con_out)
