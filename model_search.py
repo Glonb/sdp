@@ -103,6 +103,7 @@ class Network(nn.Module):
         # concat along dim=channel
         cnn_out = torch.cat(states[1:], dim=1)
 
+        hidden_size = 64
         self.bilstm = nn.LSTM(input_size=x.size(2), hidden_size=hidden_size, bidirectional=True, batch_first=True)
         bilstm_out, (h_n, c_n) = self.bilstm(x.permute(0, 2, 1))
         # print(cnn_out.shape)
