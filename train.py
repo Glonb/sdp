@@ -72,9 +72,9 @@ def main():
     )
 
     train_data = MyDataset('/kaggle/input/sdp-data/xalan5_embed.npy', '/kaggle/input/sdp-data/xalan5_label.csv')
-    valid_data = MyDataset('/kaggle/input/sdp-data/xalan6_embed.npy', '/kaggle/input/sdp-data/xalan6_label.csv')
+    # valid_data = MyDataset('/kaggle/input/sdp-data/xalan6_embed.npy', '/kaggle/input/sdp-data/xalan6_label.csv')
 
-    num_valid = len(valid_data) 
+    num_valid = len(train_data) 
     indices = list(range(num_valid))
     split = int(np.floor(0.2 * num_valid))
 
@@ -82,7 +82,7 @@ def main():
         train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
 
     valid_queue = torch.utils.data.DataLoader(
-        valid_data, batch_size=args.batchsz,
+        train_data, batch_size=args.batchsz,
         sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[:split]),
         pin_memory=True, num_workers=2)
 
