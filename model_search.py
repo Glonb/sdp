@@ -38,12 +38,11 @@ class MixedLayer(nn.Module):
 
 class Network(nn.Module):
     
-    def __init__(self, c, embsz, steps, criterion):
+    def __init__(self, c, steps, criterion):
         
         super(Network, self).__init__()
 
         self.c = c
-        self.embsz = embsz
         self.steps = steps 
         self.criterion = criterion
         
@@ -63,7 +62,7 @@ class Network(nn.Module):
         self.flatten = Flatten()
 
         hidden_size = 64
-        self.bilstm = nn.LSTM(input_size=self.embsz, hidden_size=hidden_size, bidirectional=True, batch_first=True)
+        self.bilstm = nn.LSTM(input_size=1784, hidden_size=hidden_size, bidirectional=True, batch_first=True)
 
         self.classifier = nn.Linear(c * (steps+1), 1)
 
