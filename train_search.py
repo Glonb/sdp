@@ -14,8 +14,7 @@ from    my_dataset import MyDataset
 
 
 parser = argparse.ArgumentParser("SDP")
-parser.add_argument('--data', type=str, default='../data', help='location of the data corpus')
-parser.add_argument('--batchsz', type=int, default=32, help='batch size')
+parser.add_argument('--batchsz', type=int, default=16, help='batch size')
 parser.add_argument('--lr', type=float, default=0.025, help='init learning rate')
 parser.add_argument('--lr_min', type=float, default=0.001, help='min learning rate')
 parser.add_argument('--momentum', type=float, default=0.9, help='momentum')
@@ -28,7 +27,7 @@ parser.add_argument('--layers', type=int, default=4, help='total number of layer
 parser.add_argument('--model_path', type=str, default='saved_models', help='path to save the model')
 parser.add_argument('--dropouts_prob', type=float, default=0.4, help='dropouts probability')
 parser.add_argument('--exp_path', type=str, default='search', help='experiment name')
-parser.add_argument('--seed', type=int, default=2, help='random seed')
+parser.add_argument('--seed', type=int, default=3, help='random seed')
 parser.add_argument('--grad_clip', type=float, default=5, help='gradient clipping range')
 parser.add_argument('--train_portion', type=float, default=0.5, help='portion of training/val splitting')
 parser.add_argument('--unrolled', action='store_true', default=False, help='use one-step unrolled validation loss')
