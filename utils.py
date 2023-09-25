@@ -44,12 +44,8 @@ def metrics(output, target, threshold = 0.5):
 
 
 def count_parameters_in_MB(model):
-    """
-    count all parameters excluding auxiliary
-    :param model:
-    :return:
-    """
-    return np.sum(v.numel() for name, v in model.named_parameters() if "auxiliary" not in name) / 1e6
+    
+    return np.sum(v.numel() for name, v in model.named_parameters()) / 1e6
 
 
 def save_checkpoint(state, is_best, save):
