@@ -62,9 +62,9 @@ class Network(nn.Module):
         out_dim = c * steps + 2 * hidden_size
         
         # adaptive pooling output
-        self.global_pooling = nn.AdaptiveMaxPool1d(c)
+        self.global_pooling = nn.AdaptiveMaxPool1d(1)
 
-        self.classifier = nn.Linear(out_dim * c, 1)
+        self.classifier = nn.Linear(out_dim, 1)
 
         # k is the total number of edges
         k = sum(1 for i in range(self.steps) for j in range(1 + i))
