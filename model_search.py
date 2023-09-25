@@ -101,10 +101,10 @@ class Network(nn.Module):
             # print('node:',i, s.shape)
 
         # concat along dim=channel
-        sum = torch.cat(states[1:], dim=1)
-        print(sum.shape)
+        con_out = torch.cat(states[1:], dim=1)
+        print(con_out.shape)
         
-        out = self.global_pooling(sum)
+        out = self.global_pooling(con_out)
         print(out.shape)
 
         flattened_out = self.flatten(out)
