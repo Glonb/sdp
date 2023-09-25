@@ -62,9 +62,9 @@ class Network(nn.Module):
         out_dim = c * steps + 2 * hidden_size
         
         # adaptive pooling output
-        self.global_pooling = nn.AdaptiveMaxPool1d(10)
+        self.global_pooling = nn.AdaptiveMaxPool1d(c)
 
-        self.classifier = nn.Linear(out_dim * 10, 1)
+        self.classifier = nn.Linear(out_dim * c, 1)
 
         # k is the total number of edges
         k = sum(1 for i in range(self.steps) for j in range(1 + i))
@@ -102,17 +102,19 @@ class Network(nn.Module):
 
         # concat along dim=channel
         cnn_out = torch.cat(states[1:], dim=1)
+        cnn_out = self.global_pooling(cnn_out)
         # print(cnn_out.shape)
         
         bilstm_out, (h_n, c_n) = self.bilstm(x.transpose(1, 2))
         bilstm_out = bilstm_out.transpose(1, 2)
+        bilstm_out = self.global_pooling(bilstm_out)
         # print(bilstm_out.shape)
 
         # concat cnn_out and bilstm_out
         out = torch.cat([cnn_out, bilstm_out], dim=1)
         # print(out.shape)
         
-        out = self.global_pooling(out)
+        # out = self.global_pooling(out)
         # print(out.shape)
 
         flattened_out = out.view(out.size(0), -1)
