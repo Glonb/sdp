@@ -38,11 +38,12 @@ class MixedLayer(nn.Module):
 
 class Network(nn.Module):
     
-    def __init__(self, c, steps, criterion):
+    def __init__(self, c, embsz, steps, criterion):
         
         super(Network, self).__init__()
 
         self.c = c
+        self.embsz = embsz
         self.steps = steps 
         self.criterion = criterion
         
@@ -61,10 +62,10 @@ class Network(nn.Module):
 
         self.flatten = Flatten()
 
-        # hidden_size = 64
-        # self.bilstm = nn.LSTM(input_size=c * steps, hidden_size=hidden_size, bidirectional=True, batch_first=True)
+        hidden_size = 64
+        self.bilstm = nn.LSTM(input_size=self.embsz, hidden_size=hidden_size, bidirectional=True, batch_first=True)
 
-        self.classifier = nn.Linear(c * steps, 1)
+        self.classifier = nn.Linear(c * (steps+1), 1)
 
         # k is the total number of edges
         k = sum(1 for i in range(self.steps) for j in range(1 + i))
@@ -101,14 +102,16 @@ class Network(nn.Module):
             # print('node:',i, s.shape)
 
         # concat along dim=channel
-        con_out = torch.cat(states[1:], dim=1)
-        print(con_out.shape)
+        cnn_out = torch.cat(states[1:], dim=1)
+        bilstm_out, (h_n, c_n) = self.bilstm(x.permute(0, 2, 1))
+        # print(cnn_out.shape)
+        print(bilstm_out.shape)
         
         out = self.global_pooling(con_out)
-        print(out.shape)
+        # print(out.shape)
 
         flattened_out = self.flatten(out)
-        print(flattened_out.shape)
+        # print(flattened_out.shape)
         
         logits = self.classifier(flattened_out)
         
