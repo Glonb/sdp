@@ -1,7 +1,7 @@
 import  torch
 from    torch import nn
 import  torch.nn.functional as F
-from    operations import OPS, Flatten
+from    operations import OPS
 from    genotypes import PRIMITIVES, Genotype
 
 
@@ -59,12 +59,10 @@ class Network(nn.Module):
         # adaptive pooling output
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
 
-        self.flatten = Flatten()
-
         hidden_size = 64
         self.bilstm = nn.LSTM(input_size=c, hidden_size=hidden_size, bidirectional=True, batch_first=True)
 
-        self.classifier = nn.Linear(c * (steps+1), 1)
+        self.classifier = nn.Linear(c * steps + 2 * hidden_size, 1)
 
         # k is the total number of edges
         k = sum(1 for i in range(self.steps) for j in range(1 + i))
@@ -102,18 +100,21 @@ class Network(nn.Module):
 
         # concat along dim=channel
         cnn_out = torch.cat(states[1:], dim=1)
-
-        # hidden_size = 64
-        # self.bilstm = nn.LSTM(input_size=x.size(2), hidden_size=hidden_size, bidirectional=True, batch_first=True)
-        bilstm_out, (h_n, c_n) = self.bilstm(x.transpose(1, 2))
         print(cnn_out.shape)
+        
+        bilstm_out, (h_n, c_n) = self.bilstm(x.transpose(1, 2))
+        bilstm_out = bilstm_out.transpose(1, 2)
         print(bilstm_out.shape)
+
+        # concat cnn_out and bilstm_out
+        out = torch.cat([cnn_out, bilstm_out], dim=1)
+        print(out.shape)
         
         out = self.global_pooling(con_out)
-        # print(out.shape)
+        print(out.shape)
 
-        flattened_out = self.flatten(out)
-        # print(flattened_out.shape)
+        flattened_out = out.view(out.szie(0), -1)
+        print(flattened_out.shape)
         
         logits = self.classifier(flattened_out)
         
