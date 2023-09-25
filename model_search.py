@@ -61,8 +61,8 @@ class Network(nn.Module):
 
         self.flatten = Flatten()
 
-        hidden_size = 64
-        self.bilstm = nn.LSTM(input_size=1784, hidden_size=hidden_size, bidirectional=True, batch_first=True)
+        # hidden_size = 64
+        # self.bilstm = nn.LSTM(input_size=1784, hidden_size=hidden_size, bidirectional=True, batch_first=True)
 
         self.classifier = nn.Linear(c * (steps+1), 1)
 
@@ -102,6 +102,8 @@ class Network(nn.Module):
 
         # concat along dim=channel
         cnn_out = torch.cat(states[1:], dim=1)
+
+        self.bilstm = nn.LSTM(input_size=x.size(2), hidden_size=hidden_size, bidirectional=True, batch_first=True)
         bilstm_out, (h_n, c_n) = self.bilstm(x.permute(0, 2, 1))
         # print(cnn_out.shape)
         print(bilstm_out.shape)
