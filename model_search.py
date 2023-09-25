@@ -110,7 +110,7 @@ class Network(nn.Module):
         out = torch.cat([cnn_out, bilstm_out], dim=1)
         print(out.shape)
         
-        out = self.global_pooling(con_out)
+        out = self.global_pooling(out)
         print(out.shape)
 
         flattened_out = out.view(out.szie(0), -1)
