@@ -61,10 +61,10 @@ class Network(nn.Module):
 
         self.flatten = Flatten()
 
-        hidden_size = 64
-        self.bilstm = nn.LSTM(input_size=c * steps, hidden_size=hidden_size, bidirectional=True, batch_first=True)
+        # hidden_size = 64
+        # self.bilstm = nn.LSTM(input_size=c * steps, hidden_size=hidden_size, bidirectional=True, batch_first=True)
 
-        self.classifier = nn.Linear(2 * hidden_size, 1)
+        self.classifier = nn.Linear(c * steps, 1)
 
         # k is the total number of edges
         k = sum(1 for i in range(self.steps) for j in range(1 + i))
@@ -101,16 +101,16 @@ class Network(nn.Module):
             # print('node:',i, s.shape)
 
         # concat along dim=channel
-        res = torch.cat(states[1:], dim=1)
-        res = res.permute(0, 2, 1)
-        # print(res.shape)
+        sum = torch.cat(states[1:], dim=1)
+        print(sum.shape)
         
-        bilstm_out, _ = self.bilstm(res)
-        # print(bilstm_out.shape)
-        out = self.global_pooling(bilstm_out.permute(0, 2, 1))
-        # print(out.shape)
+        out = self.global_pooling(sum)
+        print(out.shape)
+
+        flattened_out = self.flatten(out)
+        print(flattened_out.shape)
         
-        logits = self.classifier(self.flatten(out))
+        logits = self.classifier(flattened_out)
         
         return logits
 
