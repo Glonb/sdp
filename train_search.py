@@ -95,8 +95,8 @@ def main():
         sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[split:]),
         pin_memory=True, num_workers=2)
 
-    scheduler = optim.lr_scheduler.CosineAnnealingLR(
-                    optimizer, float(args.epochs), eta_min=args.lr_min)
+    # scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, float(args.epochs), eta_min=args.lr_min)
+    scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95)
 
     arch = Arch(model, args)
 
