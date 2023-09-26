@@ -96,7 +96,7 @@ def main():
         pin_memory=True, num_workers=2)
 
     # scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, float(args.epochs), eta_min=args.lr_min)
-    scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95)
+    # scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95)
 
     arch = Arch(model, args)
 
@@ -113,7 +113,7 @@ def main():
         print('train precision: %.5f' %train_prec.item())
 
         # update lr
-        scheduler.step()
+        # scheduler.step()
 
         # validation
         valid_prec, valid_rec, valid_f1 = infer(valid_queue, model, criterion)
