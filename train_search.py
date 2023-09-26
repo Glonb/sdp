@@ -79,7 +79,7 @@ def main():
     # optimizer = optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd)
     optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
 
-    train_data = MyDataset('/kaggle/input/sdp-data/xalan25_embed.npy', '/kaggle/input/sdp-data/xalan25_label.csv')
+    train_data = MyDataset('/kaggle/input/sdp-data/poi25_embed.npy', '/kaggle/input/sdp-data/poi25_label.csv')
 
     num_train = len(train_data) 
     indices = list(range(num_train))
