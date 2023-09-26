@@ -76,7 +76,8 @@ def main():
     logging.info("Total param size = %f MB", utils.count_parameters_in_MB(model))
 
     # this is the optimizer to optimize
-    optimizer = optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd)
+    # optimizer = optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd)
+    optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
 
     train_data = MyDataset('/kaggle/input/sdp-data/xalan25_embed.npy', '/kaggle/input/sdp-data/xalan25_label.csv')
 
