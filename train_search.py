@@ -113,7 +113,7 @@ def main():
         print('train precision: %.5f' %train_prec.item())
 
         # update lr
-        # scheduler.step()
+        scheduler.step()
 
         # validation
         valid_prec, valid_rec, valid_f1 = infer(valid_queue, model, criterion)
