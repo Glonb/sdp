@@ -96,14 +96,14 @@ def main():
         pin_memory=True, num_workers=2)
 
     # scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, float(args.epochs), eta_min=args.lr_min)
-    # scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95)
+    scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95)
 
     arch = Arch(model, args)
 
     for epoch in range(args.epochs):
 
-        # lr = scheduler.get_last_lr()[0]
-        # logging.info('Epoch: %d lr: %e', epoch, lr)
+        lr = scheduler.get_last_lr()[0]
+        logging.info('Epoch: %d lr: %e', epoch, lr)
 
         genotype = model.genotype()
         logging.info('Genotype: %s', genotype)
