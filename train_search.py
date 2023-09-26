@@ -76,8 +76,8 @@ def main():
     logging.info("Total param size = %f MB", utils.count_parameters_in_MB(model))
 
     # this is the optimizer to optimize
-    # optimizer = optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd)
-    optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
+    optimizer = optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd)
+    # optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
 
     train_data = MyDataset('/kaggle/input/sdp-data/poi25_embed.npy', '/kaggle/input/sdp-data/poi25_label.csv')
 
@@ -95,8 +95,8 @@ def main():
         sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[split:]),
         pin_memory=True, num_workers=2)
 
-    # scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, float(args.epochs), eta_min=args.lr_min)
-    scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95)
+    scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, float(args.epochs), eta_min=args.lr_min)
+    # scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95)
 
     arch = Arch(model, args)
 
