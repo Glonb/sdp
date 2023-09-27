@@ -91,11 +91,15 @@ def main():
         logging.info('epoch %d lr %e', epoch, scheduler.get_last_lr()[0])
         model.drop_path_prob = args.drop_path_prob * epoch / args.epochs
 
-        train_prec, train_obj = train(train_queue, model, criterion, optimizer)
-        logging.info('train_prec: %f', train_prec)
+        # train_prec, train_obj = train(train_queue, model, criterion, optimizer)
+        # logging.info('train_prec: %f', train_prec)
+        train_prec, train_rec, train_f1 = train(train_queue, model, criterion, optimizer)
+        print('train precision: %.5f' %train_prec.item())
 
-        valid_prec, valid_obj = infer(valid_queue, model, criterion)
-        logging.info('valid_prec: %f', valid_prec)
+        # valid_prec, valid_obj = infer(valid_queue, model, criterion)
+        # logging.info('valid_prec: %f', valid_prec)
+        valid_prec, valid_rec, valid_f1 = infer(valid_queue, model, criterion)
+        print('train precision: %.5f' %train_prec.item())
 
         scheduler.step()
       
@@ -145,7 +149,7 @@ def train(train_queue, model, criterion, optimizer):
                          step, losses.avg, precision.avg, recall.avg, fpr.avg, 
                          fnr.avg, f_measure.avg, g_measure.avg, mcc.avg)
 
-    return precision.avg, losses.avg
+    return precision.avg, recall.avg, f_measure.avg
 
 
 def infer(valid_queue, model, criterion):
@@ -188,7 +192,7 @@ def infer(valid_queue, model, criterion):
                              step, losses.avg, precision.avg, recall.avg, fpr.avg,
                              fnr.avg, f_measure.avg, g_measure.avg, mcc.avg)
 
-    return precision.avg, losses.avg
+    return precision.avg, recall.avg, f_measure.avg
 
 
 if __name__ == '__main__':
