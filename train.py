@@ -73,7 +73,7 @@ def main():
 
     num_data = len(train_data) 
     indices = list(range(num_data))
-    split = int(np.floor(0.5 * num_valid))
+    split = int(np.floor(0.5 * num_data))
 
     # train_queue = torch.utils.data.DataLoader(
     #     train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
