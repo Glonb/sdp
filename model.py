@@ -45,10 +45,11 @@ class Network(nn.Module):
         cnn_out = torch.cat([states[i] for i in self._concat], dim=1)
         cnn_out = self.global_pooling(cnn_out)
 
-        bilstm_out, (h_n, c_n) = self.bilstm(input)
+        bilstm_out, (h_n, c_n) = self.bilstm(input.transpose(1, 2))
+        bilstm_out = bilstm_out.transpose(1, 2)
         bilstm_out = self.global_pooling(bilstm_out)
 
-        out = torch.cat(cnn_out, bilstm_out, dim=1)
+        out = torch.cat([cnn_out, bilstm_out], dim=1)
         
         logits = self.classifier(out.view(out.size(0), -1))
         return logits
