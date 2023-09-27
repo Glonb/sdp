@@ -80,7 +80,7 @@ def main():
     # optimizer = optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd)
     optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
 
-    data_loc = '/kaggle/input/sdp-data'
+    data_loc = '/kaggle/input/sdp-data/'
     train_data = MyDataset(data_loc + args.data + '_embed.npy', data_loc + args.data + '_label.csv')
 
     num_train = len(train_data) 
