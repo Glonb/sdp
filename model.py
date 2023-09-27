@@ -8,13 +8,15 @@ class Network(nn.Module):
 
     def __init__(self, C, genotype):
         super(Network, self).__init__()
+        hidden_size = 64
 
         op_names, indices = zip(*genotype.geno)
         concat = genotype.geno_concat
         self._compile(C, op_names, indices, concat)
-            
-        self.global_pooling = nn.AdaptiveAvgPool1d(1)
-        self.classifier = nn.Linear(C * len(op_names), 1)
+
+        self.bilstm = nn.LSTM(input_size=C, hidden_size=hidden_size, bidirectional=True, batch_first=True)
+        self.global_pooling = nn.AdaptiveMaxPool1d(1)
+        self.classifier = nn.Linear(C * len(op_names) + 2 * hidden_size, 1)
 
     def _compile(self, C, op_names, indices, concat):
         
@@ -40,8 +42,13 @@ class Network(nn.Module):
             h = op(h)
             states += [h]
             
-        res = torch.cat([states[i] for i in self._concat], dim=1)
+        cnn_out = torch.cat([states[i] for i in self._concat], dim=1)
+        cnn_out = self.global_pooling(cnn_out)
+
+        bilstm_out, (h_n, c_n) = self.bilstm(input)
+        bilstm_out = self.global_pooling(bilstm_out)
+
+        out = torch.cat(cnn_out, bilstm_out, dim=1)
         
-        out = self.global_pooling(res)
         logits = self.classifier(out.view(out.size(0), -1))
         return logits
