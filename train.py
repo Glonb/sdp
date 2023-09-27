@@ -69,23 +69,25 @@ def main():
 
     data_loc = '/kaggle/input/sdp-data/'  
     train_data = MyDataset(data_loc + args.data + '_embed.npy', data_loc + args.data + '_label.csv')
-    # valid_data = MyDataset(data_loc + 'poi25_embed.npy', data_loc + 'poi25_label.csv')
+    valid_data = MyDataset(data_loc + 'poi30_embed.npy', data_loc + 'poi30_label.csv')
 
-    num_data = len(train_data) 
-    indices = list(range(num_data))
-    split = int(np.floor(0.5 * num_data))
+    # num_data = len(train_data) 
+    # indices = list(range(num_data))
+    # split = int(np.floor(0.5 * num_data))
 
-    # train_queue = torch.utils.data.DataLoader(
-    #     train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
     train_queue = torch.utils.data.DataLoader(
-        train_data, batch_size=args.batchsz,
-        sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[:split]),
-        pin_memory=True, num_workers=2)
-  
+        train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
+    # train_queue = torch.utils.data.DataLoader(
+    #     train_data, batch_size=args.batchsz,
+    #     sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[:split]),
+    #     pin_memory=True, num_workers=2)
+
     valid_queue = torch.utils.data.DataLoader(
-        train_data, batch_size=args.batchsz,
-        sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[split:]),
-        pin_memory=True, num_workers=2)
+        valid_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
+    # valid_queue = torch.utils.data.DataLoader(
+    #     train_data, batch_size=args.batchsz,
+    #     sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[split:]),
+    #     pin_memory=True, num_workers=2)
 
     # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, float(args.epochs))
     scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95)
