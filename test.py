@@ -13,20 +13,18 @@ from    model import Network
 from    my_dataset import MyDataset
 
 parser = argparse.ArgumentParser("SDP")
-parser.add_argument('--data', type=str, default='../data', help='location of the data corpus')
-parser.add_argument('--batchsz', type=int, default=32, help='batch size')
+parser.add_argument('--data', type=str, default='xalan25', help='dataset')
+parser.add_argument('--batchsz', type=int, default=16, help='batch size')
 parser.add_argument('--report_freq', type=float, default=10, help='report frequency')
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
 parser.add_argument('--init_ch', type=int, default=40, help='num of init channels')
-parser.add_argument('--layers', type=int, default=6, help='total number of layers')
-parser.add_argument('--pos_weight', type=float, default=1, help='Positive class weight')
+parser.add_argument('--layers', type=int, default=4, help='total number of layers')
 parser.add_argument('--exp_path', type=str, default='exp/trained.pt', help='path of pretrained model')
-parser.add_argument('--auxiliary', action='store_true', default=False, help='use auxiliary tower')
 parser.add_argument('--cutout', action='store_true', default=False, help='use cutout')
 parser.add_argument('--cutout_length', type=int, default=16, help='cutout length')
 parser.add_argument('--drop_path_prob', type=float, default=0.2, help='drop path probability')
 parser.add_argument('--seed', type=int, default=0, help='random seed')
-parser.add_argument('--arch', type=str, default='DARTS', help='which architecture to use')
+parser.add_argument('--arch', type=str, default='SDP', help='which architecture to use')
 args = parser.parse_args()
 
 args.save = 'test-' + time.strftime("%Y%m%d-%H%M%S")
@@ -56,11 +54,10 @@ def main():
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
 
-    pos_weight = torch.tensor([args.pos_weight])
-  
-    criterion = nn.BCEWithLogitsLoss(pos_weight = pos_weight).cuda()
+    criterion = nn.BCEWithLogitsLoss().cuda()
 
-    test_data = MyDataset('/kaggle/input/sdp-data/xalan6_embed.npy', '/kaggle/input/sdp-data/xalan6_label.csv')
+    data_loc = '/kaggle/input/sdp-data/'
+    test_data = MyDataset(data_loc + args.data + '_embed.npy', data_loc + args.data + '_label.csv')
 
     test_queue = torch.utils.data.DataLoader(
         test_data, batch_size=args.batchsz, 
