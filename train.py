@@ -99,7 +99,7 @@ def main():
         # valid_prec, valid_obj = infer(valid_queue, model, criterion)
         # logging.info('valid_prec: %f', valid_prec)
         valid_prec, valid_rec, valid_f1 = infer(valid_queue, model, criterion)
-        print('train precision: %.5f' %train_prec.item())
+        print('valid precision: %.5f' %valid_prec.item())
 
         scheduler.step()
       
