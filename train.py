@@ -65,7 +65,7 @@ def main():
   
     criterion = nn.BCEWithLogitsLoss().cuda()
     # optimizer = torch.optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd)
-    optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
 
     data_loc = '/kaggle/input/sdp-data/'  
     train_data = MyDataset(data_loc + args.data + '_embed.npy', data_loc + args.data + '_label.csv')
@@ -84,7 +84,7 @@ def main():
         pin_memory=True, num_workers=2)
 
     # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, float(args.epochs))
-    scheduler = ExponentialLR(optimizer, gamma=0.95)
+    scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95)
 
     for epoch in range(args.epochs):
     
