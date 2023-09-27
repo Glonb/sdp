@@ -14,6 +14,7 @@ from    my_dataset import MyDataset
 
 
 parser = argparse.ArgumentParser("SDP")
+parser.add_argument('--data', type=str, default='xalan25', help='dataset')
 parser.add_argument('--batchsz', type=int, default=16, help='batch size')
 parser.add_argument('--lr', type=float, default=0.025, help='init learning rate')
 parser.add_argument('--lr_min', type=float, default=0.001, help='min learning rate')
@@ -79,7 +80,8 @@ def main():
     # optimizer = optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd)
     optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
 
-    train_data = MyDataset('/kaggle/input/sdp-data/xalan25_embed.npy', '/kaggle/input/sdp-data/xalan25_label.csv')
+    data_loc = '/kaggle/input/sdp-data'
+    train_data = MyDataset(data_loc + args.data + '_embed.npy', data_loc + args.data + '_label.csv')
 
     num_train = len(train_data) 
     indices = list(range(num_train))
