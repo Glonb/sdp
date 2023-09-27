@@ -17,8 +17,8 @@ from    model import Network
 from    my_dataset import MyDataset
 
 parser = argparse.ArgumentParser("SDP")
-parser.add_argument('--data', type=str, default='../data', help='location of the data corpus')
-parser.add_argument('--batchsz', type=int, default=32, help='batch size')
+parser.add_argument('--data', type=str, default='xalan25', help='dataset')
+parser.add_argument('--batchsz', type=int, default=16, help='batch size')
 parser.add_argument('--lr', type=float, default=0.025, help='init learning rate')
 parser.add_argument('--momentum', type=float, default=0.9, help='momentum')
 parser.add_argument('--wd', type=float, default=3e-4, help='weight decay')
@@ -26,14 +26,14 @@ parser.add_argument('--report_freq', type=float, default=10, help='report freque
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
 parser.add_argument('--epochs', type=int, default=10, help='num of training epochs')
 parser.add_argument('--init_ch', type=int, default=40, help='num of init channels')
-parser.add_argument('--layers', type=int, default=6, help='total number of layers')
+parser.add_argument('--layers', type=int, default=4, help='total number of layers')
 parser.add_argument('--model_path', type=str, default='saved_models', help='path to save the model')
 parser.add_argument('--cutout', action='store_true', default=False, help='use cutout')
 parser.add_argument('--cutout_length', type=int, default=16, help='cutout length')
 parser.add_argument('--drop_path_prob', type=float, default=0.2, help='drop path probability')
 parser.add_argument('--exp_path', type=str, default='exp/sdp', help='experiment name')
 parser.add_argument('--seed', type=int, default=0, help='random seed')
-parser.add_argument('--arch', type=str, default='DARTS', help='which architecture to use')
+parser.add_argument('--arch', type=str, default='SDP', help='which architecture to use')
 parser.add_argument('--grad_clip', type=float, default=5, help='gradient clipping')
 args = parser.parse_args()
 
@@ -64,14 +64,11 @@ def main():
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
   
     criterion = nn.BCEWithLogitsLoss().cuda()
-    optimizer = torch.optim.SGD(
-        model.parameters(),
-        args.lr,
-        momentum=args.momentum,
-        weight_decay=args.wd
-    )
+    # optimizer = torch.optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd)
+    optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
 
-    train_data = MyDataset('/kaggle/input/sdp-data/xalan25_embed.npy', '/kaggle/input/sdp-data/xalan25_label.csv')
+    data_loc = '/kaggle/input/sdp-data/'  
+    train_data = MyDataset(data_loc + args.data + '_embed.npy', data_loc + args.data + '_label.csv')
     # valid_data = MyDataset('/kaggle/input/sdp-data/xalan26_embed.npy', '/kaggle/input/sdp-data/xalan26_label.csv')
 
     num_valid = len(train_data) 
@@ -86,7 +83,8 @@ def main():
         sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[:split]),
         pin_memory=True, num_workers=2)
 
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, float(args.epochs))
+    # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, float(args.epochs))
+    scheduler = ExponentialLR(optimizer, gamma=0.95)
 
     for epoch in range(args.epochs):
     
