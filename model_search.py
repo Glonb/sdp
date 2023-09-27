@@ -16,11 +16,6 @@ class MixedLayer(nn.Module):
             
             # create corresponding layer
             layer = OPS[primitive](c, stride, False)
-            
-            # append batchnorm after pool layer
-            # if 'pool' in primitive:
-            #     # disable affine w/b for batchnorm
-            #     layer = nn.Sequential(layer, nn.BatchNorm1d(c, affine=False))
 
             self.layers.append(layer)
 
@@ -112,9 +107,6 @@ class Network(nn.Module):
 
         # concat cnn_out and bilstm_out
         out = torch.cat([cnn_out, bilstm_out], dim=1)
-        # print(out.shape)
-        
-        # out = self.global_pooling(out)
         # print(out.shape)
 
         flattened_out = out.view(out.size(0), -1)
