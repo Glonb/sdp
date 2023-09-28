@@ -13,9 +13,9 @@ OPS = {
     'max_pool_3':   lambda C, stride, affine: nn.MaxPool1d(3, stride=stride, padding=1),
     'max_pool_5':   lambda C, stride, affine: nn.MaxPool1d(5, stride=stride, padding=2),
     'max_pool_7':   lambda C, stride, affine: nn.MaxPool1d(7, stride=stride, padding=3),
-    'smp_conv_3':   lambda C, stride, affine: ReLUConvBN(C, C, 3, stride, 1, affine=affine),
-    'smp_conv_5':   lambda C, stride, affine: ReLUConvBN(C, C, 5, stride, 2, affine=affine),
-    'smp_conv_7':   lambda C, stride, affine: ReLUConvBN(C, C, 7, stride, 3, affine=affine),
+    'conv_3':   lambda C_in, C_out, stride, affine: ReLUConvBN(C_in, C_out, 3, stride, 1, affine=affine),
+    'conv_5':   lambda C, stride, affine: ReLUConvBN(C, C, 5, stride, 2, affine=affine),
+    'conv_7':   lambda C, stride, affine: ReLUConvBN(C, C, 7, stride, 3, affine=affine),
     'sep_conv_3':   lambda C, stride, affine: SepConv(C, C, 3, stride, 1, affine=affine),
     'sep_conv_5':   lambda C, stride, affine: SepConv(C, C, 5, stride, 2, affine=affine),
     'sep_conv_7':   lambda C, stride, affine: SepConv(C, C, 7, stride, 3, affine=affine),
@@ -23,6 +23,21 @@ OPS = {
     'dil_conv_5':   lambda C, stride, affine: DilConv(C, C, 5, stride, 4, 2, affine=affine)
 }
 
+class ConvBN(nn.Module):
+    """
+    Stack of conv-bn
+    """
+    def __init__(self, C_in, C_out, kernel_size, stride, padding, affine=True):
+        
+        super(ConvBN, self).__init__()
+
+        self.op = nn.Sequential(
+            nn.Conv1d(C_in, C_out, kernel_size, stride=stride, padding=padding, bias=False),
+            nn.BatchNorm1d(C_out, affine=affine)
+        )
+
+    def forward(self, x):
+        return self.op(x)
 
 class ReLUConvBN(nn.Module):
     """
