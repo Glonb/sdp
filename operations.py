@@ -10,6 +10,7 @@ OPS = {
     'conv_2':   lambda C_in, C_out, stride: ConvReLU(C_in, C_out, 3, stride, 1),
     'conv_3':   lambda C_in, C_out, stride: ConvReLU(C_in, C_out, 4, stride, 1),
     'conv_4':   lambda C_in, C_out, stride: ConvReLU(C_in, C_out, 5, stride, 1),
+    'conv_5':   lambda C_in, C_out, stride: ConvReLU(C_in, C_out, 5, stride, 1),
     'avg_pool_2':    nn.AvgPool1d(2, stride=2, padding=0, count_include_pad=False),
     'avg_pool_3':    nn.AvgPool1d(3, stride=2, padding=1, count_include_pad=False),
     'max_pool_3':    nn.MaxPool1d(3, stride=2, padding=1),
