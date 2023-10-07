@@ -83,7 +83,7 @@ def main():
     #     pin_memory=True, num_workers=2)
 
     valid_queue = torch.utils.data.DataLoader(
-        train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
+        valid_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
     # valid_queue = torch.utils.data.DataLoader(
     #     train_data, batch_size=args.batchsz,
     #     sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[split:]),
