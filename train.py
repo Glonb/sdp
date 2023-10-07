@@ -63,7 +63,7 @@ def main():
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
   
-    criterion = nn.BCEWithLoss().cuda()
+    criterion = nn.BCELoss().cuda()
     # optimizer = torch.optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd)
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
 
@@ -130,7 +130,7 @@ def train(train_queue, model, criterion, optimizer):
 
         optimizer.zero_grad()
         logits = model(x)
-        print(logits)
+        # print(logits)
         loss = criterion(logits, target.float())
         loss.backward()
         nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
