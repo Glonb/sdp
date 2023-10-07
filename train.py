@@ -63,7 +63,7 @@ def main():
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
   
-    criterion = nn.BCEWithLogitsLoss().cuda()
+    criterion = nn.BCEWithLoss().cuda()
     # optimizer = torch.optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd)
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
 
