@@ -11,7 +11,7 @@ PRIMITIVES = [
     # 'avg_pool_3',
     # 'avg_pool_5',
     # 'avg_pool_7',
-    # 'skip_connect',
+    'skip_connect',
     'conv_3',
     'conv_5',
     'conv_7',
