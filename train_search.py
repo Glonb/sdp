@@ -71,7 +71,7 @@ def main():
     logging.info('GPU device = %d' % args.gpu)
     logging.info("args = %s", args)
 
-    criterion = nn.BCEWithLogitsLoss().to(device)
+    criterion = nn.BCELoss().to(device)
     model = Network(args.init_ch, args.layers, criterion).to(device)
 
     logging.info("Total param size = %f MB", utils.count_parameters_in_MB(model))
