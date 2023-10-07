@@ -15,7 +15,7 @@ class MixedLayer(nn.Module):
         for primitive in PRIMITIVES:
             
             # create corresponding layer
-            layer = OPS[primitive](c, stride, False)
+            layer = OPS[primitive](c, stride)
 
             self.layers.append(layer)
 
