@@ -135,7 +135,7 @@ class Network(nn.Module):
                 W = weights[start:end].copy() # [1, 8], [2, 8], ...
                 edges = sorted(range(i + 1), # i+1 is the number of connection for node i
                             key=lambda x: -max(W[x][k] # by descending order
-                                               for k in range(len(W[x])) # get strongest ops)
+                                               for k in range(len(W[x])) )# get strongest ops
                                )[:1] # only has one inputs
                 for j in edges: # for every input nodes j of current node i
                     k_best = None
