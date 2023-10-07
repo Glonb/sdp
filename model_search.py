@@ -114,7 +114,7 @@ class Network(nn.Module):
         
         logits = self.classifier(flattened_out)
         
-        return logits
+        return torch.sigmoid(logits)
 
     def loss(self, x, target):
         logits = self(x)
