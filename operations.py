@@ -30,7 +30,7 @@ class ConvReLU(nn.Module):
     """
     def __init__(self, C_in, C_out, kernel_size, stride, padding):
         
-        super(ConvBN, self).__init__()
+        super(ConvReLU, self).__init__()
 
         self.op = nn.Sequential(
             nn.Conv1d(C_in, C_out, kernel_size, stride=stride, padding=padding),
