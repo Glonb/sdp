@@ -130,6 +130,7 @@ def train(train_queue, model, criterion, optimizer):
 
         optimizer.zero_grad()
         logits = model(x)
+        print(logits)
         loss = criterion(logits, target.float())
         loss.backward()
         nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
@@ -176,7 +177,7 @@ def infer(valid_queue, model, criterion):
 
         with torch.no_grad():
             logits = model(x)
-            print(logits)
+            # print(logits)
             loss = criterion(logits, target.float())
 
             prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(logits, target)
