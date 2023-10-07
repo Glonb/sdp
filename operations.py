@@ -6,16 +6,16 @@ import  torch.nn.functional as F
 
 OPS = {
     # 'none':         lambda C, stride, affine: Zero(stride),
-    'skip_connect':  Identity(),
-    'conv_3':   lambda C_in, C_out, stride: ConvReLU(C_in, C_out, 3, stride, 1),
-    'conv_5':   lambda C_in, C_out, stride: ConvReLU(C_in, C_out, 5, stride, 2),
-    'conv_7':   lambda C_in, C_out, stride: ConvReLU(C_in, C_out, 7, stride, 3),
-    'avg_pool_3':    nn.AvgPool1d(3, stride=2, padding=1, count_include_pad=False),
-    'avg_pool_5':    nn.AvgPool1d(5, stride=2, padding=2, count_include_pad=False),
-    'avg_pool_7':    nn.AvgPool1d(7, stride=2, padding=3, count_include_pad=False),
-    'max_pool_3':    nn.MaxPool1d(3, stride=2, padding=1),
-    'max_pool_5':    nn.MaxPool1d(5, stride=2, padding=2),
-    'max_pool_7':    nn.MaxPool1d(7, stride=2, padding=3)
+    'skip_connect':  lambda C, stride: Identity(),
+    'conv_3':        lambda C_in, C_out, stride: ConvReLU(C_in, C_out, 3, stride, 1),
+    'conv_5':        lambda C_in, C_out, stride: ConvReLU(C_in, C_out, 5, stride, 2),
+    'conv_7':        lambda C_in, C_out, stride: ConvReLU(C_in, C_out, 7, stride, 3),
+    'avg_pool_3':    lambda C, stride: nn.AvgPool1d(3, stride=2, padding=1, count_include_pad=False),
+    'avg_pool_5':    lambda C, stride: nn.AvgPool1d(5, stride=2, padding=2, count_include_pad=False),
+    'avg_pool_7':    lambda C, stride: nn.AvgPool1d(7, stride=2, padding=3, count_include_pad=False),
+    'max_pool_3':    lambda C, stride: nn.MaxPool1d(3, stride=2, padding=1),
+    'max_pool_5':    lambda C, stride: nn.MaxPool1d(5, stride=2, padding=2),
+    'max_pool_7':    lambda C, stride: nn.MaxPool1d(7, stride=2, padding=3)
     
     # 'sep_conv_3':   lambda C, stride, affine: SepConv(C, C, 3, stride, 1, affine=affine),
     # 'sep_conv_5':   lambda C, stride, affine: SepConv(C, C, 5, stride, 2, affine=affine),
