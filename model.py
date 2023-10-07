@@ -28,7 +28,7 @@ class Network(nn.Module):
         self._ops = nn.ModuleList()
         for name, index in zip(op_names, indices):
             stride = 1
-            op = OPS[name](C, stride, True)
+            op = OPS[name](C, stride)
             self._ops += [op]
         self._indices = indices
 
