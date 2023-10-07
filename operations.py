@@ -7,9 +7,9 @@ import  torch.nn.functional as F
 OPS = {
     # 'none':         lambda C, stride, affine: Zero(stride),
     'skip_connect':  lambda C, stride: Identity(),
-    'conv_3':        lambda C_in, C_out, stride: ConvReLU(C_in, C_out, 3, stride, 1),
-    'conv_5':        lambda C_in, C_out, stride: ConvReLU(C_in, C_out, 5, stride, 2),
-    'conv_7':        lambda C_in, C_out, stride: ConvReLU(C_in, C_out, 7, stride, 3),
+    'conv_3':        lambda C, stride: ConvReLU(C, C, 3, stride, 1),
+    'conv_5':        lambda C, stride: ConvReLU(C, C, 5, stride, 2),
+    'conv_7':        lambda C, stride: ConvReLU(C, C, 7, stride, 3),
     'avg_pool_3':    lambda C, stride: nn.AvgPool1d(3, stride=2, padding=1, count_include_pad=False),
     'avg_pool_5':    lambda C, stride: nn.AvgPool1d(5, stride=2, padding=2, count_include_pad=False),
     'avg_pool_7':    lambda C, stride: nn.AvgPool1d(7, stride=2, padding=3, count_include_pad=False),
