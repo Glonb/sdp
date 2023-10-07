@@ -173,10 +173,10 @@ def infer(valid_queue, model, criterion):
     for step, (x, target) in enumerate(valid_queue):
         x = x.cuda()
         target = target.cuda(non_blocking=True)
-        print(target)
 
         with torch.no_grad():
             logits = model(x)
+            print(logits)
             loss = criterion(logits, target.float())
 
             prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(logits, target)
