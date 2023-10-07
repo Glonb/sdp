@@ -52,4 +52,4 @@ class Network(nn.Module):
         out = torch.cat([cnn_out, bilstm_out], dim=1)
         
         logits = self.classifier(out.view(out.size(0), -1))
-        return logits
+        return torch.sigmoid(logits)
