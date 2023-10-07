@@ -15,11 +15,12 @@ PRIMITIVES = [
     'conv_3',
     'conv_5',
     'conv_7',
-    # 'sep_conv_3',
-    # 'sep_conv_5',
-    # 'sep_conv_7',
-    # 'dil_conv_3',
-    # 'dil_conv_5'
+    'sep_conv_3',
+    'sep_conv_5',
+    'sep_conv_7',
+    'dil_conv_3',
+    'dil_conv_5',
+    'dil_conv_7'
 ]
 
 SDP_Genotype = Genotype(
