@@ -127,7 +127,6 @@ def train(train_queue, model, criterion, optimizer):
     for step, (x, target) in enumerate(train_queue):
         x = x.cuda()
         target = target.cuda(non_blocking=True)
-        print(target)
 
         optimizer.zero_grad()
         logits = model(x)
@@ -174,6 +173,7 @@ def infer(valid_queue, model, criterion):
     for step, (x, target) in enumerate(valid_queue):
         x = x.cuda()
         target = target.cuda(non_blocking=True)
+        print(target)
 
         with torch.no_grad():
             logits = model(x)
