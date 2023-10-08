@@ -102,7 +102,7 @@ class AvgPoolPadding(nn.Module):
         
         super(AvgPoolPadding, self).__init__()
 
-        self.op = nn.AvgPool1d(kernel_size=kernel_size, stride=stride, padding=padding, count_include_pad=False)
+        self.op = nn.AvgPool1d(kernel_size=kernel_size, stride=2*stride, padding=padding, count_include_pad=False)
            
     def forward(self, x):
         x = self.op(x)
@@ -119,7 +119,7 @@ class MaxPoolPadding(nn.Module):
         
         super(MaxPoolPadding, self).__init__()
         
-        self.op = nn.MaxPool1d(kernel_size=kernel_size, stride=stride, padding=padding)
+        self.op = nn.MaxPool1d(kernel_size=kernel_size, stride=2*stride, padding=padding)
 
     def forward(self, x):
         x = self.op(x)
