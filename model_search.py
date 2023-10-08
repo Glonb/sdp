@@ -18,7 +18,7 @@ class MixedLayer(nn.Module):
             if 'pool' in primitive:
                 stride = 2
             layer = OPS[primitive](c, stride)
-            # print(stride)
+            print(stride)
 
             self.layers.append(layer)
 
