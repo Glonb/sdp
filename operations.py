@@ -101,19 +101,14 @@ class AvgPoolPadding(nn.Module):
     def __init__(self, kernel_size, stride, padding):
         
         super(AvgPoolPadding, self).__init__()
-        self.padding_size = None
 
-        self.op = nn.Sequential(
-            nn.AvgPool1d(kernel_size=kernel_size, stride=stride, padding=padding, count_include_pad=False),
-            # nn.ConstantPad1d(padding=(0, self.padding_size), value=0.0)
-        )
-
+        self.op = nn.AvgPool1d(kernel_size=kernel_size, stride=stride, padding=padding, count_include_pad=False)
+           
     def forward(self, x):
         batch_size, channels, length = x.size()
 
-        if self.padding_size is None:
-            self.padding_size = length
-        padding_layer = nn.ConstantPad1d(padding=(0, self.padding_size), value=0.0)
+        padding_layer = nn.ConstantPad1d(padding=(0, length), value=0.0)
+        
         return padding_layer(self.op(x))
 
 
@@ -122,12 +117,12 @@ class MaxPoolPadding(nn.Module):
     def __init__(self, kernel_size, stride, padding):
         
         super(MaxPoolPadding, self).__init__()
-        self.padding_size = None
         
         self.op = nn.MaxPool1d(kernel_size=kernel_size, stride=stride, padding=padding)
 
     def forward(self, x):
         batch_size, channels, length = x.size()
+        
         padding_layer = nn.ConstantPad1d(padding=(0, length), value=0.0)
         
         return padding_layer(self.op(x))
