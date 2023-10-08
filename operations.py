@@ -16,12 +16,12 @@ OPS = {
     'dil_conv_3':    lambda C, stride: DilConv(C, C, 3, stride, 2, 2),
     'dil_conv_5':    lambda C, stride: DilConv(C, C, 5, stride, 4, 2),
     'dil_conv_7':    lambda C, stride: DilConv(C, C, 7, stride, 6, 2),
-    'avg_pool_3':    lambda C, stride: nn.AvgPool1d(3, stride=2, padding=1, count_include_pad=False),
-    'avg_pool_5':    lambda C, stride: nn.AvgPool1d(5, stride=2, padding=2, count_include_pad=False),
-    'avg_pool_7':    lambda C, stride: nn.AvgPool1d(7, stride=2, padding=3, count_include_pad=False),
-    'max_pool_3':    lambda C, stride: nn.MaxPool1d(3, stride=2, padding=1),
-    'max_pool_5':    lambda C, stride: nn.MaxPool1d(5, stride=2, padding=2),
-    'max_pool_7':    lambda C, stride: nn.MaxPool1d(7, stride=2, padding=3)
+    'avg_pool_3':    lambda C, stride: AvgPoolPadding(3, stride, 1),
+    'avg_pool_5':    lambda C, stride: AvgPoolPadding(5, stride, 2),
+    'avg_pool_7':    lambda C, stride: AvgPoolPadding(7, stride, 3),
+    'max_pool_3':    lambda C, stride: MaxPoolPadding(3, stride, 1),
+    'max_pool_5':    lambda C, stride: MaxPoolPadding(5, stride, 2),
+    'max_pool_7':    lambda C, stride: MaxPoolPadding(7, stride, 3)
 }
 
 class ConvReLU(nn.Module):
@@ -62,7 +62,7 @@ class DilConv(nn.Module):
     """
     dilated conv-relu
     """
-    def __init__(self, C_in, C_out, kernel_size, stride, padding, dilation, affine=True):
+    def __init__(self, C_in, C_out, kernel_size, stride, padding, dilation):
         
         super(DilConv, self).__init__()
 
@@ -81,7 +81,7 @@ class SepConv(nn.Module):
     """
     implemented separate convolution via pytorch groups parameters
     """
-    def __init__(self, C_in, C_out, kernel_size, stride, padding, affine=True):
+    def __init__(self, C_in, C_out, kernel_size, stride, padding):
         
         super(SepConv, self).__init__()
 
@@ -96,6 +96,34 @@ class SepConv(nn.Module):
         return self.op(x)
 
 
+class AvgPoolPadding(nn.Module):
+    
+    def __init__(self, kernel_size, stride, padding):
+        
+        super(AvgPoolPadding, self).__init__()
+
+        self.op = nn.AvgPool1d(kernel_size=kernel_size, stride=stride, padding=padding, count_include_pad=False)
+
+    def forward(self, x):
+        x = self.op(x)
+        padding_data = torch.zeros(x.shape[0], x.shape[1], x.shape[2])
+        return torch.cat((x, padding_data), dim=2)
+
+
+class MaxPoolPadding(nn.Module):
+    
+    def __init__(self, kernel_size, stride, padding):
+        
+        super(MaxPoolPadding, self).__init__()
+
+        self.op = nn.MaxPool1d(kernel_size=kernel_size, stride=stride, padding=padding)
+
+    def forward(self, x):
+        x = self.op(x)
+        padding_data = torch.zeros(x.shape[0], x.shape[1], x.shape[2])
+        return torch.cat((x, padding_data), dim=2)
+
+
 class Identity(nn.Module):
 
     def __init__(self):
@@ -106,9 +134,7 @@ class Identity(nn.Module):
 
 
 class Zero(nn.Module):
-    """
-    zero by stride
-    """
+   
     def __init__(self, stride):
         super(Zero, self).__init__()
         self.stride = stride
