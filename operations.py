@@ -122,13 +122,15 @@ class MaxPoolPadding(nn.Module):
     def __init__(self, kernel_size, stride, padding):
         
         super(MaxPoolPadding, self).__init__()
-
+        self.padding_size = None
+        
         self.op = nn.MaxPool1d(kernel_size=kernel_size, stride=stride, padding=padding)
 
     def forward(self, x):
-        x = self.op(x)
-        padding_data = torch.zeros(x.shape[0], x.shape[1], x.shape[2])
-        return torch.cat((x, padding_data), dim=2)
+        batch_size, channels, length = x.size()
+        padding_layer = nn.ConstantPad1d(padding=(0, length), value=0.0)
+        
+        return padding_layer(self.op(x))
 
 
 class Identity(nn.Module):
