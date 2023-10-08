@@ -28,7 +28,7 @@ parser.add_argument('--layers', type=int, default=4, help='total number of layer
 parser.add_argument('--model_path', type=str, default='saved_models', help='path to save the model')
 parser.add_argument('--dropouts_prob', type=float, default=0.4, help='dropouts probability')
 parser.add_argument('--exp_path', type=str, default='search', help='experiment name')
-parser.add_argument('--seed', type=int, default=0, help='random seed')
+parser.add_argument('--seed', type=int, default=2, help='random seed')
 parser.add_argument('--grad_clip', type=float, default=5, help='gradient clipping range')
 parser.add_argument('--train_portion', type=float, default=0.5, help='portion of training/val splitting')
 parser.add_argument('--unrolled', action='store_true', default=False, help='use one-step unrolled validation loss')
