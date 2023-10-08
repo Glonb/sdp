@@ -105,11 +105,12 @@ class AvgPoolPadding(nn.Module):
         self.op = nn.AvgPool1d(kernel_size=kernel_size, stride=stride, padding=padding, count_include_pad=False)
            
     def forward(self, x):
+        x = self.op(x)
         batch_size, channels, length = x.size()
 
         padding_layer = nn.ConstantPad1d(padding=(0, length), value=0.0)
         
-        return padding_layer(self.op(x))
+        return padding_layer(x)
 
 
 class MaxPoolPadding(nn.Module):
@@ -121,11 +122,12 @@ class MaxPoolPadding(nn.Module):
         self.op = nn.MaxPool1d(kernel_size=kernel_size, stride=stride, padding=padding)
 
     def forward(self, x):
+        x = self.op(x)
         batch_size, channels, length = x.size()
         
         padding_layer = nn.ConstantPad1d(padding=(0, length), value=0.0)
         
-        return padding_layer(self.op(x))
+        return padding_layer(x)
 
 
 class Identity(nn.Module):
