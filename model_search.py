@@ -84,10 +84,10 @@ class Network(nn.Module):
     def forward(self, x):
 
         x = self.embed(x)
-        print(x.shape)
+        # print(x.shape)
         
         input = x.permute(0, 2, 1)
-        print(input.shape)
+        # print(input.shape)
         
         states = [input]
         offset = 0
@@ -107,12 +107,12 @@ class Network(nn.Module):
         # concat along dim=channel
         cnn_out = torch.cat(states[1:], dim=1)
         cnn_out = self.global_pooling(cnn_out)
-        print(cnn_out.shape)
+        # print(cnn_out.shape)
         
         bilstm_out, (h_n, c_n) = self.bilstm(x)
         bilstm_out = bilstm_out.transpose(1, 2)
         bilstm_out = self.global_pooling(bilstm_out)
-        print(bilstm_out.shape)
+        # print(bilstm_out.shape)
 
         # concat cnn_out and bilstm_out
         out = torch.cat([cnn_out, bilstm_out], dim=1)
@@ -127,6 +127,7 @@ class Network(nn.Module):
 
     def loss(self, x, target):
         logits = self(x)
+        print(logits.shape)
         return self.criterion(logits, target.float())
 
 
