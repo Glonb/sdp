@@ -41,8 +41,8 @@ class Network(nn.Module):
         self.c = c
         self.steps = steps 
         self.vocab_size = vocab_size
-        self.embed_dim = c
         self.criterion = criterion
+        hidden_size = 64
         
         self.layers = nn.ModuleList()
 
@@ -54,7 +54,7 @@ class Network(nn.Module):
                 layer = MixedLayer(c, stride)
                 self.layers.append(layer)
 
-        hidden_size = 64
+        self.embed = nn.Embedding(self.vocab_size, self.c)
         self.bilstm = nn.LSTM(input_size=c, hidden_size=hidden_size, bidirectional=True, batch_first=True)
 
         out_dim = c * steps + 2 * hidden_size
@@ -76,14 +76,20 @@ class Network(nn.Module):
 
     def new(self):
         
-        model_new = Network(self.c, self.steps, self.criterion).cuda()
+        model_new = Network(self.c, self.steps, self.vocab_size, self.criterion).cuda()
         for x, y in zip(model_new.arch_parameters(), self.arch_parameters()):
             x.data.copy_(y.data)
         return model_new
 
     def forward(self, x):
 
-        states = [x]
+        x = self.embed(x)
+        print(x.shape)
+        
+        input = x.permute(0, 2, 1)
+        print(input.shape)
+        
+        states = [input]
         offset = 0
         
         # for each node, receive input from all previous intermediate nodes and x
@@ -101,12 +107,12 @@ class Network(nn.Module):
         # concat along dim=channel
         cnn_out = torch.cat(states[1:], dim=1)
         cnn_out = self.global_pooling(cnn_out)
-        # print(cnn_out.shape)
+        print(cnn_out.shape)
         
-        bilstm_out, (h_n, c_n) = self.bilstm(x.transpose(1, 2))
+        bilstm_out, (h_n, c_n) = self.bilstm(x)
         bilstm_out = bilstm_out.transpose(1, 2)
         bilstm_out = self.global_pooling(bilstm_out)
-        # print(bilstm_out.shape)
+        print(bilstm_out.shape)
 
         # concat cnn_out and bilstm_out
         out = torch.cat([cnn_out, bilstm_out], dim=1)
