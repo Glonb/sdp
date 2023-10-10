@@ -47,7 +47,7 @@ def main():
     logging.info('gpu device = %d' % args.gpu)
     logging.info("args = %s", args)
 
-    test_data = MyDataset('/kaggle/input/new-sdp/' + args.data + '.pt')
+    test_data = MyDataset('/kaggle/input/new-sdp/' + args.data + '_test.pt')
 
     test_queue = torch.utils.data.DataLoader(
         test_data, batch_size=args.batchsz, 
