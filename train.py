@@ -25,14 +25,13 @@ parser.add_argument('--wd', type=float, default=3e-4, help='weight decay')
 parser.add_argument('--report_freq', type=float, default=10, help='report frequency')
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
 parser.add_argument('--epochs', type=int, default=10, help='num of training epochs')
-parser.add_argument('--init_ch', type=int, default=40, help='num of init channels')
+parser.add_argument('--channels', type=int, default=40, help='num of init channels')
 parser.add_argument('--layers', type=int, default=4, help='total number of layers')
-parser.add_argument('--model_path', type=str, default='saved_models', help='path to save the model')
 parser.add_argument('--cutout', action='store_true', default=False, help='use cutout')
 parser.add_argument('--cutout_length', type=int, default=16, help='cutout length')
 parser.add_argument('--drop_path_prob', type=float, default=0.2, help='drop path probability')
 parser.add_argument('--exp_path', type=str, default='exp/sdp', help='experiment name')
-parser.add_argument('--seed', type=int, default=0, help='random seed')
+parser.add_argument('--seed', type=int, default=2, help='random seed')
 parser.add_argument('--arch', type=str, default='SDP', help='which architecture to use')
 parser.add_argument('--grad_clip', type=float, default=5, help='gradient clipping')
 args = parser.parse_args()
@@ -57,53 +56,56 @@ def main():
     torch.manual_seed(args.seed)
     logging.info('gpu device = %d' % args.gpu)
     logging.info("args = %s", args)
+ 
+    train_data = MyDataset('/kaggle/input/new-sdp/' + args.data + '.pt')
+    # valid_data = MyDataset('/kaggle/input/new-sdp/' + args.data + '.pt')
 
+    num_data = len(train_data) 
+    indices = list(range(num_data))
+    split = int(np.floor(0.5 * num_data))
+    
+    train_queue = torch.utils.data.DataLoader(
+        train_data, batch_size=args.batchsz,
+        sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[:split]),
+        pin_memory=True, num_workers=2)
+
+    valid_queue = torch.utils.data.DataLoader(
+        train_data, batch_size=args.batchsz,
+        sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[split:]),
+        pin_memory=True, num_workers=2)
+  
+    # train_queue = torch.utils.data.DataLoader(
+    #     train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
+    # valid_queue = torch.utils.data.DataLoader(
+    #     valid_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
+
+    mapping_file_path = '/kaggle/input/new-sdp/poi_mapping.txt'
+    with open(mapping_file_path, 'r') as mf:
+        lines = mf.readlines()
+
+    vocab_size = len(lines)
+    print(vocab_size)
+  
     genotype = eval("genotypes.%s" % args.arch)
-    model = Network(args.init_ch, genotype).cuda()
+    model = Network(args.channels, vocab_size, genotype).cuda()
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
   
     criterion = nn.BCELoss().cuda()
-    # optimizer = torch.optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd)
-    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
+    optimizer = torch.optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd)
 
-    data_loc = '/kaggle/input/sdp-data/'  
-    train_data = MyDataset(data_loc + args.data + '_embed.npy', data_loc + args.data + '_label.csv')
-    valid_data = MyDataset(data_loc + 'poi30_embed.npy', data_loc + 'poi30_label.csv')
-
-    # num_data = len(train_data) 
-    # indices = list(range(num_data))
-    # split = int(np.floor(0.5 * num_data))
-
-    train_queue = torch.utils.data.DataLoader(
-        train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
-    # train_queue = torch.utils.data.DataLoader(
-    #     train_data, batch_size=args.batchsz,
-    #     sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[:split]),
-    #     pin_memory=True, num_workers=2)
-
-    valid_queue = torch.utils.data.DataLoader(
-        valid_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
-    # valid_queue = torch.utils.data.DataLoader(
-    #     train_data, batch_size=args.batchsz,
-    #     sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[split:]),
-    #     pin_memory=True, num_workers=2)
-
-    # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, float(args.epochs))
-    scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, float(args.epochs))
+    # optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
+    # scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95)
 
     for epoch in range(args.epochs):
     
         logging.info('epoch %d lr %e', epoch, scheduler.get_last_lr()[0])
         model.drop_path_prob = args.drop_path_prob * epoch / args.epochs
 
-        # train_prec, train_obj = train(train_queue, model, criterion, optimizer)
-        # logging.info('train_prec: %f', train_prec)
         train_prec, train_rec, train_f1 = train(train_queue, model, criterion, optimizer)
         print('train precision: %.5f' %train_prec.item())
 
-        # valid_prec, valid_obj = infer(valid_queue, model, criterion)
-        # logging.info('valid_prec: %f', valid_prec)
         valid_prec, valid_rec, valid_f1 = infer(valid_queue, model, criterion)
         print('valid precision: %.5f' %valid_prec.item())
 
