@@ -6,7 +6,7 @@ from    utils import drop_path
 
 class Network(nn.Module):
 
-    def __init__(self, C, vocab_size genotype):
+    def __init__(self, C, vocab_size, genotype):
         super(Network, self).__init__()
         
         self.vocab_size = vocab_size
