@@ -17,13 +17,13 @@ parser.add_argument('--data', type=str, default='xalan25', help='dataset')
 parser.add_argument('--batchsz', type=int, default=16, help='batch size')
 parser.add_argument('--report_freq', type=float, default=10, help='report frequency')
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
-parser.add_argument('--init_ch', type=int, default=40, help='num of init channels')
+parser.add_argument('--channels', type=int, default=40, help='num of init channels')
 parser.add_argument('--layers', type=int, default=4, help='total number of layers')
 parser.add_argument('--exp_path', type=str, default='exp/trained.pt', help='path of pretrained model')
 parser.add_argument('--cutout', action='store_true', default=False, help='use cutout')
 parser.add_argument('--cutout_length', type=int, default=16, help='cutout length')
 parser.add_argument('--drop_path_prob', type=float, default=0.2, help='drop path probability')
-parser.add_argument('--seed', type=int, default=0, help='random seed')
+parser.add_argument('--seed', type=int, default=2, help='random seed')
 parser.add_argument('--arch', type=str, default='SDP', help='which architecture to use')
 args = parser.parse_args()
 
@@ -47,24 +47,30 @@ def main():
     logging.info('gpu device = %d' % args.gpu)
     logging.info("args = %s", args)
 
-    genotype = eval("genotypes.%s" % args.arch)
-    print('Load genotype:', genotype)
-    model = Network(args.init_ch, genotype).cuda()
-    utils.load(model, args.exp_path)
-
-    logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
-
-    criterion = nn.BCEWithLogitsLoss().cuda()
-
-    data_loc = '/kaggle/input/sdp-data/'
-    test_data = MyDataset(data_loc + args.data + '_embed.npy', data_loc + args.data + '_label.csv')
+    test_data = MyDataset('/kaggle/input/new-sdp/' + args.data + '.pt')
 
     test_queue = torch.utils.data.DataLoader(
         test_data, batch_size=args.batchsz, 
         shuffle=False, 
         pin_memory=True, num_workers=2)
 
+    mapping_file_path = '/kaggle/input/new-sdp/poi_mapping.txt'
+    with open(mapping_file_path, 'r') as mf:
+        lines = mf.readlines()
+
+    vocab_size = len(lines)
+    print(vocab_size)
+
+    genotype = eval("genotypes.%s" % args.arch)
+    print('Load genotype:', genotype)
+    model = Network(args.channels, vocab_size, genotype).cuda()
+    utils.load(model, args.exp_path)
+
+    logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
+
     model.drop_path_prob = args.drop_path_prob
+    criterion = nn.BCEWithLogitsLoss().cuda()
+  
     test_prec, test_rec, test_f1 = infer(test_queue, model, criterion)
     
     print('test_precision: ', test_prec.item())
