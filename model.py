@@ -6,14 +6,17 @@ from    utils import drop_path
 
 class Network(nn.Module):
 
-    def __init__(self, C, genotype):
+    def __init__(self, C, vocab_size genotype):
         super(Network, self).__init__()
+        
+        self.vocab_size = vocab_size
         hidden_size = 64
 
         op_names, indices = zip(*genotype.geno)
         concat = genotype.geno_concat
         self._compile(C, op_names, indices, concat)
 
+        self.embed = nn.Embedding(vocab_size, C)
         self.bilstm = nn.LSTM(input_size=C, hidden_size=hidden_size, bidirectional=True, batch_first=True)
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
         self.classifier = nn.Linear(C * len(op_names) + 2 * hidden_size, 1)
@@ -32,8 +35,10 @@ class Network(nn.Module):
             self._ops += [op]
         self._indices = indices
 
-    def forward(self, input):
-        
+    def forward(self, x):
+
+        x = self.embed(x)
+        input = x.permute(0, 2, 1)
         states = [input]
         
         for i in range(self._steps):
@@ -45,11 +50,11 @@ class Network(nn.Module):
         cnn_out = torch.cat([states[i] for i in self._concat], dim=1)
         cnn_out = self.global_pooling(cnn_out)
 
-        bilstm_out, (h_n, c_n) = self.bilstm(input.transpose(1, 2))
+        bilstm_out, (h_n, c_n) = self.bilstm(x)
         bilstm_out = bilstm_out.transpose(1, 2)
         bilstm_out = self.global_pooling(bilstm_out)
 
         out = torch.cat([cnn_out, bilstm_out], dim=1)
         
         logits = self.classifier(out.view(out.size(0), -1))
-        return torch.sigmoid(logits)
+        return torch.sigmoid(logits).view(-1)
