@@ -123,12 +123,12 @@ class Network(nn.Module):
         
         logits = self.classifier(flattened_out)
         
-        return torch.sigmoid(logits)
+        return torch.sigmoid(logits).view(-1)
 
     def loss(self, x, target):
         logits = self(x)
         # print(logits.shape)
-        return self.criterion(logits.view(-1), target.float())
+        return self.criterion(logits, target.float())
 
 
     def arch_parameters(self):
