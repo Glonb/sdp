@@ -70,7 +70,7 @@ def main():
     logging.info('GPU device = %d' % args.gpu)
     logging.info("args = %s", args)
 
-    train_data = MyDataset('/kaggle/input/new-sdp/' + args.data + '.pt')
+    train_data = MyDataset('/kaggle/input/new-sdp/' + args.data + '_train.pt')
 
     num_train = len(train_data) 
     indices = list(range(num_train))
