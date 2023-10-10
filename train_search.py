@@ -71,16 +71,7 @@ def main():
     logging.info('GPU device = %d' % args.gpu)
     logging.info("args = %s", args)
 
-    criterion = nn.BCELoss().to(device)
-    model = Network(args.init_ch, args.layers, criterion).to(device)
-
-    logging.info("Total param size = %f MB", utils.count_parameters_in_MB(model))
-
-    # this is the optimizer to optimize
-    optimizer = optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd)
-    # optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
-
-    data_loc = '/kaggle/input/sdp-data/'
+    data_loc = '/kaggle/input/new-sdp/'
     train_data = MyDataset(data_loc + args.data + '_embed.npy', data_loc + args.data + '_label.csv')
 
     num_train = len(train_data) 
@@ -96,6 +87,15 @@ def main():
         train_data, batch_size=args.batchsz,
         sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[split:]),
         pin_memory=True, num_workers=2)
+
+    criterion = nn.BCELoss().to(device)
+    model = Network(args.init_ch, args.layers, criterion).to(device)
+
+    logging.info("Total param size = %f MB", utils.count_parameters_in_MB(model))
+
+    # this is the optimizer to optimize
+    optimizer = optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd)
+    # optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
 
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, float(args.epochs), eta_min=args.lr_min)
     # scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95)
