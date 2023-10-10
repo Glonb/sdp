@@ -23,7 +23,7 @@ parser.add_argument('--wd', type=float, default=3e-4, help='weight decay')
 parser.add_argument('--report_freq', type=float, default=10, help='report frequency')
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
 parser.add_argument('--epochs', type=int, default=10, help='num of training epochs')
-parser.add_argument('--init_ch', type=int, default=40, help='num of init channels')
+parser.add_argument('--channels', type=int, default=40, help='num of channels')
 parser.add_argument('--layers', type=int, default=4, help='total number of layers')
 parser.add_argument('--model_path', type=str, default='saved_models', help='path to save the model')
 parser.add_argument('--dropouts_prob', type=float, default=0.4, help='dropouts probability')
@@ -71,8 +71,7 @@ def main():
     logging.info('GPU device = %d' % args.gpu)
     logging.info("args = %s", args)
 
-    data_loc = '/kaggle/input/new-sdp/'
-    train_data = MyDataset(data_loc + args.data + '_embed.npy', data_loc + args.data + '_label.csv')
+    train_data = MyDataset('/kaggle/input/new-sdp/' + args.data + '.pt')
 
     num_train = len(train_data) 
     indices = list(range(num_train))
@@ -88,16 +87,24 @@ def main():
         sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[split:]),
         pin_memory=True, num_workers=2)
 
+    mapping_file_path = '/kaggle/input/new-sdp/poi_mapping.txt'
+    with open(mapping_file_path, 'r') as mf:
+        lines = mf.readlines()
+
+    vocab_size = len(lines)
+    print(vocab_size)
+  
     criterion = nn.BCELoss().to(device)
-    model = Network(args.init_ch, args.layers, criterion).to(device)
+    model = Network(args.channels, args.layers, vocab_size, criterion).to(device)
 
     logging.info("Total param size = %f MB", utils.count_parameters_in_MB(model))
 
     # this is the optimizer to optimize
     optimizer = optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd)
-    # optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
 
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, float(args.epochs), eta_min=args.lr_min)
+
+    # optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
     # scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95)
 
     arch = Arch(model, args)
