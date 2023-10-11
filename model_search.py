@@ -110,7 +110,7 @@ class Network(nn.Module):
         # cnn_out = torch.cat(states[1:], dim=1)
         cnn_out = states[-1]
         cnn_out = self.global_pooling(cnn_out)
-        print(cnn_out.shape)
+        # print(cnn_out.shape)
         
         bilstm_out, (h_n, c_n) = self.bilstm(x)
         bilstm_out = bilstm_out.transpose(1, 2)
