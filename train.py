@@ -25,18 +25,16 @@ parser.add_argument('--wd', type=float, default=3e-4, help='weight decay')
 parser.add_argument('--report_freq', type=float, default=10, help='report frequency')
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
 parser.add_argument('--epochs', type=int, default=10, help='num of training epochs')
-parser.add_argument('--channels', type=int, default=40, help='num of init channels')
+parser.add_argument('--channels', type=int, default=64, help='num of init channels')
 parser.add_argument('--layers', type=int, default=4, help='total number of layers')
-parser.add_argument('--cutout', action='store_true', default=False, help='use cutout')
-parser.add_argument('--cutout_length', type=int, default=16, help='cutout length')
 parser.add_argument('--dropout_prob', type=float, default=0.5, help='dropout probability')
 parser.add_argument('--exp_path', type=str, default='exp/sdp', help='experiment name')
-parser.add_argument('--seed', type=int, default=2, help='random seed')
+parser.add_argument('--seed', type=int, default=5, help='random seed')
 parser.add_argument('--arch', type=str, default='SDP', help='which architecture to use')
 parser.add_argument('--grad_clip', type=float, default=5, help='gradient clipping')
 args = parser.parse_args()
 
-args.save = args.exp_path + '-' + time.strftime("%Y%m%d-%H%M%S")
+args.save = args.exp_path + '-train'
 utils.create_exp_dir(args.save)
 
 log_format = '%(asctime)s %(message)s'
@@ -58,7 +56,6 @@ def main():
     logging.info("args = %s", args)
  
     train_data = MyDataset('/kaggle/input/new-sdp/' + args.data + '_train.pt')
-    # valid_data = MyDataset('/kaggle/input/new-sdp/' + args.data + '.pt')
 
     # num_data = len(train_data) 
     # indices = list(range(num_data))
@@ -79,7 +76,7 @@ def main():
     valid_queue = torch.utils.data.DataLoader(
         train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
 
-    mapping_file_path = '/kaggle/input/new-sdp/poi_mapping.txt'
+    mapping_file_path = '/kaggle/input/new-sdp/xalan_mapping.txt'
     with open(mapping_file_path, 'r') as mf:
         lines = mf.readlines()
 
@@ -102,7 +99,6 @@ def main():
     for epoch in range(args.epochs):
     
         logging.info('epoch %d lr %e', epoch, scheduler.get_last_lr()[0])
-        # model.drop_path_prob = args.drop_path_prob * epoch / args.epochs
 
         train_prec, train_rec, train_f1 = train(train_queue, model, criterion, optimizer)
         print('train precision: %.5f' %train_prec.item())
@@ -136,7 +132,6 @@ def train(train_queue, model, criterion, optimizer):
         # print(logits)
         loss = criterion(logits, target.float())
         loss.backward()
-        # nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
         optimizer.step()
 
         prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(logits, target)
