@@ -1,4 +1,4 @@
-import  os,sys,time, glob
+import  os,sys,time, glob, re
 import  numpy as np
 import  torch
 import  utils
@@ -66,7 +66,8 @@ def main():
     logging.info('GPU device = %d' % args.gpu)
     logging.info("args = %s", args)
 
-    train_data = MyDataset('/kaggle/input/new-sdp/' + args.data + '_train.pt')
+    data_path = '/kaggle/input/new-sdp/'
+    train_data = MyDataset(data_path + args.data + '_train.pt')
 
     # num_train = len(train_data) 
     # indices = list(range(num_train))
@@ -86,14 +87,15 @@ def main():
         train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
     valid_queue = torch.utils.data.DataLoader(
         train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
-  
-    mapping_file_path = '/kaggle/input/new-sdp/xalan_mapping.txt'
+
+    letters = ''.join(re.findall(r'[a-zA-Z]+', args.data))
+    mapping_file_path = data_path + letters + '_mapping.txt'
     with open(mapping_file_path, 'r') as mf:
         lines = mf.readlines()
 
     vocab_size = len(lines)
-    print(vocab_size)
-  
+    print('vocabulary size: %d'%vocab_size)
+
     criterion = nn.BCELoss().to(device)
     model = Network(args.channels, args.layers, args.dropout_prob, vocab_size, criterion).to(device)
 
