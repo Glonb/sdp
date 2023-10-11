@@ -29,7 +29,7 @@ parser.add_argument('--channels', type=int, default=40, help='num of init channe
 parser.add_argument('--layers', type=int, default=4, help='total number of layers')
 parser.add_argument('--cutout', action='store_true', default=False, help='use cutout')
 parser.add_argument('--cutout_length', type=int, default=16, help='cutout length')
-parser.add_argument('--drop_path_prob', type=float, default=0.2, help='drop path probability')
+parser.add_argument('--dropout_prob', type=float, default=0.4, help='dropout probability')
 parser.add_argument('--exp_path', type=str, default='exp/sdp', help='experiment name')
 parser.add_argument('--seed', type=int, default=2, help='random seed')
 parser.add_argument('--arch', type=str, default='SDP', help='which architecture to use')
@@ -85,16 +85,17 @@ def main():
     print(vocab_size)
   
     genotype = eval("genotypes.%s" % args.arch)
-    model = Network(args.channels, vocab_size, genotype).cuda()
+    model = Network(args.channels, args.dropout_prob, vocab_size, genotype).cuda()
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
   
     criterion = nn.BCELoss().cuda()
-    optimizer = torch.optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd)
-
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, float(args.epochs))
-    # optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
-    # scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95)
+  
+    # optimizer = torch.optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd)
+    # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, float(args.epochs))
+  
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
+    scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95)
 
     for epoch in range(args.epochs):
     
