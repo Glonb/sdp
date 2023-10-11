@@ -1,7 +1,6 @@
 import  torch
 import  torch.nn as nn
 from    operations import *
-from    utils import drop_path
 
 
 class Network(nn.Module):
