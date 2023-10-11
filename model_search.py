@@ -56,7 +56,8 @@ class Network(nn.Module):
         self.embed = nn.Embedding(self.vocab_size, self.c)
         self.bilstm = nn.LSTM(input_size=self.c, hidden_size=hidden_size, bidirectional=True, batch_first=True)
 
-        out_dim = c * steps + 2 * hidden_size
+        # out_dim = c * steps + 2 * hidden_size
+        out_dim = c + 2 * hidden_size
         hidden_dim = int(out_dim)
         
         # adaptive pooling output
@@ -106,9 +107,10 @@ class Network(nn.Module):
             # print('node:',i, s.shape)
 
         # concat along dim=channel
-        cnn_out = torch.cat(states[1:], dim=1)
+        # cnn_out = torch.cat(states[1:], dim=1)
+        cnn_out = states[-1]
         cnn_out = self.global_pooling(cnn_out)
-        # print(cnn_out.shape)
+        print(cnn_out.shape)
         
         bilstm_out, (h_n, c_n) = self.bilstm(x)
         bilstm_out = bilstm_out.transpose(1, 2)
