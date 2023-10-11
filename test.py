@@ -22,7 +22,7 @@ parser.add_argument('--layers', type=int, default=4, help='total number of layer
 parser.add_argument('--exp_path', type=str, default='exp/trained.pt', help='path of pretrained model')
 parser.add_argument('--cutout', action='store_true', default=False, help='use cutout')
 parser.add_argument('--cutout_length', type=int, default=16, help='cutout length')
-parser.add_argument('--drop_prob', type=float, default=0.4, help='drop probability')
+parser.add_argument('--dropout_prob', type=float, default=0.4, help='drop probability')
 parser.add_argument('--seed', type=int, default=2, help='random seed')
 parser.add_argument('--arch', type=str, default='SDP', help='which architecture to use')
 args = parser.parse_args()
