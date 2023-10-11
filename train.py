@@ -29,7 +29,7 @@ parser.add_argument('--channels', type=int, default=40, help='num of init channe
 parser.add_argument('--layers', type=int, default=4, help='total number of layers')
 parser.add_argument('--cutout', action='store_true', default=False, help='use cutout')
 parser.add_argument('--cutout_length', type=int, default=16, help='cutout length')
-parser.add_argument('--dropout_prob', type=float, default=0.4, help='dropout probability')
+parser.add_argument('--dropout_prob', type=float, default=0.5, help='dropout probability')
 parser.add_argument('--exp_path', type=str, default='exp/sdp', help='experiment name')
 parser.add_argument('--seed', type=int, default=2, help='random seed')
 parser.add_argument('--arch', type=str, default='SDP', help='which architecture to use')
@@ -60,22 +60,24 @@ def main():
     train_data = MyDataset('/kaggle/input/new-sdp/' + args.data + '_train.pt')
     # valid_data = MyDataset('/kaggle/input/new-sdp/' + args.data + '.pt')
 
-    num_data = len(train_data) 
-    indices = list(range(num_data))
-    split = int(np.floor(0.8 * num_data))
+    # num_data = len(train_data) 
+    # indices = list(range(num_data))
+    # split = int(np.floor(0.8 * num_data))
     
-    train_queue = torch.utils.data.DataLoader(
-        train_data, batch_size=args.batchsz,
-        sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[:split]),
-        pin_memory=True, num_workers=2)
-
-    valid_queue = torch.utils.data.DataLoader(
-        train_data, batch_size=args.batchsz,
-        sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[split:]),
-        pin_memory=True, num_workers=2)
-  
     # train_queue = torch.utils.data.DataLoader(
-    #     train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
+    #     train_data, batch_size=args.batchsz,
+    #     sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[:split]),
+    #     pin_memory=True, num_workers=2)
+
+    # valid_queue = torch.utils.data.DataLoader(
+    #     train_data, batch_size=args.batchsz,
+    #     sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[split:]),
+    #     pin_memory=True, num_workers=2)
+  
+    train_queue = torch.utils.data.DataLoader(
+        train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
+    valid_queue = torch.utils.data.DataLoader(
+        train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
 
     mapping_file_path = '/kaggle/input/new-sdp/poi_mapping.txt'
     with open(mapping_file_path, 'r') as mf:
@@ -134,7 +136,7 @@ def train(train_queue, model, criterion, optimizer):
         # print(logits)
         loss = criterion(logits, target.float())
         loss.backward()
-        nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
+        # nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
         optimizer.step()
 
         prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(logits, target)
