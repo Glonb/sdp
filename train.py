@@ -100,7 +100,7 @@ def main():
     for epoch in range(args.epochs):
     
         logging.info('epoch %d lr %e', epoch, scheduler.get_last_lr()[0])
-        model.drop_path_prob = args.drop_path_prob * epoch / args.epochs
+        # model.drop_path_prob = args.drop_path_prob * epoch / args.epochs
 
         train_prec, train_rec, train_f1 = train(train_queue, model, criterion, optimizer)
         print('train precision: %.5f' %train_prec.item())
