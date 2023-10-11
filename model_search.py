@@ -121,8 +121,10 @@ class Network(nn.Module):
 
         flattened_out = out.view(out.size(0), -1)
         # print(flattened_out.shape)
+
+        output = self.dropout(flattened_out)
         
-        logits = self.classifier(flattened_out)
+        logits = self.classifier(output)
         
         return torch.sigmoid(logits).view(-1)
 
