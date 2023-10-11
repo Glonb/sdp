@@ -6,9 +6,9 @@ from    utils import drop_path
 
 class Network(nn.Module):
 
-    def __init__(self, C, vocab_size, genotype):
+    def __init__(self, C, dropout_prob, vocab_size, genotype):
         super(Network, self).__init__()
-        
+        self.dropout_prob = dropout_prob
         self.vocab_size = vocab_size
         hidden_size = 64
 
@@ -19,6 +19,7 @@ class Network(nn.Module):
         self.embed = nn.Embedding(vocab_size, C)
         self.bilstm = nn.LSTM(input_size=C, hidden_size=hidden_size, bidirectional=True, batch_first=True)
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
+        self.dropout = nn.Dropout(p=self.dropout_prob)
         self.classifier = nn.Linear(C * len(op_names) + 2 * hidden_size, 1)
 
     def _compile(self, C, op_names, indices, concat):
@@ -55,6 +56,8 @@ class Network(nn.Module):
         bilstm_out = self.global_pooling(bilstm_out)
 
         out = torch.cat([cnn_out, bilstm_out], dim=1)
-        
-        logits = self.classifier(out.view(out.size(0), -1))
+        out = out.view(out.size(0), -1)
+
+        output = self.dropout(out)
+        logits = self.classifier(output)
         return torch.sigmoid(logits).view(-1)
