@@ -1,7 +1,4 @@
-import  os
-import  sys
-import  time
-import  glob
+import  os, sys, time, glob, re
 import  numpy as np
 import  torch
 import  utils
@@ -54,8 +51,9 @@ def main():
     torch.manual_seed(args.seed)
     logging.info('gpu device = %d' % args.gpu)
     logging.info("args = %s", args)
- 
-    train_data = MyDataset('/kaggle/input/new-sdp/' + args.data + '_train.pt')
+
+    data_path = '/kaggle/input/new-sdp/'
+    train_data = MyDataset(data_path + args.data + '_train.pt')
 
     # num_data = len(train_data) 
     # indices = list(range(num_data))
@@ -76,12 +74,13 @@ def main():
     valid_queue = torch.utils.data.DataLoader(
         train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
 
-    mapping_file_path = '/kaggle/input/new-sdp/xalan_mapping.txt'
+    letters = ''.join(re.findall(r'[a-zA-Z]+', args.data))
+    mapping_file_path = data_path + letters + '_mapping.txt'
     with open(mapping_file_path, 'r') as mf:
         lines = mf.readlines()
 
     vocab_size = len(lines)
-    print(vocab_size)
+    print('vocabulary size: %d'%vocab_size)
   
     genotype = eval("genotypes.%s" % args.arch)
     model = Network(args.channels, args.dropout_prob, vocab_size, genotype).cuda()
