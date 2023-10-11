@@ -54,7 +54,7 @@ def main():
         shuffle=False, 
         pin_memory=True, num_workers=2)
 
-    mapping_file_path = '/kaggle/input/new-sdp/poi_mapping.txt'
+    mapping_file_path = '/kaggle/input/new-sdp/xalan_mapping.txt'
     with open(mapping_file_path, 'r') as mf:
         lines = mf.readlines()
 
