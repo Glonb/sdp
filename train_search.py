@@ -25,7 +25,7 @@ parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
 parser.add_argument('--epochs', type=int, default=10, help='num of training epochs')
 parser.add_argument('--channels', type=int, default=40, help='num of channels')
 parser.add_argument('--layers', type=int, default=4, help='total number of layers')
-parser.add_argument('--dropouts_prob', type=float, default=0.4, help='dropouts probability')
+parser.add_argument('--dropout_prob', type=float, default=0.4, help='dropout probability')
 parser.add_argument('--exp_path', type=str, default='search', help='experiment name')
 parser.add_argument('--seed', type=int, default=2, help='random seed')
 parser.add_argument('--grad_clip', type=float, default=5, help='gradient clipping range')
@@ -94,7 +94,7 @@ def main():
     print(vocab_size)
   
     criterion = nn.BCELoss().to(device)
-    model = Network(args.channels, args.layers, vocab_size, criterion).to(device)
+    model = Network(args.channels, args.layers, args.dropout_prob, vocab_size, criterion).to(device)
 
     logging.info("Total param size = %f MB", utils.count_parameters_in_MB(model))
 
