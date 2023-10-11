@@ -54,7 +54,7 @@ class Network(nn.Module):
                 self.layers.append(layer)
 
         self.embed = nn.Embedding(self.vocab_size, self.c)
-        self.bilstm = nn.LSTM(input_size=c, hidden_size=hidden_size, bidirectional=True, batch_first=True)
+        self.bilstm = nn.LSTM(input_size=self.c, hidden_size=hidden_size, bidirectional=True, batch_first=True)
 
         out_dim = c * steps + 2 * hidden_size
         hidden_dim = int(out_dim)
