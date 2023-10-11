@@ -22,7 +22,7 @@ parser.add_argument('--layers', type=int, default=4, help='total number of layer
 parser.add_argument('--exp_path', type=str, default='exp/trained.pt', help='path of pretrained model')
 parser.add_argument('--cutout', action='store_true', default=False, help='use cutout')
 parser.add_argument('--cutout_length', type=int, default=16, help='cutout length')
-parser.add_argument('--drop_path_prob', type=float, default=0.2, help='drop path probability')
+parser.add_argument('--drop_prob', type=float, default=0.4, help='drop probability')
 parser.add_argument('--seed', type=int, default=2, help='random seed')
 parser.add_argument('--arch', type=str, default='SDP', help='which architecture to use')
 args = parser.parse_args()
@@ -54,7 +54,7 @@ def main():
         shuffle=False, 
         pin_memory=True, num_workers=2)
 
-    mapping_file_path = '/kaggle/input/new-sdp/xalan_mapping.txt'
+    mapping_file_path = '/kaggle/input/new-sdp/poi_mapping.txt'
     with open(mapping_file_path, 'r') as mf:
         lines = mf.readlines()
 
@@ -63,12 +63,12 @@ def main():
 
     genotype = eval("genotypes.%s" % args.arch)
     print('Load genotype:', genotype)
-    model = Network(args.channels, vocab_size, genotype).cuda()
+    model = Network(args.channels, args.dropout_prob, vocab_size, genotype).cuda()
     utils.load(model, args.exp_path)
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
 
-    model.drop_path_prob = args.drop_path_prob
+    # model.drop_path_prob = args.drop_path_prob
     criterion = nn.BCEWithLogitsLoss().cuda()
   
     test_prec, test_rec, test_f1 = infer(test_queue, model, criterion)
