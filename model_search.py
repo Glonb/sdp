@@ -34,12 +34,13 @@ class MixedLayer(nn.Module):
 
 class Network(nn.Module):
     
-    def __init__(self, c, steps, vocab_size, criterion):
+    def __init__(self, c, steps, dropout_prob, vocab_size, criterion):
         
         super(Network, self).__init__()
 
         self.c = c
         self.steps = steps 
+        self.dropout_prob = dropout_prob
         self.vocab_size = vocab_size
         self.criterion = criterion
         hidden_size = 64
@@ -62,7 +63,7 @@ class Network(nn.Module):
         # adaptive pooling output
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
 
-        self.dropout = nn.Dropout(p=dropout_prob)
+        self.dropout = nn.Dropout(p=self.dropout_prob)
         self.classifier = nn.Linear(out_dim, 1)
 
         # k is the total number of edges
@@ -77,7 +78,7 @@ class Network(nn.Module):
 
     def new(self):
         
-        model_new = Network(self.c, self.steps, self.vocab_size, self.criterion).cuda()
+        model_new = Network(self.c, self.steps, self.dropout_prob, self.vocab_size, self.criterion).cuda()
         for x, y in zip(model_new.arch_parameters(), self.arch_parameters()):
             x.data.copy_(y.data)
         return model_new
