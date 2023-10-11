@@ -127,7 +127,7 @@ def main():
         valid_prec, valid_rec, valid_f1 = infer(valid_queue, model, criterion)
         print('valid precision: %.5f' %valid_prec.item())
 
-        utils.save(model, os.path.join(args.exp_path, 'search.pt'))
+        # utils.save(model, os.path.join(args.exp_path, 'search.pt'))
 
 
 def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
