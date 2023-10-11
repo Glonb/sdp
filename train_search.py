@@ -65,27 +65,32 @@ def main():
     logging.info('Total GPU memory: %d used: %d', total, used)
     print('Total GPU mem:', total, 'used:', used)
 
-    args.unrolled = True
+    # args.unrolled = True
 
     logging.info('GPU device = %d' % args.gpu)
     logging.info("args = %s", args)
 
     train_data = MyDataset('/kaggle/input/new-sdp/' + args.data + '_train.pt')
 
-    num_train = len(train_data) 
-    indices = list(range(num_train))
-    split = int(np.floor(args.train_portion * num_train))
+    # num_train = len(train_data) 
+    # indices = list(range(num_train))
+    # split = int(np.floor(args.train_portion * num_train))
+
+    # train_queue = torch.utils.data.DataLoader(
+    #     train_data, batch_size=args.batchsz,
+    #     sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[:split]),
+    #     pin_memory=True, num_workers=2)
+
+    # valid_queue = torch.utils.data.DataLoader(
+    #     train_data, batch_size=args.batchsz,
+    #     sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[split:]),
+    #     pin_memory=True, num_workers=2)
 
     train_queue = torch.utils.data.DataLoader(
-        train_data, batch_size=args.batchsz,
-        sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[:split]),
-        pin_memory=True, num_workers=2)
-
+        train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
     valid_queue = torch.utils.data.DataLoader(
-        train_data, batch_size=args.batchsz,
-        sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[split:]),
-        pin_memory=True, num_workers=2)
-
+        train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
+  
     mapping_file_path = '/kaggle/input/new-sdp/poi_mapping.txt'
     with open(mapping_file_path, 'r') as mf:
         lines = mf.readlines()
@@ -111,6 +116,7 @@ def main():
 
         lr = scheduler.get_last_lr()[0]
         logging.info('Epoch: %d lr: %e', epoch, lr)
+        print('Epoch: %d' %epoch)
 
         genotype = model.genotype()
         logging.info('Genotype: %s', genotype)
@@ -152,7 +158,7 @@ def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
         x_search, target_search = x_search.to(device), target_search.cuda(non_blocking=True)
 
         # 1. update alpha
-        arch.step(x, target, x_search, target_search, lr, optimizer, unrolled=args.unrolled)
+        arch.step(x, target, x_search, target_search, lr, optimizer, unrolled=True)
 
         logits = model(x)
         loss = criterion(logits, target.float())
@@ -160,7 +166,7 @@ def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
         # 2. update weight
         optimizer.zero_grad()
         loss.backward()
-        nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
+        # nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
         optimizer.step()
 
         prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(logits, target)
