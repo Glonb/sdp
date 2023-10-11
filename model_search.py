@@ -59,12 +59,13 @@ class Network(nn.Module):
         self.bilstm = nn.LSTM(input_size=c, hidden_size=hidden_size, bidirectional=True, batch_first=True)
 
         out_dim = c * steps + 2 * hidden_size
+        hidden_dim = int(out_dim)
         
         # adaptive pooling output
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
-        self.fc1 = nn.Linear(out_dim, out_dim / 2)
+        self.fc1 = nn.Linear(out_dim, hidden_dim)
         self.dropout = nn.Dropout(p=self.dropout_prob)
-        self.fc2 = nn.Linear(out_dim / 2, 1)
+        self.fc2 = nn.Linear(hidden_dim, 1)
 
         # k is the total number of edges
         k = sum(1 for i in range(self.steps) for j in range(1 + i))
