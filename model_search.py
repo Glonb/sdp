@@ -16,20 +16,18 @@ class MixedLayer(nn.Module):
             
             # create corresponding layer
             layer = OPS[primitive](c, stride)
-            # print(stride)
-
+            
             self.layers.append(layer)
 
     def forward(self, x, weights):
         # for i,layer in enumerate(self.layers):
-        #     print("after: " , i)
         #     print(layer(x).shape)
-        res = [w * layer(x) for w, layer in zip(weights, self.layers)]
+        out = [w * layer(x) for w, layer in zip(weights, self.layers)]
         
         # element-wise add by torch.add
-        res = sum(res)
+        output = sum(out)
         
-        return res
+        return output
         
 
 class Network(nn.Module):
