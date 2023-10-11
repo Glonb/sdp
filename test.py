@@ -1,4 +1,4 @@
-import  os,sys,glob,time
+import  os,sys,glob,time,re
 import  numpy as np
 import  torch
 import  utils
@@ -44,18 +44,20 @@ def main():
     logging.info('gpu device = %d' % args.gpu)
     logging.info("args = %s", args)
 
-    test_data = MyDataset('/kaggle/input/new-sdp/' + args.data + '_test.pt')
+    data_path = '/kaggle/input/new-sdp/'
+    test_data = MyDataset(data_path + args.data + '_test.pt')
 
     test_queue = torch.utils.data.DataLoader(
         test_data, batch_size=args.batchsz, 
         shuffle=True, pin_memory=True, num_workers=2)
 
-    mapping_file_path = '/kaggle/input/new-sdp/xalan_mapping.txt'
+    letters = "".join(re.findall(r'[a-zA-Z]+', args.data))
+    mapping_file_path = data_path + letters + '_mapping.txt'
     with open(mapping_file_path, 'r') as mf:
         lines = mf.readlines()
 
     vocab_size = len(lines)
-    print(vocab_size)
+    print('vocabulary size: %d'%vocab_size)
 
     genotype = eval("genotypes.%s" % args.arch)
     print('Load genotype:', genotype)
