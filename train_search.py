@@ -23,14 +23,12 @@ parser.add_argument('--wd', type=float, default=3e-4, help='weight decay')
 parser.add_argument('--report_freq', type=float, default=10, help='report frequency')
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
 parser.add_argument('--epochs', type=int, default=10, help='num of training epochs')
-parser.add_argument('--channels', type=int, default=40, help='num of channels')
+parser.add_argument('--channels', type=int, default=64, help='num of channels')
 parser.add_argument('--layers', type=int, default=4, help='total number of layers')
 parser.add_argument('--dropout_prob', type=float, default=0.5, help='dropout probability')
 parser.add_argument('--exp_path', type=str, default='search', help='experiment name')
 parser.add_argument('--seed', type=int, default=2, help='random seed')
-parser.add_argument('--grad_clip', type=float, default=5, help='gradient clipping range')
 parser.add_argument('--train_portion', type=float, default=0.5, help='portion of training/val splitting')
-parser.add_argument('--unrolled', action='store_true', default=False, help='use one-step unrolled validation loss')
 parser.add_argument('--arch_lr', type=float, default=3e-4, help='learning rate for arch encoding')
 parser.add_argument('--arch_wd', type=float, default=1e-3, help='weight decay for arch encoding')
 args = parser.parse_args()
@@ -65,8 +63,6 @@ def main():
     logging.info('Total GPU memory: %d used: %d', total, used)
     print('Total GPU mem:', total, 'used:', used)
 
-    # args.unrolled = True
-
     logging.info('GPU device = %d' % args.gpu)
     logging.info("args = %s", args)
 
@@ -91,7 +87,7 @@ def main():
     valid_queue = torch.utils.data.DataLoader(
         train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
   
-    mapping_file_path = '/kaggle/input/new-sdp/poi_mapping.txt'
+    mapping_file_path = '/kaggle/input/new-sdp/xalan_mapping.txt'
     with open(mapping_file_path, 'r') as mf:
         lines = mf.readlines()
 
@@ -132,8 +128,6 @@ def main():
         valid_prec, valid_rec, valid_f1 = infer(valid_queue, model, criterion)
         print('valid precision: %.5f' %valid_prec.item())
 
-        # utils.save(model, os.path.join(args.exp_path, 'search.pt'))
-
 
 def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
     
@@ -166,7 +160,6 @@ def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
         # 2. update weight
         optimizer.zero_grad()
         loss.backward()
-        # nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
         optimizer.step()
 
         prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(logits, target)
