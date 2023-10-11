@@ -77,7 +77,7 @@ def main():
     # train_queue = torch.utils.data.DataLoader(
     #     train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
 
-    mapping_file_path = '/kaggle/input/new-sdp/xalan_mapping.txt'
+    mapping_file_path = '/kaggle/input/new-sdp/poi_mapping.txt'
     with open(mapping_file_path, 'r') as mf:
         lines = mf.readlines()
 
