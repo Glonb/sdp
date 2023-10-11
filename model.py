@@ -19,8 +19,11 @@ class Network(nn.Module):
         self.embed = nn.Embedding(vocab_size, C)
         self.bilstm = nn.LSTM(input_size=C, hidden_size=hidden_size, bidirectional=True, batch_first=True)
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
+        out_dim = C * len(op_names) + 2 * hidden_size
+        hidden_dim = int(out_dim / 2)
+        self.fc1 = nn.Linear(out_dim, hidden_dim)
         self.dropout = nn.Dropout(p=self.dropout_prob)
-        self.classifier = nn.Linear(C * len(op_names) + 2 * hidden_size, 1)
+        self.fc2 = nn.Linear(hidden_dim, 1)
 
     def _compile(self, C, op_names, indices, concat):
         
@@ -57,7 +60,7 @@ class Network(nn.Module):
 
         out = torch.cat([cnn_out, bilstm_out], dim=1)
         out = out.view(out.size(0), -1)
-
-        output = self.dropout(out)
-        logits = self.classifier(output)
+        fc1_out = self.fc1(out)    
+        out_drop = self.dropout(fc1_out)
+        logits = self.fc2(out_drop)
         return torch.sigmoid(logits).view(-1)
