@@ -66,15 +66,6 @@ def load(model, model_path):
     model.load_state_dict(torch.load(model_path))
 
 
-def drop_path(x, drop_prob):
-    if drop_prob > 0.:
-        keep_prob = 1. - drop_prob
-        mask = torch.cuda.FloatTensor(*x.shape).bernoulli_(keep_prob)
-        x.div_(keep_prob)
-        x.mul_(mask)
-    return x
-
-
 def create_exp_dir(path, scripts_to_save=None):
     if not os.path.exists(path):
         os.makedirs(path)
