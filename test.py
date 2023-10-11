@@ -17,18 +17,15 @@ parser.add_argument('--data', type=str, default='xalan25', help='dataset')
 parser.add_argument('--batchsz', type=int, default=16, help='batch size')
 parser.add_argument('--report_freq', type=float, default=10, help='report frequency')
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
-parser.add_argument('--channels', type=int, default=40, help='num of init channels')
+parser.add_argument('--channels', type=int, default=64, help='num of init channels')
 parser.add_argument('--layers', type=int, default=4, help='total number of layers')
 parser.add_argument('--exp_path', type=str, default='exp/trained.pt', help='path of pretrained model')
-parser.add_argument('--cutout', action='store_true', default=False, help='use cutout')
-parser.add_argument('--cutout_length', type=int, default=16, help='cutout length')
 parser.add_argument('--dropout_prob', type=float, default=0.4, help='drop probability')
-parser.add_argument('--seed', type=int, default=2, help='random seed')
+parser.add_argument('--seed', type=int, default=3, help='random seed')
 parser.add_argument('--arch', type=str, default='SDP', help='which architecture to use')
 args = parser.parse_args()
 
-args.save = 'test-' + time.strftime("%Y%m%d-%H%M%S")
-utils.create_exp_dir(args.save)
+utils.create_exp_dir('sdp-test')
 
 log_format = '%(asctime)s %(message)s'
 logging.basicConfig(stream=sys.stdout, level=logging.INFO,
@@ -51,10 +48,9 @@ def main():
 
     test_queue = torch.utils.data.DataLoader(
         test_data, batch_size=args.batchsz, 
-        shuffle=False, 
-        pin_memory=True, num_workers=2)
+        shuffle=True, pin_memory=True, num_workers=2)
 
-    mapping_file_path = '/kaggle/input/new-sdp/poi_mapping.txt'
+    mapping_file_path = '/kaggle/input/new-sdp/xalan_mapping.txt'
     with open(mapping_file_path, 'r') as mf:
         lines = mf.readlines()
 
@@ -68,7 +64,6 @@ def main():
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
 
-    # model.drop_path_prob = args.drop_path_prob
     criterion = nn.BCEWithLogitsLoss().cuda()
   
     test_prec, test_rec, test_f1 = infer(test_queue, model, criterion)
