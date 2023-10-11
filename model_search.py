@@ -62,6 +62,7 @@ class Network(nn.Module):
         # adaptive pooling output
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
 
+        self.dropout = nn.Dropout(p=dropout_prob)
         self.classifier = nn.Linear(out_dim, 1)
 
         # k is the total number of edges
