@@ -107,7 +107,7 @@ def main():
         valid_prec, valid_rec, valid_f1 = infer(valid_queue, model, criterion)
         print('valid precision: %.5f' %valid_prec.item())
 
-        scheduler.step()
+        # scheduler.step()
       
         utils.save(model, os.path.join(args.save, 'trained.pt'))
 
