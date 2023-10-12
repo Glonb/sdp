@@ -69,24 +69,24 @@ def main():
     data_path = '/kaggle/input/new-sdp/'
     train_data = MyDataset(data_path + args.data + '_train.pt')
 
-    # num_train = len(train_data) 
-    # indices = list(range(num_train))
-    # split = int(np.floor(args.train_portion * num_train))
-
-    # train_queue = torch.utils.data.DataLoader(
-    #     train_data, batch_size=args.batchsz,
-    #     sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[:split]),
-    #     pin_memory=True, num_workers=2)
-
-    # valid_queue = torch.utils.data.DataLoader(
-    #     train_data, batch_size=args.batchsz,
-    #     sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[split:]),
-    #     pin_memory=True, num_workers=2)
+    num_train = len(train_data) 
+    indices = list(range(num_train))
+    split = int(np.floor(args.train_portion * num_train))
 
     train_queue = torch.utils.data.DataLoader(
-        train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
+        train_data, batch_size=args.batchsz,
+        sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[:split]),
+        pin_memory=True, num_workers=2)
+
     valid_queue = torch.utils.data.DataLoader(
-        train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
+        train_data, batch_size=args.batchsz,
+        sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[split:]),
+        pin_memory=True, num_workers=2)
+
+    # train_queue = torch.utils.data.DataLoader(
+    #     train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
+    # valid_queue = torch.utils.data.DataLoader(
+    #     train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
 
     letters = ''.join(re.findall(r'[a-zA-Z]+', args.data))
     mapping_file_path = data_path + letters + '_mapping.txt'
@@ -106,13 +106,14 @@ def main():
     # scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, float(args.epochs), eta_min=args.lr_min)
 
     optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
-    scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95)
+    # scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95)
 
     arch = Arch(model, args)
 
     for epoch in range(args.epochs):
 
-        lr = scheduler.get_last_lr()[0]
+        # lr = scheduler.get_last_lr()[0]
+        lr = optimizer.param_groups[0]['lr']
         logging.info('Epoch: %d lr: %e', epoch, lr)
         print('Epoch: %d' %epoch)
 
@@ -124,7 +125,7 @@ def main():
         print('train precision: %.5f' %train_prec.item())
 
         # update lr
-        scheduler.step()
+        # scheduler.step()
 
         # validation
         valid_prec, valid_rec, valid_f1 = infer(valid_queue, model, criterion)
