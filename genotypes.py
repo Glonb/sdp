@@ -23,5 +23,4 @@ PRIMITIVES = [
     'dil_conv_7'
 ]
 
-SDP_Genotype = Genotype(geno=[('conv_7', 0), ('conv_7', 0), ('conv_7', 0), ('max_pool_3', 1), ('conv_7', 0), ('max_pool_3', 1)], geno_concat=range(1, 5))
-SDP = SDP_Genotype
+SDP_Genotype =Genotype(geno=[('conv_7', 0), ('conv_7', 0), ('conv_7', 0), ('max_pool_3', 2), ('conv_7', 0), ('max_pool_3', 2)], geno_concat=range(1, 5))
