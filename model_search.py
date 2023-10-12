@@ -41,7 +41,7 @@ class Network(nn.Module):
         self.dropout_prob = dropout_prob
         self.vocab_size = vocab_size
         self.criterion = criterion
-        hidden_size = 32
+        hidden_size = 64
         
         self.layers = nn.ModuleList()
 
