@@ -69,24 +69,24 @@ def main():
     data_path = '/kaggle/input/new-sdp/'
     train_data = MyDataset(data_path + args.data + '_train.pt')
 
-    num_train = len(train_data) 
-    indices = list(range(num_train))
-    split = int(np.floor(args.train_portion * num_train))
-
-    train_queue = torch.utils.data.DataLoader(
-        train_data, batch_size=args.batchsz,
-        sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[:split]),
-        pin_memory=True, num_workers=2)
-
-    valid_queue = torch.utils.data.DataLoader(
-        train_data, batch_size=args.batchsz,
-        sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[split:]),
-        pin_memory=True, num_workers=2)
+    # num_train = len(train_data) 
+    # indices = list(range(num_train))
+    # split = int(np.floor(args.train_portion * num_train))
 
     # train_queue = torch.utils.data.DataLoader(
-    #     train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
+    #     train_data, batch_size=args.batchsz,
+    #     sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[:split]),
+    #     pin_memory=True, num_workers=2)
+
     # valid_queue = torch.utils.data.DataLoader(
-    #     train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
+    #     train_data, batch_size=args.batchsz,
+    #     sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[split:]),
+    #     pin_memory=True, num_workers=2)
+
+    train_queue = torch.utils.data.DataLoader(
+        train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
+    valid_queue = torch.utils.data.DataLoader(
+        train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
 
     letters = ''.join(re.findall(r'[a-zA-Z]+', args.data))
     mapping_file_path = data_path + letters + '_mapping.txt'
