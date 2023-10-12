@@ -21,7 +21,7 @@ class Network(nn.Module):
         
         # out_dim = C * len(op_names) + 2 * hidden_size
         out_dim = C + 2 * hidden_size
-        hidden_dim = int(out_dim / 2)
+        hidden_dim = out_dim // 2
         self.fc1 = nn.Linear(out_dim, hidden_dim)
         self.dropout = nn.Dropout(p=self.dropout_prob)
         self.fc2 = nn.Linear(hidden_dim, 1)
