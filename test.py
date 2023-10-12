@@ -19,7 +19,7 @@ parser.add_argument('--report_freq', type=float, default=10, help='report freque
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
 parser.add_argument('--channels', type=int, default=64, help='num of init channels')
 parser.add_argument('--layers', type=int, default=4, help='total number of layers')
-parser.add_argument('--exp_path', type=str, default='exp/trained.pt', help='path of pretrained model')
+parser.add_argument('--exp_path', type=str, default='exp/sdp-train/trained.pt', help='path of pretrained model')
 parser.add_argument('--dropout_prob', type=float, default=0.5, help='drop probability')
 parser.add_argument('--seed', type=int, default=3, help='random seed')
 parser.add_argument('--arch', type=str, default='SDP', help='which architecture to use')
