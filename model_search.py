@@ -41,7 +41,7 @@ class Network(nn.Module):
         self.dropout_prob = dropout_prob
         self.vocab_size = vocab_size
         self.criterion = criterion
-        hidden_size = 32
+        hidden_size = 64
         
         self.layers = nn.ModuleList()
 
@@ -56,7 +56,6 @@ class Network(nn.Module):
         self.embed = nn.Embedding(self.vocab_size, self.c)
         self.bilstm = nn.LSTM(input_size=self.c, hidden_size=hidden_size, bidirectional=True, batch_first=True)
 
-        # out_dim = c * steps + 2 * hidden_size
         out_dim = c + 2 * hidden_size
         hidden_dim = out_dim // 2
         
@@ -111,7 +110,7 @@ class Network(nn.Module):
 
         # concat along dim=channel
         # cnn_out = torch.cat(states[1:], dim=1)
-        cnn_out = states[-1]
+        cnn_out = states[-2:]
         cnn_out = self.global_pooling(cnn_out)
         # print(cnn_out.shape)
         
@@ -121,7 +120,7 @@ class Network(nn.Module):
         # print(bilstm_out.shape)
 
         # concat cnn_out and bilstm_out
-        out = torch.cat([0.3 * cnn_out, 0.7 * bilstm_out], dim=1)
+        out = torch.cat([cnn_out, bilstm_out], dim=1)
         # print(out.shape)
 
         flat_out = out.view(out.size(0), -1)
