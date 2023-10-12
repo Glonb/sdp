@@ -9,7 +9,7 @@ class Network(nn.Module):
         super(Network, self).__init__()
         self.dropout_prob = dropout_prob
         self.vocab_size = vocab_size
-        hidden_size = 32
+        hidden_size = 64
 
         op_names, indices = zip(*genotype.geno)
         concat = genotype.geno_concat
@@ -19,7 +19,6 @@ class Network(nn.Module):
         self.bilstm = nn.LSTM(input_size=C, hidden_size=hidden_size, bidirectional=True, batch_first=True)
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
         
-        # out_dim = C * len(op_names) + 2 * hidden_size
         out_dim = C + 2 * hidden_size
         hidden_dim = out_dim // 2
         
@@ -55,15 +54,15 @@ class Network(nn.Module):
             h = op(h)
             states += [h]
             
-        # cnn_out = torch.cat([states[i] for i in self._concat], dim=1)
-        cnn_out = states[-1]
+        cnn_out = torch.cat([states[-2:]], dim=1)
+        # cnn_out = states[-1]
         cnn_out = self.global_pooling(cnn_out)
 
         bilstm_out, (h_n, c_n) = self.bilstm(x)
         bilstm_out = bilstm_out.transpose(1, 2)
         bilstm_out = self.global_pooling(bilstm_out)
 
-        out = torch.cat([0.3 * cnn_out, 0.7 * bilstm_out], dim=1)
+        out = torch.cat([cnn_out, bilstm_out], dim=1)
         out = out.view(out.size(0), -1)
         # fc1_out = self.fc1(out)    
         # out_drop = self.dropout(fc1_out)
