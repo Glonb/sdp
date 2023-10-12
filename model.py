@@ -9,7 +9,7 @@ class Network(nn.Module):
         super(Network, self).__init__()
         self.dropout_prob = dropout_prob
         self.vocab_size = vocab_size
-        hidden_size = 64
+        hidden_size = 32
 
         op_names, indices = zip(*genotype.geno)
         concat = genotype.geno_concat
@@ -63,7 +63,7 @@ class Network(nn.Module):
         bilstm_out = bilstm_out.transpose(1, 2)
         bilstm_out = self.global_pooling(bilstm_out)
 
-        out = torch.cat([cnn_out, bilstm_out], dim=1)
+        out = torch.cat([0.3 * cnn_out, 0.7 * bilstm_out], dim=1)
         out = out.view(out.size(0), -1)
         # fc1_out = self.fc1(out)    
         # out_drop = self.dropout(fc1_out)
