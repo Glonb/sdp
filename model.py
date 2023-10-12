@@ -9,7 +9,7 @@ class Network(nn.Module):
         super(Network, self).__init__()
         self.dropout_prob = dropout_prob
         self.vocab_size = vocab_size
-        hidden_size = 32
+        hidden_size = 64
 
         op_names, indices = zip(*genotype.geno)
         concat = genotype.geno_concat
