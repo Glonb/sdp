@@ -56,7 +56,7 @@ class Network(nn.Module):
         self.embed = nn.Embedding(self.vocab_size, self.c)
         self.bilstm = nn.LSTM(input_size=self.c, hidden_size=hidden_size, bidirectional=True, batch_first=True)
 
-        out_dim = c + 2 * hidden_size
+        out_dim = c * 2 + 2 * hidden_size
         hidden_dim = out_dim // 2
         
         # adaptive pooling output
