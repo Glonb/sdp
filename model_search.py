@@ -58,7 +58,7 @@ class Network(nn.Module):
 
         # out_dim = c * steps + 2 * hidden_size
         out_dim = c + 2 * hidden_size
-        hidden_dim = int(out_dim)
+        hidden_dim = out_dim // 2
         
         # adaptive pooling output
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
