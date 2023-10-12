@@ -22,9 +22,12 @@ class Network(nn.Module):
         # out_dim = C * len(op_names) + 2 * hidden_size
         out_dim = C + 2 * hidden_size
         hidden_dim = out_dim // 2
-        self.fc1 = nn.Linear(out_dim, hidden_dim)
-        self.dropout = nn.Dropout(p=self.dropout_prob)
-        self.fc2 = nn.Linear(hidden_dim, 1)
+        
+        # self.fc1 = nn.Linear(out_dim, hidden_dim)
+        # self.dropout = nn.Dropout(p=self.dropout_prob)
+        # self.fc2 = nn.Linear(hidden_dim, 1)
+
+        self.fc = nn.Linear(out_dim, 1)
 
     def _compile(self, C, op_names, indices, concat):
         
@@ -62,7 +65,8 @@ class Network(nn.Module):
 
         out = torch.cat([cnn_out, bilstm_out], dim=1)
         out = out.view(out.size(0), -1)
-        fc1_out = self.fc1(out)    
-        out_drop = self.dropout(fc1_out)
-        logits = self.fc2(out_drop)
+        # fc1_out = self.fc1(out)    
+        # out_drop = self.dropout(fc1_out)
+        # logits = self.fc2(out_drop)
+        logits = self.fc(out)
         return torch.sigmoid(logits).view(-1)
