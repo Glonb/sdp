@@ -55,24 +55,24 @@ def main():
     data_path = '/kaggle/input/new-sdp/'
     train_data = MyDataset(data_path + args.data + '_train.pt')
 
-    # num_data = len(train_data) 
-    # indices = list(range(num_data))
-    # split = int(np.floor(0.8 * num_data))
+    num_data = len(train_data) 
+    indices = list(range(num_data))
+    split = int(np.floor(0.8 * num_data))
     
-    # train_queue = torch.utils.data.DataLoader(
-    #     train_data, batch_size=args.batchsz,
-    #     sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[:split]),
-    #     pin_memory=True, num_workers=2)
-
-    # valid_queue = torch.utils.data.DataLoader(
-    #     train_data, batch_size=args.batchsz,
-    #     sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[split:]),
-    #     pin_memory=True, num_workers=2)
-  
     train_queue = torch.utils.data.DataLoader(
-        train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
+        train_data, batch_size=args.batchsz,
+        sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[:split]),
+        pin_memory=True, num_workers=2)
+
     valid_queue = torch.utils.data.DataLoader(
-        train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
+        train_data, batch_size=args.batchsz,
+        sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[split:]),
+        pin_memory=True, num_workers=2)
+  
+    # train_queue = torch.utils.data.DataLoader(
+    #     train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
+    # valid_queue = torch.utils.data.DataLoader(
+    #     train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
 
     letters = ''.join(re.findall(r'[a-zA-Z]+', args.data))
     mapping_file_path = data_path + letters + '_mapping.txt'
@@ -93,11 +93,13 @@ def main():
     # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, float(args.epochs))
   
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
-    scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95)
+    # scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95)
 
     for epoch in range(args.epochs):
-    
-        logging.info('epoch %d lr %e', epoch, scheduler.get_last_lr()[0])
+
+        lr = optimizer.param_groups[0]['lr']
+
+        logging.info('epoch %d lr %e', epoch, lr)
 
         train_prec, train_rec, train_f1 = train(train_queue, model, criterion, optimizer)
         print('train precision: %.5f' %train_prec.item())
