@@ -62,9 +62,12 @@ class Network(nn.Module):
         
         # adaptive pooling output
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
-        self.fc1 = nn.Linear(out_dim, hidden_dim)
-        self.dropout = nn.Dropout(p=self.dropout_prob)
-        self.fc2 = nn.Linear(hidden_dim, 1)
+        
+        # self.fc1 = nn.Linear(out_dim, hidden_dim)
+        # self.dropout = nn.Dropout(p=self.dropout_prob)
+        # self.fc2 = nn.Linear(hidden_dim, 1)
+
+        self.fc = nn.Linear(out_dim, 1)
 
         # k is the total number of edges
         k = sum(1 for i in range(self.steps) for j in range(1 + i))
@@ -121,12 +124,14 @@ class Network(nn.Module):
         out = torch.cat([cnn_out, bilstm_out], dim=1)
         # print(out.shape)
 
-        flattened_out = out.view(out.size(0), -1)
-        # print(flattened_out.shape)
+        flat_out = out.view(out.size(0), -1)
+        # print(flat_out.shape)
 
-        fc1_out = self.fc1(flattened_out)
-        out_drop = self.dropout(fc1_out)
-        logits = self.fc2(out_drop)
+        # fc1_out = self.fc1(flat_out)
+        # out_drop = self.dropout(fc1_out)
+        # logits = self.fc2(out_drop)
+
+        logits = self.fc(flat_out)
         
         return torch.sigmoid(logits).view(-1)
 
