@@ -25,6 +25,7 @@ parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
 parser.add_argument('--epochs', type=int, default=10, help='num of training epochs')
 parser.add_argument('--channels', type=int, default=64, help='num of channels')
 parser.add_argument('--layers', type=int, default=4, help='total number of layers')
+parser.add_argument('--hiddensz', type=int, default=64, help='hidden size of bilstm')
 parser.add_argument('--dropout_prob', type=float, default=0.5, help='dropout probability')
 parser.add_argument('--exp_path', type=str, default='search', help='experiment name')
 parser.add_argument('--seed', type=int, default=2, help='random seed')
@@ -88,16 +89,8 @@ def main():
     valid_queue = torch.utils.data.DataLoader(
         train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
 
-    letters = ''.join(re.findall(r'[a-zA-Z]+', args.data))
-    mapping_file_path = data_path + letters + '_mapping.txt'
-    with open(mapping_file_path, 'r') as mf:
-        lines = mf.readlines()
-
-    vocab_size = len(lines)
-    print('vocabulary size: %d'%vocab_size)
-
     criterion = nn.BCELoss().to(device)
-    model = Network(args.channels, args.layers, args.dropout_prob, vocab_size, criterion).to(device)
+    model = Network(args.channels, args.layers, args.hiddensz, criterion).to(device)
 
     logging.info("Total param size = %f MB", utils.count_parameters_in_MB(model))
 
