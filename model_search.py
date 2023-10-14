@@ -6,7 +6,7 @@ from    genotypes import PRIMITIVES, Genotype
 
 
 class MixedLayer(nn.Module):
-    def __init__(self, c, stride):
+    def __init__(self, c):
         
         super(MixedLayer, self).__init__()
 
@@ -15,7 +15,7 @@ class MixedLayer(nn.Module):
         for primitive in PRIMITIVES:
             
             # create corresponding layer
-            layer = OPS[primitive](c, stride)
+            layer = OPS[primitive](c)
             
             self.layers.append(layer)
 
@@ -32,16 +32,17 @@ class MixedLayer(nn.Module):
 
 class Network(nn.Module):
     
-    def __init__(self, c, steps, dropout_prob, vocab_size, criterion):
+    def __init__(self, c, steps, hidden_size, vocab_size, criterion):
         
         super(Network, self).__init__()
 
         self.c = c
         self.steps = steps 
-        self.dropout_prob = dropout_prob
+        self.hidden_size = hidden_size
         self.vocab_size = vocab_size
         self.criterion = criterion
-        hidden_size = 64
+        
+        out_dim = c + 2 * hidden_size
         
         self.layers = nn.ModuleList()
 
@@ -49,23 +50,14 @@ class Network(nn.Module):
             
             # for each i, it connects with all previous output
             for j in range(1 + i):
-                stride = 1
-                layer = MixedLayer(c, stride)
+                layer = MixedLayer(c)
                 self.layers.append(layer)
 
-        self.embed = nn.Embedding(self.vocab_size, self.c)
-        self.bilstm = nn.LSTM(input_size=self.c, hidden_size=hidden_size, bidirectional=True, batch_first=True)
+        self.bilstm = nn.LSTM(input_size=self.c, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
 
-        out_dim = c * 2 + 2 * hidden_size
-        hidden_dim = out_dim // 2
-        
         # adaptive pooling output
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
         
-        # self.fc1 = nn.Linear(out_dim, hidden_dim)
-        # self.dropout = nn.Dropout(p=self.dropout_prob)
-        # self.fc2 = nn.Linear(hidden_dim, 1)
-
         self.fc = nn.Linear(out_dim, 1)
 
         # k is the total number of edges
@@ -80,20 +72,17 @@ class Network(nn.Module):
 
     def new(self):
         
-        model_new = Network(self.c, self.steps, self.dropout_prob, self.vocab_size, self.criterion).cuda()
+        model_new = Network(self.c, self.steps, self.hidden_size, self.vocab_size, self.criterion).cuda()
         for x, y in zip(model_new.arch_parameters(), self.arch_parameters()):
             x.data.copy_(y.data)
         return model_new
 
     def forward(self, x):
-
-        x = self.embed(x)
-        # print(x.shape)
-    
+        
         input = x.permute(0, 2, 1)
         # print(input.shape)
         
-        states = [input]
+        states = [x]
         offset = 0
         
         # for each node, receive input from all previous intermediate nodes and x
@@ -109,14 +98,14 @@ class Network(nn.Module):
             # print('node:',i, s.shape)
 
         # concat along dim=channel
-        cnn_out = torch.cat(states[-2:], dim=1)
-        # cnn_out = states[-2:]
+        # cnn_out = torch.cat(states[-2:], dim=1)
+        
+        cnn_out = states[-1]
         cnn_out = self.global_pooling(cnn_out)
         # print(cnn_out.shape)
         
-        bilstm_out, (h_n, c_n) = self.bilstm(x)
-        bilstm_out = bilstm_out.transpose(1, 2)
-        bilstm_out = self.global_pooling(bilstm_out)
+        bl_out, (h_n, c_n) = self.bilstm(input)
+        bilstm_out = h_n.permute(0, 2, 1)
         # print(bilstm_out.shape)
 
         # concat cnn_out and bilstm_out
@@ -125,10 +114,6 @@ class Network(nn.Module):
 
         flat_out = out.view(out.size(0), -1)
         # print(flat_out.shape)
-
-        # fc1_out = self.fc1(flat_out)
-        # out_drop = self.dropout(fc1_out)
-        # logits = self.fc2(out_drop)
 
         logits = self.fc(flat_out)
         
