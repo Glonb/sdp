@@ -32,14 +32,13 @@ class MixedLayer(nn.Module):
 
 class Network(nn.Module):
     
-    def __init__(self, c, steps, hidden_size, vocab_size, criterion):
+    def __init__(self, c, steps, hidden_size, criterion):
         
         super(Network, self).__init__()
 
         self.c = c
         self.steps = steps 
         self.hidden_size = hidden_size
-        self.vocab_size = vocab_size
         self.criterion = criterion
         
         out_dim = c + 2 * hidden_size
