@@ -7,15 +7,15 @@ import  torch.nn.functional as F
 OPS = {
     # 'none':         lambda C, stride, affine: Zero(stride),
     'skip_connect':  lambda C, stride: Identity(),
-    'conv_3':        lambda C, stride: ConvReLU(C, C, 3, stride, 1),
-    'conv_5':        lambda C, stride: ConvReLU(C, C, 5, stride, 2),
-    'conv_7':        lambda C, stride: ConvReLU(C, C, 7, stride, 3),
-    'sep_conv_3':    lambda C, stride: SepConv(C, C, 3, stride, 1),
-    'sep_conv_5':    lambda C, stride: SepConv(C, C, 5, stride, 2),
-    'sep_conv_7':    lambda C, stride: SepConv(C, C, 7, stride, 3),
-    'dil_conv_3':    lambda C, stride: DilConv(C, C, 3, stride, 2, 2),
-    'dil_conv_5':    lambda C, stride: DilConv(C, C, 5, stride, 4, 2),
-    'dil_conv_7':    lambda C, stride: DilConv(C, C, 7, stride, 6, 2),
+    'conv_3':        lambda C, stride: ConvReLU(C, C, 3, stride),
+    'conv_5':        lambda C, stride: ConvReLU(C, C, 5, stride),
+    'conv_7':        lambda C, stride: ConvReLU(C, C, 7, stride),
+    'sep_conv_3':    lambda C, stride: SepConv(C, C, 3, stride),
+    'sep_conv_5':    lambda C, stride: SepConv(C, C, 5, stride),
+    'sep_conv_7':    lambda C, stride: SepConv(C, C, 7, stride),
+    'dil_conv_3':    lambda C, stride: DilConv(C, C, 3, stride, 2),
+    'dil_conv_5':    lambda C, stride: DilConv(C, C, 5, stride, 2),
+    'dil_conv_7':    lambda C, stride: DilConv(C, C, 7, stride, 2),
     'avg_pool_3':    lambda C, stride: AvgPoolPadding(3, stride, 1),
     'avg_pool_5':    lambda C, stride: AvgPoolPadding(5, stride, 2),
     'avg_pool_7':    lambda C, stride: AvgPoolPadding(7, stride, 3),
@@ -28,47 +28,29 @@ class ConvReLU(nn.Module):
     """
     Stack of conv-relu
     """
-    def __init__(self, C_in, C_out, kernel_size, stride, padding):
+    def __init__(self, C_in, C_out, kernel_size, stride):
         
         super(ConvReLU, self).__init__()
 
         self.op = nn.Sequential(
-            nn.Conv1d(C_in, C_out, kernel_size, stride=stride, padding=padding),
+            nn.Conv1d(C_in, C_out, kernel_size, stride=stride),
             nn.ReLU()
         )
 
     def forward(self, x):
         return self.op(x)
 
-# class ReLUConvBN(nn.Module):
-#     """
-#     Stack of relu-conv-bn
-#     """
-#     def __init__(self, C_in, C_out, kernel_size, stride, padding, affine=True):
-        
-#         super(ReLUConvBN, self).__init__()
-
-#         self.op = nn.Sequential(
-#             nn.ReLU(inplace=False),
-#             nn.Conv1d(C_in, C_out, kernel_size, stride=stride, padding=padding, bias=False),
-#             nn.BatchNorm1d(C_out, affine=affine)
-#         )
-
-#     def forward(self, x):
-#         return self.op(x)
-
 
 class DilConv(nn.Module):
     """
     dilated conv-relu
     """
-    def __init__(self, C_in, C_out, kernel_size, stride, padding, dilation):
+    def __init__(self, C_in, C_out, kernel_size, stride, dilation):
         
         super(DilConv, self).__init__()
 
         self.op = nn.Sequential(
-            nn.Conv1d(C_in, C_in, kernel_size=kernel_size, stride=stride, padding=padding,
-                      dilation=dilation, groups=C_in),
+            nn.Conv1d(C_in, C_in, kernel_size=kernel_size, stride=stride, dilation=dilation, groups=C_in),
             nn.Conv1d(C_in, C_out, kernel_size=1, padding=0),
             nn.ReLU()
         )
@@ -81,13 +63,12 @@ class SepConv(nn.Module):
     """
     implemented separate convolution via pytorch groups parameters
     """
-    def __init__(self, C_in, C_out, kernel_size, stride, padding):
+    def __init__(self, C_in, C_out, kernel_size, stride):
         
         super(SepConv, self).__init__()
 
         self.op = nn.Sequential(
-            nn.Conv1d(C_in, C_in, kernel_size=kernel_size, stride=stride, padding=padding,
-                      groups=C_in),
+            nn.Conv1d(C_in, C_in, kernel_size=kernel_size, stride=stride, groups=C_in),
             nn.Conv1d(C_in, C_out, kernel_size=1, padding=0),
             nn.ReLU()
         )
