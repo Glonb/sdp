@@ -51,6 +51,7 @@ class Network(nn.Module):
 
         bilstm_out, (h_n, c_n) = self.bilstm(input)
         forward_state, backward_state = h_n[0], h_n[1]
+        print(forward_state.shape)
 
         combined_state = torch.cat((forward_state, backward_state), dim=-1)
         print(combined_state.shape)
