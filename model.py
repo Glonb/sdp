@@ -53,6 +53,7 @@ class Network(nn.Module):
         forward_state, backward_state = h_n[0], h_n[1]
 
         combined_state = torch.cat((forward_state, backward_state), dim=-1)
+        print(combined_state.shape)
         bilstm_out = combined_state.permute(1, 0, 2)
         bilstm_out = bilstm_out.view(bilstm_out.size(0), -1)
 
