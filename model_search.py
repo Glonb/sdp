@@ -124,7 +124,7 @@ class Network(nn.Module):
 
         logits = self.fc(out)
         
-        return torch.sigmoid(logits).view(-1)
+        return torch.sigmoid(logits)
 
     def loss(self, x, target):
         logits = self(x)
