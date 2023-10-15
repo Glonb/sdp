@@ -17,10 +17,10 @@ parser.add_argument('--data', type=str, default='xalan25', help='dataset')
 parser.add_argument('--batchsz', type=int, default=16, help='batch size')
 parser.add_argument('--report_freq', type=float, default=10, help='report frequency')
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
-parser.add_argument('--channels', type=int, default=64, help='num of init channels')
+parser.add_argument('--channels', type=int, default=40, help='num of init channels')
 parser.add_argument('--layers', type=int, default=4, help='total number of layers')
 parser.add_argument('--exp_path', type=str, default='exp/sdp-train/trained.pt', help='path of pretrained model')
-parser.add_argument('--dropout_prob', type=float, default=0.5, help='drop probability')
+parser.add_argument('--hiddensz', type=int, default=64, help='number of hidden_size in bilstm')
 parser.add_argument('--seed', type=int, default=3, help='random seed')
 parser.add_argument('--arch', type=str, default='SDP', help='which architecture to use')
 args = parser.parse_args()
@@ -45,23 +45,15 @@ def main():
     logging.info("args = %s", args)
 
     data_path = '/kaggle/input/new-sdp/'
-    test_data = MyDataset(data_path + args.data + '_test.pt')
+    test_data = MyDataset(data_path + args.data + '_test.pt', data_path + args.data + 'original.csv')
 
     test_queue = torch.utils.data.DataLoader(
         test_data, batch_size=args.batchsz, 
         shuffle=True, pin_memory=True, num_workers=2)
 
-    letters = "".join(re.findall(r'[a-zA-Z]+', args.data))
-    mapping_file_path = data_path + letters + '_mapping.txt'
-    with open(mapping_file_path, 'r') as mf:
-        lines = mf.readlines()
-
-    vocab_size = len(lines)
-    print('vocabulary size: %d'%vocab_size)
-
     genotype = eval("genotypes.%s" % args.arch)
     print('Load genotype:', genotype)
-    model = Network(args.channels, args.dropout_prob, vocab_size, genotype).cuda()
+    model = Network(args.channels, args.hiddensz, genotype).cuda()
     utils.load(model, args.exp_path)
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
