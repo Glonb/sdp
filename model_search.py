@@ -20,8 +20,8 @@ class MixedLayer(nn.Module):
             self.layers.append(layer)
 
     def forward(self, x, weights):
-        for i,layer in enumerate(self.layers):
-            print(layer(x).shape)
+        # for i,layer in enumerate(self.layers):
+        #     print(layer(x).shape)
         out = [w * layer(x) for w, layer in zip(weights, self.layers)]
         
         # element-wise add by torch.add
@@ -105,11 +105,11 @@ class Network(nn.Module):
         
         cnn_out = states[-1]
         cnn_out = self.global_pooling(cnn_out)
-        # print(cnn_out.shape)
+        print(cnn_out.shape)
         
         bl_out, (h_n, c_n) = self.bilstm(input)
         bilstm_out = h_n.permute(0, 2, 1)
-        # print(bilstm_out.shape)
+        print(bilstm_out.shape)
 
         # concat cnn_out and bilstm_out
         out = torch.cat([cnn_out, bilstm_out], dim=1)
