@@ -25,7 +25,11 @@ class MixedLayer(nn.Module):
         out = [w * layer(x) for w, layer in zip(weights, self.layers)]
         
         # element-wise add by torch.add
-        output = sum(out)
+        # output = sum(out)
+
+        max_length = max(tensor.size(-1) for tensor in out)
+        padded_tensors = [F.pad(tensor, (0, max_length - tensor.size(-1))) for tensor in out]
+        output = torch.stack(padded_tensors, dim=-1).sum(dim=-1)
         
         return output
         
