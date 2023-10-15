@@ -22,9 +22,9 @@ parser.add_argument('--wd', type=float, default=3e-4, help='weight decay')
 parser.add_argument('--report_freq', type=float, default=10, help='report frequency')
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
 parser.add_argument('--epochs', type=int, default=10, help='num of training epochs')
-parser.add_argument('--channels', type=int, default=64, help='num of init channels')
+parser.add_argument('--channels', type=int, default=40, help='num of init channels')
 parser.add_argument('--layers', type=int, default=4, help='total number of layers')
-parser.add_argument('--dropout_prob', type=float, default=0.5, help='dropout probability')
+parser.add_argument('--hiddensz', type=int, default=64, help='number of hidden_size in bilstm')
 parser.add_argument('--exp_path', type=str, default='exp/sdp', help='experiment name')
 parser.add_argument('--seed', type=int, default=5, help='random seed')
 parser.add_argument('--arch', type=str, default='SDP', help='which architecture to use')
@@ -53,7 +53,7 @@ def main():
     logging.info("args = %s", args)
 
     data_path = '/kaggle/input/new-sdp/'
-    train_data = MyDataset(data_path + args.data + '_test.pt')
+    train_data = MyDataset(data_path + args.data + '_train.pt', data_path + args.data + '_original.csv')
 
     num_data = len(train_data) 
     indices = list(range(num_data))
@@ -73,17 +73,9 @@ def main():
     #     train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
     # valid_queue = torch.utils.data.DataLoader(
     #     train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
-
-    letters = ''.join(re.findall(r'[a-zA-Z]+', args.data))
-    mapping_file_path = data_path + letters + '_mapping.txt'
-    with open(mapping_file_path, 'r') as mf:
-        lines = mf.readlines()
-
-    vocab_size = len(lines)
-    print('vocabulary size: %d'%vocab_size)
   
     genotype = eval("genotypes.%s" % args.arch)
-    model = Network(args.channels, args.dropout_prob, vocab_size, genotype).cuda()
+    model = Network(args.channels, args.hiddensz, genotype).cuda()
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
   
