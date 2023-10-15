@@ -55,24 +55,24 @@ def main():
     data_path = '/kaggle/input/new-sdp/'
     train_data = MyDataset(data_path + args.data + '_train.pt', data_path + args.data + '_original.csv')
 
-    num_data = len(train_data) 
-    indices = list(range(num_data))
-    split = int(np.floor(0.8 * num_data))
+    # num_data = len(train_data) 
+    # indices = list(range(num_data))
+    # split = int(np.floor(0.8 * num_data))
     
-    train_queue = torch.utils.data.DataLoader(
-        train_data, batch_size=args.batchsz,
-        sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[:split]),
-        pin_memory=True, num_workers=2)
-
-    valid_queue = torch.utils.data.DataLoader(
-        train_data, batch_size=args.batchsz,
-        sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[split:]),
-        pin_memory=True, num_workers=2)
-  
     # train_queue = torch.utils.data.DataLoader(
-    #     train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
+    #     train_data, batch_size=args.batchsz,
+    #     sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[:split]),
+    #     pin_memory=True, num_workers=2)
+
     # valid_queue = torch.utils.data.DataLoader(
-    #     train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
+    #     train_data, batch_size=args.batchsz,
+    #     sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[split:]),
+    #     pin_memory=True, num_workers=2)
+  
+    train_queue = torch.utils.data.DataLoader(
+        train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
+    valid_queue = torch.utils.data.DataLoader(
+        train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
   
     genotype = eval("genotypes.%s" % args.arch)
     model = Network(args.channels, args.hiddensz, genotype).cuda()
