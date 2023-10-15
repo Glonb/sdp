@@ -110,7 +110,6 @@ class Network(nn.Module):
         
         bl_out, (h_n, c_n) = self.bilstm(input)
         forward_state, backward_state = h_n[0], h_n[1]
-
         combined_state = torch.cat((forward_state, backward_state), dim=-1)
         bilstm_out = combined_state.view(combined_state.size(0), -1)
         # print(bilstm_out.shape)
@@ -118,9 +117,6 @@ class Network(nn.Module):
         # concat cnn_out and bilstm_out
         out = torch.cat([cnn_out, bilstm_out], dim=-1)
         # print(out.shape)
-
-        # flat_out = out.view(out.size(0), -1)
-        # print(flat_out.shape)
 
         logits = self.fc(out)
         
@@ -142,7 +138,7 @@ class Network(nn.Module):
             n = 1
             start = 0
             for i in range(self.steps): # for each node
-                idx = i // 2 + 1
+                idx = 1
                 end = start + n
                 W = weights[start:end].copy()
                 edges = sorted(range(i + 1), # i+1 is the number of connection for node i
