@@ -106,14 +106,14 @@ class Network(nn.Module):
         cnn_out = states[-1]
         cnn_out = self.global_pooling(cnn_out)
         cnn_out = cnn_out.view(cnn_out.size(0), -1)
-        print(cnn_out.shape)
+        # print(cnn_out.shape)
         
         bl_out, (h_n, c_n) = self.bilstm(input)
         forward_state, backward_state = h_n[0], h_n[1]
 
         combined_state = torch.cat((forward_state, backward_state), dim=-1)
         bilstm_out = combined_state.view(combined_state.size(0), -1)
-        print(bilstm_out.shape)
+        # print(bilstm_out.shape)
 
         # concat cnn_out and bilstm_out
         out = torch.cat([cnn_out, bilstm_out], dim=-1)
