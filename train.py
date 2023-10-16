@@ -53,7 +53,7 @@ def main():
     logging.info("args = %s", args)
 
     data_path = '/kaggle/input/new-sdp/'
-    train_data = MyDataset(data_path + args.data + '_train.pt', data_path + args.data + '_original.csv')
+    train_data = MyDataset(data_path + args.data + '_train.pt', data_path + args.data + '.csv')
 
     # num_data = len(train_data) 
     # indices = list(range(num_data))
@@ -116,12 +116,13 @@ def train(train_queue, model, criterion, optimizer):
     mcc = utils.AverageMeter()
     model.train()
 
-    for step, (x, target) in enumerate(train_queue):
+    for step, (x, trf, target) in enumerate(train_queue):
         x = x.cuda()
+        trf = trf.cuda()
         target = target.cuda(non_blocking=True)
 
         optimizer.zero_grad()
-        logits = model(x)
+        logits = model(x, trf)
         # print(logits)
         loss = criterion(logits, target.float())
         loss.backward()
@@ -162,12 +163,13 @@ def infer(valid_queue, model, criterion):
     mcc = utils.AverageMeter()
     model.eval()
 
-    for step, (x, target) in enumerate(valid_queue):
+    for step, (x, trf, target) in enumerate(valid_queue):
         x = x.cuda()
+        trf = trf.cuda()
         target = target.cuda(non_blocking=True)
 
         with torch.no_grad():
-            logits = model(x)
+            logits = model(x, trf)
             # print(logits)
             loss = criterion(logits, target.float())
 
