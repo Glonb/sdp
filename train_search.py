@@ -143,9 +143,9 @@ def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
         batchsz = x.size(0)
         model.train()
 
-        x, trf, target = x.to(device), trf.to(device), target.cuda(non_blocking=True)
+        x, trf, target = x.to(device), trf.to(device), target.cuda()
         x_search, trf_search, target_search = next(valid_iter) 
-        x_search, trf_search, target_search = x_search.to(device), trf_search.to(device), target_search.cuda(non_blocking=True)
+        x_search, trf_search, target_search = x_search.to(device), trf_search.to(device), target_search.cuda()
 
         # 1. update alpha
         arch.step(x, trf, target, x_search, trf_search, target_search, lr, optimizer, unrolled=True)
@@ -195,7 +195,7 @@ def infer(valid_queue, model, criterion):
     with torch.no_grad():
         for step, (x, trf, target) in enumerate(valid_queue):
 
-            x, trf, target = x.to(device), trf.to(device), target.cuda(non_blocking=True)
+            x, trf, target = x.to(device), trf.to(device), target.cuda()
             batchsz = x.size(0)
 
             logits = model(x, trf)
