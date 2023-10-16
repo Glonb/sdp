@@ -33,7 +33,7 @@ SDP_Genotype = Genotype(
     geno=[('conv_7_2', 0),
           ('conv_7_2', 0),
           ('conv_7_2', 0), ('skip_connect', 1),
-          ('conv_7_2', 0), ('conv_7_1', 3)],
+          ('conv_7_2', 0), ('skip_connect', 3)],
     geno_concat=range(1, 5)
 )
 SDP = SDP_Genotype
