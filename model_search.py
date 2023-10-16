@@ -45,7 +45,7 @@ class Network(nn.Module):
         self.hidden_size = hidden_size
         self.criterion = criterion
         
-        out_dim = c * 2 + 2 * hidden_size + 18
+        out_dim = c * 4 + 2 * hidden_size + 18
         
         self.layers = nn.ModuleList()
 
@@ -102,7 +102,8 @@ class Network(nn.Module):
             # print('node:',i, s.shape)
 
         # concat along dim=channel
-        cnn_out = torch.cat((self.global_pooling(states[-1]), self.global_pooling(states[-2])), dim=1)
+        # cnn_out = torch.cat((self.global_pooling(states[-1]), self.global_pooling(states[-2])), dim=1)
+        cnn_out = torch.cat(self.global_pooling(states[1:]), dim=1)
         
         # cnn_out = self.global_pooling(cnn_out)
         
