@@ -47,6 +47,7 @@ class Network(nn.Module):
         # cnn_out = torch.cat((self.global_pooling(states[-1]),self.global_pooling(states[-2])), dim = 1)
         pooled_states = [self.global_pooling(h) for h in states[1:]]
         cnn_out = torch.cat(pooled_states, dim=1)
+        print(cnn_out.shape)
         
         # cnn_out = states[-1]
         # cnn_out = self.global_pooling(cnn_out)
