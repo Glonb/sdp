@@ -68,7 +68,7 @@ def main():
     logging.info("args = %s", args)
 
     data_path = '/kaggle/input/new-sdp/'
-    train_data = MyDataset(data_path + args.data + '_train.pt', data_path + args.data + '_original.csv')
+    train_data = MyDataset(data_path + args.data + '_train.pt', data_path + args.data + '.csv')
 
     # num_train = len(train_data) 
     # indices = list(range(num_train))
@@ -138,19 +138,19 @@ def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
 
     valid_iter = iter(valid_queue)
 
-    for step, (x, target) in enumerate(train_queue):
+    for step, (x, trf, target) in enumerate(train_queue):
 
         batchsz = x.size(0)
         model.train()
 
-        x, target = x.to(device), target.cuda(non_blocking=True)
-        x_search, target_search = next(valid_iter) 
-        x_search, target_search = x_search.to(device), target_search.cuda(non_blocking=True)
+        x, trf, target = x.to(device), trf.to(device), target.cuda(non_blocking=True)
+        x_search, trf_search, target_search = next(valid_iter) 
+        x_search, trf_search, target_search = x_search.to(device), trf_search.to(device), target_search.cuda(non_blocking=True)
 
         # 1. update alpha
-        arch.step(x, target, x_search, target_search, lr, optimizer, unrolled=True)
+        arch.step(x, trf, target, x_search, trf_search, target_search, lr, optimizer, unrolled=True)
 
-        logits = model(x)
+        logits = model(x, trf)
         loss = criterion(logits, target.float())
 
         # 2. update weight
@@ -193,12 +193,12 @@ def infer(valid_queue, model, criterion):
     model.eval()
 
     with torch.no_grad():
-        for step, (x, target) in enumerate(valid_queue):
+        for step, (x, trf, target) in enumerate(valid_queue):
 
-            x, target = x.to(device), target.cuda(non_blocking=True)
+            x, trf, target = x.to(device), trf.to(device), target.cuda(non_blocking=True)
             batchsz = x.size(0)
 
-            logits = model(x)
+            logits = model(x, trf)
             loss = criterion(logits, target.float())
 
             prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(logits, target)
