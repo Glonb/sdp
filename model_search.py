@@ -80,8 +80,9 @@ class Network(nn.Module):
             x.data.copy_(y.data)
         return model_new
 
-    def forward(self, x):
+    def forward(self, x, trf):
         
+        print(trf.shape)
         input = x.permute(0, 2, 1)
         # print(input.shape)
         
@@ -115,15 +116,15 @@ class Network(nn.Module):
         # print(bilstm_out.shape)
 
         # concat cnn_out and bilstm_out
-        out = torch.cat([cnn_out, bilstm_out], dim=-1)
+        out = torch.cat([cnn_out, bilstm_out, trf], dim=-1)
         # print(out.shape)
 
         logits = self.fc(out)
         
         return torch.sigmoid(logits)
 
-    def loss(self, x, target):
-        logits = self(x)
+    def loss(self, x, trf, target):
+        logits = self(x, trf)
         # print(logits.shape)
         return self.criterion(logits, target.float())
 
