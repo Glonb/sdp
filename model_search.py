@@ -82,7 +82,7 @@ class Network(nn.Module):
 
     def forward(self, x, trf):
         
-        print(trf.shape)
+        # print(trf.shape)
         input = x.permute(0, 2, 1)
         # print(input.shape)
         
