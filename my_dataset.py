@@ -5,13 +5,16 @@ import pandas as pd
 
 class MyDataset(Dataset):
 
-    def __init__(self, embed_file, label_file):
-        self.data = torch.load(embed_file)
-        labels = pd.read_csv(label_file, usecols=['bug']).values
-        self.labels = torch.tensor(labels)
+    def __init__(self, embed_file, csv_file):
+        self.emb_data = torch.load(embed_file)
+        self.csv_data = pd.read_csv(csv_file)
 
     def __len__(self):
-        return len(self.data)
+        return len(self.csv_data)
 
     def __getitem__(self, idx):
-        return self.data[idx].float(), self.labels[idx]
+        tr_features = torch.tensor(self.csv_data.iloc[idx, 1:-1], dtype=torch.float32)
+        label = torch.tensor(self.csv_data.iloc[idx, -1], dtype=torch.long)
+
+        return self.emb_data[idx], tr_features, label
+
