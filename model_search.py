@@ -142,7 +142,7 @@ class Network(nn.Module):
             n = 1
             start = 0
             for i in range(self.steps): # for each node
-                idx = i // 2 + 1
+                idx = 1
                 end = start + n
                 W = weights[start:end].copy()
                 edges = sorted(range(i + 1), # i+1 is the number of connection for node i
