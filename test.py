@@ -45,7 +45,7 @@ def main():
     logging.info("args = %s", args)
 
     data_path = '/kaggle/input/new-sdp/'
-    test_data = MyDataset(data_path + args.data + '_test.pt', data_path + args.data + '_original.csv')
+    test_data = MyDataset(data_path + args.data + '_test.pt', data_path + args.data + '.csv')
 
     test_queue = torch.utils.data.DataLoader(
         test_data, batch_size=args.batchsz, 
@@ -79,11 +79,11 @@ def infer(test_queue, model, criterion):
 
     with torch.no_grad():
 
-        for step, (x, target) in enumerate(test_queue):
+        for step, (x, trf, target) in enumerate(test_queue):
 
-            x, target = x.cuda(), target.cuda(non_blocking=True)
+            x, trf, target = x.cuda(), trf.cuda(), target.cuda(non_blocking=True)
 
-            logits = model(x)
+            logits = model(x, trf)
             loss = criterion(logits, target.float())
 
             batchsz = x.size(0)
