@@ -45,7 +45,7 @@ class Network(nn.Module):
         self.hidden_size = hidden_size
         self.criterion = criterion
         
-        out_dim = c * 4 + 2 * hidden_size + 18
+        out_dim = c + 2 * hidden_size + 18
         
         self.layers = nn.ModuleList()
 
@@ -82,7 +82,6 @@ class Network(nn.Module):
 
     def forward(self, x, trf):
         
-        # print(trf.shape)
         input = x.permute(0, 2, 1)
         # print(input.shape)
         
@@ -104,10 +103,10 @@ class Network(nn.Module):
         # concat along dim=channel
         # cnn_out = torch.cat((self.global_pooling(states[-1]), self.global_pooling(states[-2])), dim=1)
 
-        pooled_states = [self.global_pooling(h) for h in states[1:]]
-        cnn_out = torch.cat(pooled_states, dim=1)
+        # pooled_states = [self.global_pooling(h) for h in states[1:]]
+        # cnn_out = torch.cat(pooled_states, dim=1)
         
-        # cnn_out = self.global_pooling(cnn_out)
+        cnn_out = self.global_pooling(states[-1])
         
         cnn_out = cnn_out.view(cnn_out.size(0), -1)
         # print(cnn_out.shape)
@@ -119,7 +118,7 @@ class Network(nn.Module):
         # print(bilstm_out.shape)
 
         # concat cnn_out and bilstm_out
-        out = torch.cat([cnn_out, bilstm_out, trf], dim=-1)
+        out = torch.cat([trf, cnn_out, bilstm_out], dim=-1)
         # print(out.shape)
 
         logits = self.fc(out)
@@ -142,7 +141,7 @@ class Network(nn.Module):
             n = 1
             start = 0
             for i in range(self.steps): # for each node
-                idx = 1
+                idx = 1 if i < 3 else 4
                 end = start + n
                 W = weights[start:end].copy()
                 edges = sorted(range(i + 1), # i+1 is the number of connection for node i
