@@ -29,6 +29,7 @@ class MixedLayer(nn.Module):
         output = torch.stack(padded_tensors, dim=-1).sum(dim=-1)
         print('*********')
         print(output.shape)
+        print('*********')
         
         return output
         
