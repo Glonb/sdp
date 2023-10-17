@@ -17,6 +17,7 @@ class Network(nn.Module):
 
         self.bilstm = nn.LSTM(input_size=C, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
+        self.weight_gen = WeightGenerator(out_dim, out_dim)
         self.fc = nn.Linear(out_dim, 1)
 
     def _compile(self, C, op_names, indices, concat):
@@ -54,6 +55,7 @@ class Network(nn.Module):
         bilstm_out = torch.cat((h_n[0], h_n[1]), dim=-1)
 
         out = torch.cat([trf, cnn_out, bilstm_out], dim=-1)
-        logits = self.fc(out)
+        w = self.weight_gen(out)
+        logits = self.fc(w * out)
         
         return torch.sigmoid(logits)
