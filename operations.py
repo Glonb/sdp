@@ -137,3 +137,13 @@ class Zero(nn.Module):
             return x.mul(0.)
         return x[:, :, ::self.stride].mul(0.)
 
+
+class WeightGenerator(nn.Module):
+    def __init__(self, input_dim, output_dim):
+        super(WeightGenerator, self).__init__()
+        self.fc = nn.Linear(input_dim, output_dim)
+
+    def forward(self, x):
+        weights = torch.softmax(self.fc(x), dim=1)
+        return weights
+
