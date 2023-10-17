@@ -57,7 +57,7 @@ class Network(nn.Module):
 
         # adaptive pooling output
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
-        
+        self.weight_gen = WeightGenerator(out_dim, out_dim)
         self.fc = nn.Linear(out_dim, 1)
 
         # k is the total number of edges
