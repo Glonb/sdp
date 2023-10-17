@@ -9,7 +9,7 @@ class Network(nn.Module):
         super(Network, self).__init__()
         
         self.hidden_size = hidden_size
-        out_dim = C * 4 + 2 * hidden_size + 18
+        out_dim = C + 2 * hidden_size + 18
 
         op_names, indices = zip(*genotype.geno)
         concat = genotype.geno_concat
@@ -45,25 +45,18 @@ class Network(nn.Module):
             
         # cnn_out = torch.cat(states[-2:], dim=1)
         # cnn_out = torch.cat((self.global_pooling(states[-1]),self.global_pooling(states[-2])), dim = 1)
-        pooled_states = [self.global_pooling(h) for h in states[1:]]
-        cnn_out = torch.cat(pooled_states, dim=1)
+        # pooled_states = [self.global_pooling(h) for h in states[1:]]
+        # cnn_out = torch.cat(pooled_states, dim=1)
         # print(cnn_out.shape)
         
-        # cnn_out = states[-1]
-        # cnn_out = self.global_pooling(cnn_out)
+        cnn_out = states[-1]
+        cnn_out = self.global_pooling(cnn_out)
         cnn_out = cnn_out.view(cnn_out.size(0), -1)
 
-        bilstm_out, (h_n, c_n) = self.bilstm(input)
-        forward_state, backward_state = h_n[0], h_n[1]
-        # print(forward_state.shape)
+        sum_out, (h_n, c_n) = self.bilstm(input)
+        bilstm_out = torch.cat((h_n[0], h_n[1]), dim=-1)
 
-        combined_state = torch.cat((forward_state, backward_state), dim=-1)
-        # print(combined_state.shape)
-        # bilstm_out = combined_state.permute(1, 0, 2)
-        # bilstm_out = bilstm_out.view(bilstm_out.size(0), -1)
-        bilstm_out = combined_state
-
-        out = torch.cat([cnn_out, bilstm_out, trf], dim=-1)
+        out = torch.cat([trf, cnn_out, bilstm_out], dim=-1)
         logits = self.fc(out)
         
         return torch.sigmoid(logits)
