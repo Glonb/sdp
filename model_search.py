@@ -1,7 +1,7 @@
 import  torch
 from    torch import nn
 import  torch.nn.functional as F
-from    operations import OPS
+from    operations import OPS, WeightGenerator
 from    genotypes import PRIMITIVES, Genotype
 
 
@@ -115,8 +115,8 @@ class Network(nn.Module):
         # concat cnn_out and bilstm_out
         out = torch.cat([trf, cnn_out, bilstm_out], dim=-1)
         # print(out.shape)
-
-        logits = self.fc(out)
+        w = self.weight_gen(out)
+        logits = self.fc(w * out)
         
         return torch.sigmoid(logits)
 
