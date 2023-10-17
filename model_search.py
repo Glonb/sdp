@@ -93,10 +93,10 @@ class Network(nn.Module):
         for i in range(self.steps):
             
             weights = F.softmax(self.alpha, dim=-1)
-            print(weights)
             # s = sum(self.layers[offset + j](h, weights[offset + j]) for j, h in enumerate(states))
             for j, h in enumerate(states):
                 layer = self.layers[offset + j]
+                print(weights[offset + j])
                 n_state = layer(h, weights[offset + j])
                 # s.append(n_state)
             # print(tensor.shape for tensor in s)
