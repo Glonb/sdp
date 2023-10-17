@@ -93,7 +93,7 @@ class Network(nn.Module):
             # s = sum(self.layers[offset + j](h, weights[offset + j]) for j, h in enumerate(states))
             for j, h in enumerate(states):
                 n_states = self.layers[offset + j](h, weights[offset + j])
-                s.append(n_states)
+                # s.append(n_states)
             # print(tensor.shape for tensor in s)
             # max_length = max(tensor.size(-1) for tensor in s)
             # padded_tensors = [F.pad(tensor, (0, max_length - tensor.size(-1))) for tensor in s]
