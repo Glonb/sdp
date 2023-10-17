@@ -20,16 +20,13 @@ class MixedLayer(nn.Module):
             self.layers.append(layer)
 
     def forward(self, x, weights):
-        for i,layer in enumerate(self.layers):
-            print(layer(x).shape)
+        # for i,layer in enumerate(self.layers):
+        #     print(layer(x).shape)
         out = [w * layer(x) for w, layer in zip(weights, self.layers)]
 
         max_length = max(tensor.size(-1) for tensor in out)
         padded_tensors = [F.pad(tensor, (0, max_length - tensor.size(-1))) for tensor in out]
         output = torch.stack(padded_tensors, dim=-1).sum(dim=-1)
-        print('*********')
-        print(output.shape)
-        print('*********')
         
         return output
         
@@ -93,16 +90,7 @@ class Network(nn.Module):
         for i in range(self.steps):
             
             weights = F.softmax(self.alpha, dim=-1)
-            # s = sum(self.layers[offset + j](h, weights[offset + j]) for j, h in enumerate(states))
-            for j, h in enumerate(states):
-                layer = self.layers[offset + j]
-                print(weights[offset + j])
-                n_state = layer(h, weights[offset + j])
-                # s.append(n_state)
-            # print(tensor.shape for tensor in s)
-            # max_length = max(tensor.size(-1) for tensor in s)
-            # padded_tensors = [F.pad(tensor, (0, max_length - tensor.size(-1))) for tensor in s]
-            # s = torch.stack(padded_tensors, dim=-1).sum(dim=-1)
+            s = sum(self.layers[offset + j](h, weights[offset + j]) for j, h in enumerate(states))
             offset += len(states)
             
             # append one state since s is the elem-wise addition of all output
