@@ -92,8 +92,9 @@ class Network(nn.Module):
             weights = F.softmax(self.alpha, dim=-1)
             # s = sum(self.layers[offset + j](h, weights[offset + j]) for j, h in enumerate(states))
             for j, h in enumerate(states):
-                s.append(self.layers[offset + j](h, weights[offset + j]))
-            print(tensor.shape for tensor in s)
+                n_states = self.layers[offset + j](h, weights[offset + j])
+                s.append(n_states)
+            # print(tensor.shape for tensor in s)
             # max_length = max(tensor.size(-1) for tensor in s)
             # padded_tensors = [F.pad(tensor, (0, max_length - tensor.size(-1))) for tensor in s]
             # s = torch.stack(padded_tensors, dim=-1).sum(dim=-1)
