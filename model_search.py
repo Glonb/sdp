@@ -20,8 +20,8 @@ class MixedLayer(nn.Module):
             self.layers.append(layer)
 
     def forward(self, x, weights):
-        # for i,layer in enumerate(self.layers):
-        #     print(layer(x).shape)
+        for i,layer in enumerate(self.layers):
+            print(layer(x).shape)
         out = [w * layer(x) for w, layer in zip(weights, self.layers)]
 
         max_length = max(tensor.size(-1) for tensor in out)
