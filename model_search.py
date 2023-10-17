@@ -84,13 +84,15 @@ class Network(nn.Module):
         
         states = [x]
         offset = 0
+        s = []
         
         # for each node, receive input from all previous intermediate nodes and x
         for i in range(self.steps):
             
             weights = F.softmax(self.alpha, dim=-1)
             # s = sum(self.layers[offset + j](h, weights[offset + j]) for j, h in enumerate(states))
-            s = [self.layers[offset + j](h, weights[offset + j]) for j, h in enumerate(states)]
+            for j, h in enumerate(states):
+                s.append(self.layers[offset + j](h, weights[offset + j]))
             print(tensor.shape for tensor in s)
             # max_length = max(tensor.size(-1) for tensor in s)
             # padded_tensors = [F.pad(tensor, (0, max_length - tensor.size(-1))) for tensor in s]
