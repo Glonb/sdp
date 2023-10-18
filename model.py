@@ -9,7 +9,7 @@ class Network(nn.Module):
         super(Network, self).__init__()
         
         self.hidden_size = hidden_size
-        out_dim = C * 4 + 2 * hidden_size + 18
+        out_dim = C * 4 + 2 * hidden_size
 
         op_names, indices = zip(*genotype.geno)
         concat = genotype.geno_concat
@@ -17,7 +17,7 @@ class Network(nn.Module):
 
         self.bilstm = nn.LSTM(input_size=C, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
-        self.weight_gen = WeightGenerator(out_dim, out_dim)
+        
         self.fc = nn.Linear(out_dim, 1)
 
     def _compile(self, C, op_names, indices, concat):
@@ -54,8 +54,8 @@ class Network(nn.Module):
         sum_out, (h_n, c_n) = self.bilstm(input)
         bilstm_out = torch.cat((h_n[0], h_n[1]), dim=-1)
 
-        out = torch.cat([trf, cnn_out, bilstm_out], dim=-1)
-        w = self.weight_gen(out)
-        logits = self.fc(w * out)
+        out = torch.cat([cnn_out, bilstm_out], dim=-1)
+        
+        logits = self.fc(out)
         
         return torch.sigmoid(logits)
