@@ -9,13 +9,14 @@ class Network(nn.Module):
         super(Network, self).__init__()
         
         self.hidden_size = hidden_size
-        out_dim = C * 4 + 2 * hidden_size
+        out_dim = C * 4 + 2 * hidden_size + 32
 
         op_names, indices = zip(*genotype.geno)
         concat = genotype.geno_concat
         self._compile(C, op_names, indices, concat)
 
         self.bilstm = nn.LSTM(input_size=C, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
+        self.bilstm_tr = nn.LSTM(input_size=1, hidden_size=16, bidirectional=True, batch_first=True)
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
         
         self.fc = nn.Linear(out_dim, 1)
@@ -36,6 +37,7 @@ class Network(nn.Module):
     def forward(self, x, trf):
         
         input = x.permute(0, 2, 1)
+        trf = trf.view(trf.size(0), trf.size(1), 1)
         states = [x]
         
         for i in range(self._steps):
@@ -54,7 +56,10 @@ class Network(nn.Module):
         sum_out, (h_n, c_n) = self.bilstm(input)
         bilstm_out = torch.cat((h_n[0], h_n[1]), dim=-1)
 
-        out = torch.cat([cnn_out, bilstm_out], dim=-1)
+        tra_out, (th_n, tc_n) = self.bilstm_tr(trf)
+        trf_out = torch.cat((th_n[0], th_n[1]), dim=-1)
+
+        out = torch.cat([cnn_out, bilstm_out, trf_out], dim=-1)
         
         logits = self.fc(out)
         
