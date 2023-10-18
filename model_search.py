@@ -108,6 +108,7 @@ class Network(nn.Module):
         # print(cnn_out.shape)
         
         bl_out, (h_n, c_n) = self.bilstm(input)
+        print(h_n[0].shape)
         combined_state = torch.cat((h_n[0], h_n[1]), dim=-1)
         bilstm_out = combined_state.view(combined_state.size(0), -1)
         # print(bilstm_out.shape)
