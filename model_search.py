@@ -42,7 +42,7 @@ class Network(nn.Module):
         self.hidden_size = hidden_size
         self.criterion = criterion
         
-        out_dim = c * 4 + 2 * hidden_size
+        out_dim = c * 4 + 2 * hidden_size + 32
         
         self.layers = nn.ModuleList()
 
@@ -54,7 +54,7 @@ class Network(nn.Module):
                 self.layers.append(layer)
 
         self.bilstm = nn.LSTM(input_size=self.c, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
-
+        self.bilstm_tr = nn.LSTM(input_size=18, hidden_size=16, bidirectional=True, batch_first=True)
         # adaptive pooling output
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
         
@@ -112,6 +112,9 @@ class Network(nn.Module):
         bilstm_out = combined_state.view(combined_state.size(0), -1)
         # print(bilstm_out.shape)
 
+        trad_out, (th_n, tc_n) = self.bilstm_tr(trf)
+        print(th_n[0].shape)
+        
         # concat cnn_out and bilstm_out
         out = torch.cat([cnn_out, bilstm_out], dim=-1)
         # print(out.shape)
