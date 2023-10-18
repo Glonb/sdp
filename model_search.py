@@ -42,7 +42,7 @@ class Network(nn.Module):
         self.hidden_size = hidden_size
         self.criterion = criterion
         
-        out_dim = c * 2 + 2 * hidden_size + 32
+        out_dim = c * 2 + 2 * hidden_size + 18
         
         self.layers = nn.ModuleList()
 
@@ -54,7 +54,6 @@ class Network(nn.Module):
                 self.layers.append(layer)
 
         self.bilstm = nn.LSTM(input_size=self.c, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
-        self.bilstm_tr = nn.LSTM(input_size=1, hidden_size=16, bidirectional=True, batch_first=True)
         # adaptive pooling output
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
         
@@ -81,10 +80,8 @@ class Network(nn.Module):
         
         input = x.permute(0, 2, 1)
         # print(input.shape)
-        trf = trf.view(trf.size(0), trf.size(1), 1)
         states = [x]
         offset = 0
-        s = []
         
         # for each node, receive input from all previous intermediate nodes and x
         for i in range(self.steps):
@@ -110,13 +107,9 @@ class Network(nn.Module):
         bl_out, (h_n, c_n) = self.bilstm(input)
         bilstm_out = torch.cat((h_n[0], h_n[1]), dim=-1) 
         # print(bilstm_out.shape)
-
-        trad_out, (th_n, tc_n) = self.bilstm_tr(trf)
-        # print(th_n[0].shape)
-        trf_out = torch.cat((th_n[0], th_n[1]), dim=-1)
         
         # concat cnn_out and bilstm_out
-        out = torch.cat([cnn_out, bilstm_out, trf_out], dim=-1)
+        out = torch.cat([cnn_out, bilstm_out, trf], dim=-1)
         # print(out.shape)
         
         logits = self.fc(out)
