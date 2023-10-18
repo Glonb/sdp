@@ -118,7 +118,7 @@ class Network(nn.Module):
 
     def loss(self, x, trf, target):
         logits = self(x, trf)
-        # print(logits.shape)
+        print(logits.shape)
         return self.criterion(logits, target.float())
 
 
