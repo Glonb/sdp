@@ -1,7 +1,7 @@
 import  torch
 from    torch import nn
 import  torch.nn.functional as F
-from    operations import OPS, WeightGenerator
+from    operations import *
 from    genotypes import PRIMITIVES, Genotype
 
 
