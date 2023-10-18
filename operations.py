@@ -5,12 +5,15 @@ import  torch.nn.functional as F
 
 
 OPS = {
-    # 'none':         lambda C, stride, affine: Zero(stride),
-    'skip_connect':  lambda C: Identity(),
+    'skip_connect':    lambda C: Identity(),
+    'conv_2_1':        lambda C: ConvReLU(C, C, 2, 1),
     'conv_3_1':        lambda C: ConvReLU(C, C, 3, 1),
+    'conv_4_1':        lambda C: ConvReLU(C, C, 4, 1),
     'conv_5_1':        lambda C: ConvReLU(C, C, 5, 1),
     'conv_7_1':        lambda C: ConvReLU(C, C, 7, 1),
+    'conv_2_2':        lambda C: ConvReLU(C, C, 2, 2),
     'conv_3_2':        lambda C: ConvReLU(C, C, 3, 2),
+    'conv_4_2':        lambda C: ConvReLU(C, C, 4, 2),
     'conv_5_2':        lambda C: ConvReLU(C, C, 5, 2),
     'conv_7_2':        lambda C: ConvReLU(C, C, 7, 2),
     'sep_conv_3_1':    lambda C: SepConv(C, C, 3, 1),
