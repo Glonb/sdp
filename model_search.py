@@ -42,7 +42,7 @@ class Network(nn.Module):
         self.hidden_size = hidden_size
         self.criterion = criterion
         
-        out_dim = c * 4 + 2 * hidden_size + 18
+        out_dim = c * 4 + 2 * hidden_size
         
         self.layers = nn.ModuleList()
 
@@ -57,7 +57,7 @@ class Network(nn.Module):
 
         # adaptive pooling output
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
-        self.weight_gen = WeightGenerator(out_dim, out_dim)
+        
         self.fc = nn.Linear(out_dim, 1)
 
         # k is the total number of edges
@@ -113,10 +113,10 @@ class Network(nn.Module):
         # print(bilstm_out.shape)
 
         # concat cnn_out and bilstm_out
-        out = torch.cat([trf, cnn_out, bilstm_out], dim=-1)
+        out = torch.cat([cnn_out, bilstm_out], dim=-1)
         # print(out.shape)
-        w = self.weight_gen(out)
-        logits = self.fc(w * out)
+        
+        logits = self.fc(out)
         
         return torch.sigmoid(logits)
 
