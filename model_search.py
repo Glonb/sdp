@@ -112,7 +112,7 @@ class Network(nn.Module):
         # print(bilstm_out.shape)
 
         trad_out, (th_n, tc_n) = self.bilstm_tr(trf)
-        print(th_n[0].shape)
+        # print(th_n[0].shape)
         trf_out = torch.cat((th_n[0], th_n[1]), dim=-1)
         
         # concat cnn_out and bilstm_out
