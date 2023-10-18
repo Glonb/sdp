@@ -42,7 +42,7 @@ class Network(nn.Module):
         self.hidden_size = hidden_size
         self.criterion = criterion
         
-        out_dim = c * 4 + 2 * hidden_size + 32
+        out_dim = c * 2 + 2 * hidden_size + 32
         
         self.layers = nn.ModuleList()
 
@@ -99,7 +99,7 @@ class Network(nn.Module):
         # concat along dim=channel
         # cnn_out = torch.cat((self.global_pooling(states[-1]), self.global_pooling(states[-2])), dim=1)
 
-        pooled_states = [self.global_pooling(h) for h in states[1:]]
+        pooled_states = [self.global_pooling(h) for h in states[-2:]]
         cnn_out = torch.cat(pooled_states, dim=1)
         
         # cnn_out = self.global_pooling(states[-1])
@@ -139,7 +139,7 @@ class Network(nn.Module):
             n = 1
             start = 0
             for i in range(self.steps): # for each node
-                idx = 1
+                idx = i // 2 + 1
                 end = start + n
                 W = weights[start:end].copy()
                 edges = sorted(range(i + 1), # i+1 is the number of connection for node i
