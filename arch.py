@@ -21,7 +21,7 @@ class Arch:
         # this is the optimizer to optimize alpha parameter
         self.optimizer = optim.Adam(self.model.arch_parameters(),
                                           lr=args.arch_lr,
-                                          betas=(0.5, 0.9),
+                                          betas=(0.8, 0.9),
                                           weight_decay=args.arch_wd)
 
     def comp_unrolled_model(self, x, trf, target, eta, optimizer):
