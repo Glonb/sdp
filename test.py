@@ -52,6 +52,7 @@ def main():
         shuffle=True, pin_memory=True, num_workers=2)
 
     genotype = eval("genotypes.%s" % args.arch)
+    logging.info('Load genotype: %s', genotype)
     print('Load genotype:', genotype)
     model = Network(args.channels, args.hiddensz, genotype).cuda()
     utils.load(model, args.exp_path)
