@@ -9,7 +9,7 @@ class Network(nn.Module):
         super(Network, self).__init__()
         
         self.hidden_size = hidden_size
-        out_dim = C * 4 + 2 * hidden_size + 18
+        out_dim = C * 4 + 2 * hidden_size
 
         op_names, indices = zip(*genotype.geno)
         concat = genotype.geno_concat
@@ -33,7 +33,7 @@ class Network(nn.Module):
             self._ops += [op]
         self._indices = indices
 
-    def forward(self, x, trf):
+    def forward(self, x):
         
         input = x.permute(0, 2, 1)
         states = [x]
@@ -54,7 +54,7 @@ class Network(nn.Module):
         sum_out, (h_n, c_n) = self.bilstm(input)
         bilstm_out = torch.cat((h_n[0], h_n[1]), dim=-1)
 
-        out = torch.cat([cnn_out, bilstm_out, trf], dim=-1)
+        out = torch.cat([cnn_out, bilstm_out], dim=-1)
         
         logits = self.fc(out)
         
