@@ -46,6 +46,7 @@ logging.getLogger().addHandler(fh)
 
 
 os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu)
+os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 device = torch.device('cuda:0')
 
 
