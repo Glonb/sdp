@@ -139,7 +139,7 @@ def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
 
     valid_iter = iter(valid_queue)
 
-    for step, (x, trf, target) in enumerate(train_queue):
+    for step, (x, target) in enumerate(train_queue):
 
         batchsz = x.size(0)
         model.train()
@@ -194,7 +194,7 @@ def infer(valid_queue, model, criterion):
     model.eval()
 
     with torch.no_grad():
-        for step, (x, trf, target) in enumerate(valid_queue):
+        for step, (x, target) in enumerate(valid_queue):
 
             x, target = x.to(device), target.cuda(non_blocking=True)
             batchsz = x.size(0)
