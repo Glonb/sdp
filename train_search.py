@@ -32,6 +32,7 @@ parser.add_argument('--seed', type=int, default=2, help='random seed')
 parser.add_argument('--train_portion', type=float, default=0.5, help='portion of training/val splitting')
 parser.add_argument('--arch_lr', type=float, default=3e-4, help='learning rate for arch encoding')
 parser.add_argument('--arch_wd', type=float, default=1e-3, help='weight decay for arch encoding')
+parser.add_argument('--grad_clip', type=float, default=5, help='gradient clipping')
 args = parser.parse_args()
 
 args.exp_path += str(args.gpu)
@@ -157,6 +158,7 @@ def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
         # 2. update weight
         optimizer.zero_grad()
         loss.backward()
+        nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
         optimizer.step()
 
         prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(logits, target)
