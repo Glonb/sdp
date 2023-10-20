@@ -16,7 +16,7 @@ from    my_dataset import MyDataset
 parser = argparse.ArgumentParser("SDP")
 parser.add_argument('--data', type=str, default='xalan25', help='dataset')
 parser.add_argument('--batchsz', type=int, default=16, help='batch size')
-parser.add_argument('--lr', type=float, default=0.025, help='init learning rate')
+parser.add_argument('--lr', type=float, default=0.01, help='init learning rate')
 parser.add_argument('--momentum', type=float, default=0.9, help='momentum')
 parser.add_argument('--wd', type=float, default=3e-4, help='weight decay')
 parser.add_argument('--report_freq', type=float, default=10, help='report frequency')
@@ -81,10 +81,10 @@ def main():
   
     criterion = nn.BCELoss().cuda()
   
-    # optimizer = torch.optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd)
-    # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, float(args.epochs))
+    optimizer = torch.optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, float(args.epochs))
   
-    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
+    # optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
     # scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95)
 
     for epoch in range(args.epochs):
@@ -99,7 +99,7 @@ def main():
         valid_prec, valid_rec, valid_f1 = infer(valid_queue, model, criterion)
         print('valid precision: %.5f' %valid_prec.item())
 
-        # scheduler.step()
+        scheduler.step()
       
         utils.save(model, os.path.join(args.save, 'trained.pt'))
 
@@ -116,13 +116,12 @@ def train(train_queue, model, criterion, optimizer):
     mcc = utils.AverageMeter()
     model.train()
 
-    for step, (x, trf, target) in enumerate(train_queue):
+    for step, (x, target) in enumerate(train_queue):
         x = x.cuda()
-        trf = trf.cuda()
         target = target.cuda(non_blocking=True)
 
         optimizer.zero_grad()
-        logits = model(x, trf)
+        logits = model(x)
         # print(logits)
         loss = criterion(logits, target.float())
         loss.backward()
@@ -163,13 +162,12 @@ def infer(valid_queue, model, criterion):
     mcc = utils.AverageMeter()
     model.eval()
 
-    for step, (x, trf, target) in enumerate(valid_queue):
+    for step, (x, target) in enumerate(valid_queue):
         x = x.cuda()
-        trf = trf.cuda()
         target = target.cuda(non_blocking=True)
 
         with torch.no_grad():
-            logits = model(x, trf)
+            logits = model(x)
             # print(logits)
             loss = criterion(logits, target.float())
 
