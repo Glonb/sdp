@@ -16,7 +16,7 @@ from    my_dataset import MyDataset
 parser = argparse.ArgumentParser("SDP")
 parser.add_argument('--data', type=str, default='xalan25', help='dataset')
 parser.add_argument('--batchsz', type=int, default=16, help='batch size')
-parser.add_argument('--lr', type=float, default=0.01, help='init learning rate')
+parser.add_argument('--lr', type=float, default=0.025, help='init learning rate')
 parser.add_argument('--lr_min', type=float, default=0.001, help='min learning rate')
 parser.add_argument('--momentum', type=float, default=0.9, help='momentum')
 parser.add_argument('--wd', type=float, default=3e-4, help='weight decay')
