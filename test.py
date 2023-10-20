@@ -80,11 +80,11 @@ def infer(test_queue, model, criterion):
 
     with torch.no_grad():
 
-        for step, (x, trf, target) in enumerate(test_queue):
+        for step, (x, target) in enumerate(test_queue):
 
-            x, trf, target = x.cuda(), trf.cuda(), target.cuda(non_blocking=True)
+            x, target = x.cuda(), target.cuda(non_blocking=True)
 
-            logits = model(x, trf)
+            logits = model(x)
             loss = criterion(logits, target.float())
 
             batchsz = x.size(0)
