@@ -16,7 +16,7 @@ from    my_dataset import MyDataset
 parser = argparse.ArgumentParser("SDP")
 parser.add_argument('--data', type=str, default='xalan25', help='dataset')
 parser.add_argument('--batchsz', type=int, default=16, help='batch size')
-parser.add_argument('--lr', type=float, default=0.025, help='init learning rate')
+parser.add_argument('--lr', type=float, default=0.001, help='init learning rate')
 parser.add_argument('--lr_min', type=float, default=0.001, help='min learning rate')
 parser.add_argument('--momentum', type=float, default=0.9, help='momentum')
 parser.add_argument('--wd', type=float, default=3e-4, help='weight decay')
@@ -96,18 +96,18 @@ def main():
     logging.info("Total param size = %f MB", utils.count_parameters_in_MB(model))
 
     # this is the optimizer to optimize
-    optimizer = optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd)
-    scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, float(args.epochs), eta_min=args.lr_min)
+    # optimizer = optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd)
+    # scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, float(args.epochs), eta_min=args.lr_min)
 
-    # optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
+    optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
     # scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95)
 
     arch = Arch(model, args)
 
     for epoch in range(args.epochs):
 
-        lr = scheduler.get_last_lr()[0]
-        # lr = optimizer.param_groups[0]['lr']
+        # lr = scheduler.get_last_lr()[0]
+        lr = optimizer.param_groups[0]['lr']
         logging.info('Epoch: %d lr: %e', epoch, lr)
         print('Epoch: %d' %epoch)
 
@@ -119,7 +119,7 @@ def main():
         print('train precision: %.5f' %train_prec.item())
 
         # update lr
-        scheduler.step()
+        # scheduler.step()
 
         # validation
         valid_prec, valid_rec, valid_f1 = infer(valid_queue, model, criterion)
