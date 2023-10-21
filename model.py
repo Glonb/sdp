@@ -15,7 +15,8 @@ class Network(nn.Module):
         concat = genotype.geno_concat
         self._compile(C, op_names, indices, concat)
 
-        self.bilstm = nn.LSTM(input_size=C, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
+        # self.bilstm = nn.LSTM(input_size=C, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
+        self.gru = nn.GRU(input_size=C, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
         
         self.fc = nn.Linear(out_dim, 1)
@@ -51,10 +52,12 @@ class Network(nn.Module):
         
         cnn_out = cnn_out.view(cnn_out.size(0), -1)
 
-        sum_out, (h_n, c_n) = self.bilstm(input)
-        bilstm_out = torch.cat((h_n[0], h_n[1]), dim=-1)
+        # sum_out, (h_n, c_n) = self.bilstm(input)
+        # bilstm_out = torch.cat((h_n[0], h_n[1]), dim=-1)
+        g_out, h_n = self.gru(input)
+        gru_out = torch.cat((h_n[0], h_n[1]), dim=-1)
 
-        out = torch.cat([cnn_out, bilstm_out], dim=-1)
+        out = torch.cat([cnn_out, gru_out], dim=-1)
         
         logits = self.fc(out)
         
