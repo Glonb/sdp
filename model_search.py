@@ -54,7 +54,7 @@ class Network(nn.Module):
                 self.layers.append(layer)
 
         self.bilstm = nn.LSTM(input_size=self.c, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
-        self.gru = nn.GRU(input_size=self.c, hidden_szie=self.hidden_size, bidirectional=True, batch_first=True)
+        self.gru = nn.GRU(input_size=self.c, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
         # adaptive pooling output
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
         
