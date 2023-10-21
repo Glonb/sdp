@@ -68,7 +68,7 @@ class Network(nn.Module):
         with torch.no_grad():
             # initialize to smaller value
             self.alpha.mul_(1e-3)
-        self._arch_parameters = [self.alpha]
+        self._arch_parameters = [self.alpha,]
 
     def new(self):
         
