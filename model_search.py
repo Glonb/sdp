@@ -54,6 +54,7 @@ class Network(nn.Module):
                 self.layers.append(layer)
 
         self.bilstm = nn.LSTM(input_size=self.c, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
+        self.gru = nn.GRU(input_size=self.c, hidden_szie=self.hidden_size, bidirectional=True, batch_first=True)
         # adaptive pooling output
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
         
@@ -104,12 +105,14 @@ class Network(nn.Module):
         cnn_out = cnn_out.view(cnn_out.size(0), -1)
         # print(cnn_out.shape)
         
-        bl_out, (h_n, c_n) = self.bilstm(input)
-        bilstm_out = torch.cat((h_n[0], h_n[1]), dim=-1) 
+        # bl_out, (h_n, c_n) = self.bilstm(input)
+        # bilstm_out = torch.cat((h_n[0], h_n[1]), dim=-1) 
         # print(bilstm_out.shape)
+        g_out, h_n = self.gru(input)
+        gru_out = torch.cat((h_n[0], h_n[1]), dim=-1)
         
         # concat cnn_out and bilstm_out
-        out = torch.cat([cnn_out, bilstm_out], dim=-1)
+        out = torch.cat([cnn_out, gru_out], dim=-1)
         # print(out.shape)
         
         logits = self.fc(out)
@@ -132,7 +135,7 @@ class Network(nn.Module):
             n = 1
             start = 0
             for i in range(self.steps): # for each node
-                idx = 1
+                idx = i // 2 + 1
                 end = start + n
                 W = weights[start:end].copy()
                 edges = sorted(range(i + 1), # i+1 is the number of connection for node i
