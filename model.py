@@ -16,7 +16,7 @@ class Network(nn.Module):
         self._compile(C, op_names, indices, concat)
 
         # self.bilstm = nn.LSTM(input_size=C, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
-        self.gru = nn.GRU(input_size=C, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
+        self.gru = nn.GRU(input_size=C, hidden_size=self.hidden_size, bidirectional=True, batch_first=True, dropout=0.5)
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
         
         self.fc = nn.Linear(out_dim, 1)
