@@ -55,6 +55,7 @@ class Network(nn.Module):
 
         # self.bilstm = nn.LSTM(input_size=self.c, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
         self.gru = nn.GRU(input_size=self.c, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
+        
         # adaptive pooling output
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
         
@@ -94,8 +95,8 @@ class Network(nn.Module):
             # append one state since s is the elem-wise addition of all output
             states.append(s)
 
-        pooled_states = [self.global_pooling(h) for h in states[1:4]]
-        cnn_out = torch.cat(pooled_states, dim=1)
+        pooled_states = [self.global_pooling(h) for h in states[-1:-4]]
+        cnn_out = torch.cat(pooled_states, dim=-1)
         
         # cnn_out = self.global_pooling(states[-1])
         
