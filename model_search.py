@@ -95,7 +95,7 @@ class Network(nn.Module):
             # append one state since s is the elem-wise addition of all output
             states.append(s)
 
-        pooled_states = [self.global_pooling(h) for h in states[-1:-4]]
+        pooled_states = [self.global_pooling(h) for h in states[-3:]]
         cnn_out = torch.cat(pooled_states, dim=-1)
         
         # cnn_out = self.global_pooling(states[-1])
