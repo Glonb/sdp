@@ -7,11 +7,15 @@ import  torch.nn.functional as F
 OPS = {
     'skip_connect':    lambda C: Identity(),
     'conv_3_1':        lambda C: ConvReLU(C, C, 3, 1),
+    'conv_4_1':        lambda C: ConvReLU(C, C, 4, 1),
     'conv_5_1':        lambda C: ConvReLU(C, C, 5, 1),
+    'conv_6_1':        lambda C: ConvReLU(C, C, 6, 1),
     'conv_7_1':        lambda C: ConvReLU(C, C, 7, 1),
     'conv_9_1':        lambda C: ConvReLU(C, C, 9, 1),
     'conv_3_2':        lambda C: ConvReLU(C, C, 3, 2),
+    'conv_4_2':        lambda C: ConvReLU(C, C, 4, 2),
     'conv_5_2':        lambda C: ConvReLU(C, C, 5, 2),
+    'conv_6_2':        lambda C: ConvReLU(C, C, 6, 2),
     'conv_7_2':        lambda C: ConvReLU(C, C, 7, 2),
     'conv_9_2':        lambda C: ConvReLU(C, C, 9, 2),
     'sep_conv_3_1':    lambda C: SepConv(C, C, 3, 1),
@@ -129,24 +133,4 @@ class Identity(nn.Module):
         return x
 
 
-class Zero(nn.Module):
-   
-    def __init__(self, stride):
-        super(Zero, self).__init__()
-        self.stride = stride
-
-    def forward(self, x):
-        if self.stride == 1:
-            return x.mul(0.)
-        return x[:, :, ::self.stride].mul(0.)
-
-
-class WeightGenerator(nn.Module):
-    def __init__(self, input_dim, output_dim):
-        super(WeightGenerator, self).__init__()
-        self.fc = nn.Linear(input_dim, output_dim)
-
-    def forward(self, x):
-        weights = torch.softmax(self.fc(x), dim=1)
-        return weights
 
