@@ -32,10 +32,10 @@ PRIMITIVES = [
 ]
 
 SDP_Genotype = Genotype(
-    geno=[('skip_connect', 0),
+    geno=[('conv_9_1', 0),
           ('skip_connect', 1),
-          ('conv_9_1', 0), ('skip_connect', 2),
-          ('conv_9_1', 0), ('skip_connect', 2)],
+          ('skip_connect', 1),
+          ('skip_connect', 3)], 
     geno_concat=range(1, 5)
 )
 SDP = SDP_Genotype
