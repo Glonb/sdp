@@ -53,7 +53,7 @@ def main():
     logging.info("args = %s", args)
 
     data_path = '/kaggle/input/new-sdp/'
-    train_data = MyDataset(data_path + args.data + '1_train.pt', data_path + args.data + '.csv')
+    train_data = MyDataset(data_path + args.data + '_train.pt', data_path + args.data + '_oversampled.csv')
 
     # num_data = len(train_data) 
     # indices = list(range(num_data))
