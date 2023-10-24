@@ -42,7 +42,7 @@ class Network(nn.Module):
         self.hidden_size = hidden_size
         self.criterion = criterion
         
-        out_dim = c * 2 + 2 * hidden_size
+        out_dim = c * 2 + 2 * hidden_size + 18
         
         self.layers = nn.ModuleList()
 
@@ -78,7 +78,7 @@ class Network(nn.Module):
             x.data.copy_(y.data)
         return model_new
 
-    def forward(self, x):
+    def forward(self, x, trf):
         
         input = x.permute(0, 2, 1)
         # print(input.shape)
@@ -106,19 +106,20 @@ class Network(nn.Module):
         # bl_out, (h_n, c_n) = self.bilstm(input)
         # bilstm_out = torch.cat((h_n[0], h_n[1]), dim=-1) 
         # print(bilstm_out.shape)
+        
         g_out, h_n = self.gru(input)
         gru_out = torch.cat((h_n[0], h_n[1]), dim=-1)
         
         # concat cnn_out and bilstm_out
-        out = torch.cat([cnn_out, gru_out], dim=-1)
+        out = torch.cat([trf, cnn_out, gru_out], dim=-1)
         # print(out.shape)
         
         logits = self.fc(out)
         
         return torch.sigmoid(logits)
 
-    def loss(self, x, target):
-        logits = self(x)
+    def loss(self, x, trf, target):
+        logits = self(x, trf)
         # print(logits.shape)
         return self.criterion(logits, target.float())
 
