@@ -46,14 +46,10 @@ class Network(nn.Module):
             h = op(h)
             states += [h]
 
-        max_len = max(tensor.size(-1) for tensor in states[-4:])
-        padding_states = [F.pad(tensor, (0, max_len - tensor.size(-1))) for tensor in states[-4:]]
-        second_out = torch.stack(padding_states[:2], dim=-1).sum(dim=-1)
-        last_out = torch.stack(padding_states[2:4], dim=-1).sum(dim=-1)
-        second_out = self.global_pooling(second_out)
-        last_out = self.global_pooling(last_out)
-        cnn_out = torch.cat((second_out, last_out), dim=-1)
-        # pooled_states = [self.global_pooling(h) for h in states[-2:]]
+        pooled_states = [self.global_pooling(h) for h in states[-4:]]
+        first_out = pooled_states[0] + pooled_states[1]
+        seconde_out = pooled_states[2] + pooled_states[3]
+        cnn_out = torch.cat((first_out, second_out), dim=1)
         # cnn_out = torch.cat(pooled_states, dim=1)
         # print(cnn_out.shape)
         
