@@ -101,7 +101,7 @@ def main():
     # scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, float(args.epochs), eta_min=args.lr_min)
 
     optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
-    scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95)
+    scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
 
     arch = Arch(model, args)
 
