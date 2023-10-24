@@ -52,7 +52,7 @@ class Arch:
 
         return unrolled_model
 
-    def step(self, x_train, trf_search, target_train, x_valid, trf_valid, target_valid, eta, optimizer, unrolled):
+    def step(self, x_train, trf_train, target_train, x_valid, trf_valid, target_valid, eta, optimizer, unrolled):
         """
         update alpha parameter by manually computing the gradients
         :param optimizer: theta optimizer
