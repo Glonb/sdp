@@ -1,5 +1,6 @@
 import  torch
 import  torch.nn as nn
+import  torch.nn.functional as F
 from    operations import *
 
 
@@ -9,7 +10,7 @@ class Network(nn.Module):
         super(Network, self).__init__()
         
         self.hidden_size = hidden_size
-        out_dim = C * 3 + 2 * hidden_size
+        out_dim = C + 2 * hidden_size
 
         op_names, indices = zip(*genotype.geno)
         concat = genotype.geno_concat
@@ -44,9 +45,13 @@ class Network(nn.Module):
             op = self._ops[i]
             h = op(h)
             states += [h]
-            
-        pooled_states = [self.global_pooling(h) for h in states[-3:]]
-        cnn_out = torch.cat(pooled_states, dim=1)
+
+        max_len = max(tensor.size(-1) for tensor in states[-2:])
+        padding_states = [F.pad(tensor, (0, max_len - tensor.size(-1))) for tensor in states[-2:]]
+        cnn_out = torch.stack(padding_states, dim=-1).sum(dim=-1)
+        cnn_out = self.global_pooling(cnn_out)
+        # pooled_states = [self.global_pooling(h) for h in states[-2:]]
+        # cnn_out = torch.cat(pooled_states, dim=1)
         # print(cnn_out.shape)
         
         cnn_out = cnn_out.view(cnn_out.size(0), -1)
