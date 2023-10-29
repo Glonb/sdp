@@ -114,13 +114,13 @@ class Network(nn.Module):
 
         _, th_n = self.tr_gru(trf)
         trf_out = th_n[0]
-        # concat cnn_out and bilstm_out
+        
         out = torch.cat([trf_out, cnn_out, gru_out], dim=-1)
         # print(out.shape)
         
         logits = self.fc(out)
         
-        return torch.sigmoid(logits)
+        return logits
 
     def loss(self, x, trf, target):
         logits = self(x, trf)
