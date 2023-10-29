@@ -59,7 +59,7 @@ def main():
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
 
-    criterion = nn.BCEWithLogitsLoss().cuda()
+    criterion = nn.BCELoss().cuda()
   
     test_prec, test_rec, test_f1 = infer(test_queue, model, criterion)
     
