@@ -78,8 +78,9 @@ def main():
     model = Network(args.channels, args.hiddensz, genotype).cuda()
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
-  
-    criterion = nn.BCELoss().cuda()
+
+    pos_weight = torch.tensor(5.0)
+    criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight).cuda()
   
     # optimizer = torch.optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd)
     # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, float(args.epochs))
