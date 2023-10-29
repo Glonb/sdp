@@ -68,4 +68,4 @@ class Network(nn.Module):
         
         logits = self.fc(out)
         
-        return torch.sigmoid(logits)
+        return logits
