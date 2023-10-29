@@ -91,7 +91,7 @@ def main():
     valid_queue = torch.utils.data.DataLoader(
         train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
 
-    pos_weight = torch.tensor(2.0)
+    pos_weight = torch.tensor(5.0)
     criterion = nn.BCELoss(pos_weight = pos_weight).to(device)
     model = Network(args.channels, args.layers, args.hiddensz, criterion).to(device)
 
