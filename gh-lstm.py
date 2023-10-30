@@ -71,7 +71,7 @@ criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 train_data = MyDataset('/kaggle/input/sdp-own/ant16_train.pt', '/kaggle/input/sdp-own/ant16.csv')
-test_data = MyDataset('/kaggle/input/sdp-own/ant16_train.pt', '/kaggle/input/sdp-own/ant17.csv')
+test_data = MyDataset('/kaggle/input/sdp-own/ant17_test.pt', '/kaggle/input/sdp-own/ant17.csv')
 
 batch_size = 2048
 train_dataloader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
