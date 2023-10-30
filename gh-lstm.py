@@ -70,10 +70,12 @@ criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
 # 定义优化器
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-dataset = MyDataset('/kaggle/input/sdp-own/ant16_train.pt', '/kaggle/input/sdp-own/ant16.csv')
+train_data = MyDataset('/kaggle/input/sdp-own/ant16_train.pt', '/kaggle/input/sdp-own/ant16.csv')
+test_data = MyDataset('/kaggle/input/sdp-own/ant16_train.pt', '/kaggle/input/sdp-own/ant17.csv')
 
 batch_size = 2048
-dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+train_dataloader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
+test_dataloader = DataLoader(test_data, batch_size=batch_size, shuffle=True)
 
 # 训练模型和预测的过程需要根据你的数据和训练流程进行调整
 for epoch in range(200):
@@ -84,7 +86,7 @@ for epoch in range(200):
     recall = utils.AverageMeter()
     f_measure = utils.AverageMeter()
 
-    for i, (emb_data, tr_data, label) in enumerate(dataloader):
+    for i, (emb_data, tr_data, label) in enumerate(train_dataloader):
         emb_data = emb_data.to(device)
         tr_data = tr_data.to(device)
         label = label.to(device)
@@ -106,3 +108,31 @@ for epoch in range(200):
 
     print(f'Epoch {epoch + 1}/{200}, Loss: {losses.avg}, Precision: {precision.avg}, Recall: {recall.avg}, F1 Score: {f_measure.avg}')
 
+model.eval
+with torch.no_grad():
+    losses = utils.AverageMeter()
+    precision = utils.AverageMeter()
+    recall = utils.AverageMeter()
+    f_measure = utils.AverageMeter()
+
+    for i, (emb_data, tr_data, label) in enumerate(test_dataloader):
+        emb_data = emb_data.to(device)
+        tr_data = tr_data.to(device)
+        label = label.to(device)
+
+        optimizer.zero_grad()
+        sce = emb_data.permute(0, 2, 1)
+        trf = tr_data.unsqueeze(1)
+        output = model(sce, trf)
+        loss = criterion(output, label.float())
+
+        loss.backward()
+        optimizer.step()
+
+        prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(output, label)
+        losses.update(loss.item(), batch_size)
+        precision.update(prec, batch_size)
+        recall.update(rec, batch_size)
+        f_measure.update(f1, batch_size)
+
+    print(f'Test Loss: {losses.avg}, Precision: {precision.avg}, Recall: {recall.avg}, F1 Score: {f_measure.avg}')
