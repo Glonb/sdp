@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import utils
 from torch.utils.data import DataLoader
-
 from my_dataset import MyDataset
 
 
@@ -11,27 +11,6 @@ if torch.cuda.is_available():
     device = torch.device("cuda")
 else:
     device = torch.device("cpu")
-
-def metrics(output, target, threshold = 0.5):
-
-    pred = (output > threshold).long()
-    
-    # Compute True Positives, False Positives, False Negatives, True Negatives
-    tp = (pred == target) & (target == 1)
-    fp = (pred == 1) & (target == 0)
-    fn = (pred == 0) & (target == 1)
-    tn = (pred == target) & (target == 0)
-    
-    # accuracy = (tp.sum() + tn.sum()) / (tp.sum() + fp.sum() + fn.sum() + tn.sum() + 1e-10)
-    precision = tp.sum() / (tp.sum() + fp.sum() + 1e-10)
-    recall = tp.sum() / (tp.sum() + fn.sum() + 1e-10)
-    fpr = fp.sum() / (fp.sum() + tn.sum() + 1e-10)
-    fnr = fn.sum() / (fn.sum() + tn.sum() + 1e-10)
-    f1 = 2 * precision * recall / (precision + recall + 1e-10)
-    g1 = 2 * recall * (1 - fpr) / (recall - fpr + 1)
-    mcc = (tp.sum() * tn.sum() - fp.sum() * fn.sum()) / (torch.sqrt((tp.sum() + fp.sum()) * (tp.sum() + fn.sum()) * (tn.sum() + fp.sum()) * (tn.sum() + fn.sum()))+ 1e-10)
-    
-    return  precision, recall, fpr, fnr, f1, g1, mcc
 
 
 class MyModel(nn.Module):
@@ -93,7 +72,8 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 dataset = MyDataset('/kaggle/input/sdp-own/ant16_train.pt', '/kaggle/input/sdp-own/ant16.csv')
 
-dataloader = DataLoader(dataset, batch_size=2048, shuffle=True)
+batch_size = 2048
+dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
 # 训练模型和预测的过程需要根据你的数据和训练流程进行调整
 for epoch in range(200):
@@ -101,6 +81,10 @@ for epoch in range(200):
     lr = optimizer.param_groups[0]['lr']
     print('Epoch: %d' % epoch)
     total_loss = 0.0
+    losses = utils.AverageMeter()
+    precision = utils.AverageMeter()
+    recall = utils.AverageMeter()
+    f_measure = utils.AverageMeter()
 
     for i, (emb_data, tr_data, label) in enumerate(dataloader):
         emb_data = emb_data.to(device)
@@ -116,9 +100,15 @@ for epoch in range(200):
         loss.backward()
         optimizer.step()
 
+        prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(logits, target)
+        losses.update(loss.item(), batch_size)
+        precision.update(prec, batch_size)
+        recall.update(rec, batch_size)
+        f_measure.update(f1, batch_size)
+
         total_loss += loss.item()
 
     print(f'Epoch {epoch + 1}/ {200}, Loss: {total_loss / len(dataloader)}')
-
-
+    print(f'Epoch {epoch + 1}/{200}, Loss: {losses.avg}, Precision: {precision.avg},
+            Recall: {recall.avg}, F1 Score: {f_measure.avg}')
 
