@@ -53,6 +53,7 @@ class MyModel(nn.Module):
 
         # 应用门控机制
         gate_output = self.sigmoid(self.sce_gate(lstm_out_last))
+        print(gate_output.shape)
         gated_lstm_out = lstm_out * gate_output.unsqueeze(1)
 
         # 处理promise_input数据
@@ -61,10 +62,12 @@ class MyModel(nn.Module):
 
         # 应用门控机制
         promise_gate_output = self.sigmoid(self.promise_gate(promise_lstm_out_last))
+        print(promise_gate_output.shape)
         gated_promise_lstm_out = promise_lstm_out * promise_gate_output.unsqueeze(1)
 
         # 合并两个部分
         merged = torch.cat((gated_lstm_out, gated_promise_lstm_out), dim=1)
+        print(merged.shape)
 
         # 全连接层
         fc_output = self.fc(merged)
