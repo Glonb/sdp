@@ -73,7 +73,7 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 train_data = MyDataset('/kaggle/input/sdp-own/poi25_train.pt', '/kaggle/input/sdp-own/poi25.csv')
 test_data = MyDataset('/kaggle/input/sdp-own/poi30_test.pt', '/kaggle/input/sdp-own/poi30.csv')
 
-batch_size = 1024
+batch_size = 512
 train_dataloader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
 test_dataloader = DataLoader(test_data, batch_size=batch_size, shuffle=True)
 
