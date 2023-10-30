@@ -94,9 +94,6 @@ for epoch in range(200):
     total_loss = 0.0
 
     for i, (emb_data, tr_data, label) in enumerate(dataloader):
-        print(emb_data.shape)
-        print(tr_data.shape)
-        print(label)
 
         optimizer.zero_grad()
 
