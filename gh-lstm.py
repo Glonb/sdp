@@ -6,6 +6,12 @@ from torch.utils.data import DataLoader
 from my_dataset import MyDataset
 
 
+# 检查 GPU 可用性
+if torch.cuda.is_available():
+    device = torch.device("cuda")
+else:
+    device = torch.device("cpu")
+
 def metrics(output, target, threshold = 0.5):
 
     pred = (output > threshold).long()
@@ -76,7 +82,7 @@ class MyModel(nn.Module):
 
 
 # 创建模型实例
-model = MyModel(input_dim=40, hidden_dim=128)
+model = MyModel(input_dim=40, hidden_dim=128).to(device)
 
 # 定义损失函数
 pos_weight = torch.tensor(2.0)
@@ -97,6 +103,9 @@ for epoch in range(200):
     total_loss = 0.0
 
     for i, (emb_data, tr_data, label) in enumerate(dataloader):
+        emb_data = emb_data.to(device)
+        tr_data = tr_data.to(device)
+        label = label.to(device)
 
         optimizer.zero_grad()
         sce = emb_data.permute(0, 2, 1)
