@@ -64,7 +64,7 @@ class MyModel(nn.Module):
 model = MyModel(input_dim=40, hidden_dim=128).to(device)
 
 # 定义损失函数
-pos_weight = torch.tensor(0.7)
+pos_weight = torch.tensor(2.0)
 criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
 
 # 定义优化器
