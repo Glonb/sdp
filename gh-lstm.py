@@ -100,7 +100,7 @@ for epoch in range(200):
         loss.backward()
         optimizer.step()
 
-        prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(output, target)
+        prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(output, label)
         losses.update(loss.item(), batch_size)
         precision.update(prec, batch_size)
         recall.update(rec, batch_size)
