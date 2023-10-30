@@ -6,6 +6,28 @@ from torch.utils.data import DataLoader
 from my_dataset import MyDataset
 
 
+def metrics(output, target, threshold = 0.5):
+
+    pred = (output > threshold).long()
+    
+    # Compute True Positives, False Positives, False Negatives, True Negatives
+    tp = (pred == target) & (target == 1)
+    fp = (pred == 1) & (target == 0)
+    fn = (pred == 0) & (target == 1)
+    tn = (pred == target) & (target == 0)
+    
+    # accuracy = (tp.sum() + tn.sum()) / (tp.sum() + fp.sum() + fn.sum() + tn.sum() + 1e-10)
+    precision = tp.sum() / (tp.sum() + fp.sum() + 1e-10)
+    recall = tp.sum() / (tp.sum() + fn.sum() + 1e-10)
+    fpr = fp.sum() / (fp.sum() + tn.sum() + 1e-10)
+    fnr = fn.sum() / (fn.sum() + tn.sum() + 1e-10)
+    f1 = 2 * precision * recall / (precision + recall + 1e-10)
+    g1 = 2 * recall * (1 - fpr) / (recall - fpr + 1)
+    mcc = (tp.sum() * tn.sum() - fp.sum() * fn.sum()) / (torch.sqrt((tp.sum() + fp.sum()) * (tp.sum() + fn.sum()) * (tn.sum() + fp.sum()) * (tn.sum() + fn.sum()))+ 1e-10)
+    
+    return  precision, recall, fpr, fnr, f1, g1, mcc
+
+
 class MyModel(nn.Module):
     def __init__(self, input_dim, hidden_dim):
         super(MyModel, self).__init__()
