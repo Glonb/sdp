@@ -96,8 +96,9 @@ for epoch in range(200):
     for i, (emb_data, tr_data, label) in enumerate(dataloader):
 
         optimizer.zero_grad()
-
-        output = model(emb_data, tr_data)
+        sce = emb_data.permute(0, 2, 1)
+        trf = tr_data.unsqueeze(1)
+        output = model(sce, trf)
         loss = criterion(output, label)
 
         loss.backward()
