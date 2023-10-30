@@ -109,6 +109,5 @@ for epoch in range(200):
         total_loss += loss.item()
 
     print(f'Epoch {epoch + 1}/{200}, Loss: {total_loss / len(dataloader)}')
-    print(f'Epoch {epoch + 1}/{200}, Loss: {losses.avg}, Precision: {precision.avg},
-            Recall: {recall.avg}, F1 Score: {f_measure.avg}')
+    print(f'Epoch {epoch + 1}/{200}, Loss: {losses.avg}, Precision: {precision.avg}, Recall: {recall.avg}, F1 Score: {f_measure.avg}')
 
