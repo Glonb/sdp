@@ -113,8 +113,8 @@ class Network(nn.Module):
         # _, h_n = self.gru(input)
         # gru_out = torch.cat((h_n[0], h_n[1]), dim=-1)
 
-        # _, th_n = self.tr_gru(trf)
-        # trf_out = th_n[0]
+        _, th_n = self.tr_gru(trf)
+        trf_out = th_n[0]
         
         out = torch.cat([trf_out, cnn_out], dim=-1)
         # print(out.shape)
