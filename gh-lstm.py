@@ -80,7 +80,6 @@ for epoch in range(200):
     model.train()
     lr = optimizer.param_groups[0]['lr']
     print('Epoch: %d' % epoch)
-    total_loss = 0.0
     losses = utils.AverageMeter()
     precision = utils.AverageMeter()
     recall = utils.AverageMeter()
@@ -106,8 +105,5 @@ for epoch in range(200):
         recall.update(rec, batch_size)
         f_measure.update(f1, batch_size)
 
-        total_loss += loss.item()
-
-    print(f'Epoch {epoch + 1}/{200}, Loss: {total_loss / len(dataloader)}')
     print(f'Epoch {epoch + 1}/{200}, Loss: {losses.avg}, Precision: {precision.avg}, Recall: {recall.avg}, F1 Score: {f_measure.avg}')
 
