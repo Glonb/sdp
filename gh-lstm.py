@@ -120,14 +120,10 @@ with torch.no_grad():
         tr_data = tr_data.to(device)
         label = label.to(device)
 
-        optimizer.zero_grad()
         sce = emb_data.permute(0, 2, 1)
         trf = tr_data.unsqueeze(1)
         output = model(sce, trf)
         loss = criterion(output, label.float())
-
-        loss.backward()
-        optimizer.step()
 
         prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(output, label)
         losses.update(loss.item(), batch_size)
