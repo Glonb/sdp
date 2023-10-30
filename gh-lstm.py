@@ -82,7 +82,7 @@ criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
 # 定义优化器
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-dataset = MyDataset('kaggle/input/sdp-own/ant16_train.pt', 'kaggle/input/sdp-own/ant16.csv')
+dataset = MyDataset('/kaggle/input/sdp-own/ant16_train.pt', '/kaggle/input/sdp-own/ant16.csv')
 
 dataloader = DataLoader(dataset, batch_size=2048, shuffle=True)
 
