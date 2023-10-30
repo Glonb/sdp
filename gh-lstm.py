@@ -78,8 +78,7 @@ dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 # 训练模型和预测的过程需要根据你的数据和训练流程进行调整
 for epoch in range(200):
     model.train()
-    lr = optimizer.param_groups[0]['lr']
-    print('Epoch: %d' % epoch)
+    # lr = optimizer.param_groups[0]['lr']
     losses = utils.AverageMeter()
     precision = utils.AverageMeter()
     recall = utils.AverageMeter()
