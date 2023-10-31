@@ -41,7 +41,7 @@ class MyModel(nn.Module):
 
         # 应用门控机制
         # sce_gate_output = self.sce_gate(sce_lstm_out_last)
-        sce_gate_output = self.sigmoid(self.sce_gate(lstm_out_last))
+        sce_gate_output = self.sigmoid(self.sce_gate(sce_lstm_out_last))
         print(sce_gate_output.shape)
         gated_lstm_out = sce_lstm_out_last * sce_gate_output.unsqueeze(1)
 
