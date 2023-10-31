@@ -57,7 +57,7 @@ class MyModel(nn.Module):
         gated_promise_lstm_out = promise_lstm_out_last * promise_gate_output.unsqueeze(1)
 
         # 合并两个部分
-        merged = torch.cat((gated_sce_lstm_output, gated_promise_lstm_output), dim=-1)
+        merged = torch.cat((gated_sce_lstm_out, gated_promise_lstm_out), dim=-1)
         print(merged.shape)
 
         # 全连接层
