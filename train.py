@@ -12,6 +12,7 @@ import  torch.backends.cudnn as cudnn
 import  pandas as pd
 from    model import Network
 from    my_dataset import MyDataset
+from    sklearn.utils.class_weight import compute_class_weight
 
 parser = argparse.ArgumentParser("SDP")
 parser.add_argument('--data', type=str, default='xalan25', help='dataset')
