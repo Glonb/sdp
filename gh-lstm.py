@@ -5,6 +5,7 @@ import pandas as pd
 import utils
 from torch.utils.data import DataLoader
 from my_dataset import MyDataset
+from sklearn.utils.class_weight import compute_class_weight
 
 
 # 检查 GPU 可用性
