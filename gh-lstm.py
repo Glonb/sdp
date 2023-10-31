@@ -29,15 +29,16 @@ class MyModel(nn.Module):
         self.promise_gate = nn.Linear(hidden_dim, 128)
 
         # Sigmoid激活函数
-        self.sigmoid = nn.Sigmoid()
+        # self.sigmoid = nn.Sigmoid()
 
     def forward(self, sce_input, promise_input):
         # 处理sce_input序列数据
-        lstm_out, _ = self.sce_lstm(sce_input)
-        lstm_out_last = lstm_out[:, -1, :]  # 取最后一个时间步的输出
+        sce_lstm_out, _ = self.sce_lstm(sce_input)
+        sce_lstm_out_last = sce_lstm_out[:, -1, :]  # 取最后一个时间步的输出
 
         # 应用门控机制
-        gate_output = self.sigmoid(self.sce_gate(lstm_out_last))
+        sce_gate_output = self.sce_gate(sce_lstm_out_last)
+        # gate_output = self.sigmoid(self.sce_gate(lstm_out_last))
         # print(gate_output.shape)
         # gated_lstm_out = lstm_out * gate_output.unsqueeze(1)
 
@@ -46,12 +47,13 @@ class MyModel(nn.Module):
         promise_lstm_out_last = promise_lstm_out[:, -1, :]  # 取最后一个时间步的输出
 
         # 应用门控机制
-        promise_gate_output = self.sigmoid(self.promise_gate(promise_lstm_out_last))
+        promise_gate_output = self.promise_gate(promise_lstm_out_last)
+        # promise_gate_output = self.sigmoid(self.promise_gate(promise_lstm_out_last))
         # print(promise_gate_output.shape)
         # gated_promise_lstm_out = promise_lstm_out * promise_gate_output.unsqueeze(1)
 
         # 合并两个部分
-        merged = torch.cat((gate_output, promise_gate_output), dim=1)
+        merged = torch.cat((sce_gate_output, promise_gate_output), dim=-1)
         # print(merged.shape)
 
         # 全连接层
