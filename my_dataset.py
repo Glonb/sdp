@@ -15,6 +15,5 @@ class MyDataset(Dataset):
     def __getitem__(self, idx):
         tr_features = torch.tensor(self.csv_data.iloc[idx, 1:-3], dtype=torch.float32)
         label = torch.tensor(self.csv_data.iloc[idx, -1], dtype=torch.long).unsqueeze(0)
-        label[label != 0] = 1
 
         return self.emb_data[idx].float(), tr_features, label
