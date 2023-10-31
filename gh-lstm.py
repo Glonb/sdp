@@ -44,7 +44,7 @@ class MyModel(nn.Module):
         sce_gate_output = self.sigmoid(self.sce_gate(sce_lstm_out_last))
         # print(sce_gate_output.shape)
         gated_sce_lstm_out = sce_lstm_out_last * sce_gate_output.unsqueeze(1)
-        print(gates_sce_lstm_out.shape)
+        print(gated_sce_lstm_out.shape)
 
         # 处理promise_input数据
         promise_lstm_out, _ = self.promise_lstm(promise_input)
