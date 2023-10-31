@@ -60,18 +60,25 @@ class MyModel(nn.Module):
         return fc_output
 
 
+train_data = MyDataset('/kaggle/input/sdp-own/poi25_train.pt', '/kaggle/input/sdp-own/poi25.csv')
+test_data = MyDataset('/kaggle/input/sdp-own/poi30_test.pt', '/kaggle/input/sdp-own/poi30.csv')
+df = pd.read_csv('/kaggle/input/sdp-own/poi25.csv')
+labels = df["bug"]
+# print(labels.shape)
+
+class_weights = compute_class_weight(class_weight='balanced', classes=[0, 1], y=labels)
+print(class_weights)
+pos_weight = torch.tensor(class_weights[1] / class_weights[0])
+print(pos_weight)
+
 # 创建模型实例
 model = MyModel(input_dim=40, hidden_dim=128).to(device)
 
 # 定义损失函数
-pos_weight = torch.tensor(1.0)
 criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
 
 # 定义优化器
 optimizer = optim.Adam(model.parameters(), lr=0.001)
-
-train_data = MyDataset('/kaggle/input/sdp-own/poi25_train.pt', '/kaggle/input/sdp-own/poi25.csv')
-test_data = MyDataset('/kaggle/input/sdp-own/poi30_test.pt', '/kaggle/input/sdp-own/poi30.csv')
 
 batch_size = 64
 train_dataloader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
