@@ -21,9 +21,9 @@ class Network(nn.Module):
         # self.gru = nn.GRU(input_size=C, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
         self.tr_gru = nn.GRU(input_size=18, hidden_size=48, batch_first=True)
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
-        self.cnn_gate = nn.Linear(C * 2, C * 2)
-        self.tr_gate = nn.Linear(48, 48)
-        self.sigmoid = nn.Sigmoid()
+        # self.cnn_gate = nn.Linear(C * 2, C * 2)
+        # self.tr_gate = nn.Linear(48, 48)
+        # self.sigmoid = nn.Sigmoid()
         self.fc = nn.Linear(out_dim, 1)
 
     def _compile(self, C, op_names, indices, concat):
@@ -59,8 +59,8 @@ class Network(nn.Module):
         # print(cnn_out.shape)
         
         cnn_out = cnn_out.view(cnn_out.size(0), -1)
-        cnn_gate_out = self.sigmoid(self.cnn_gate(cnn_out))
-        cnn_out = cnn_out * cnn_gate_out
+        # cnn_gate_out = self.sigmoid(self.cnn_gate(cnn_out))
+        # cnn_out = cnn_out * cnn_gate_out
 
         # sum_out, (h_n, c_n) = self.bilstm(input)
         # bilstm_out = torch.cat((h_n[0], h_n[1]), dim=-1)
@@ -69,8 +69,8 @@ class Network(nn.Module):
 
         _, th_n = self.tr_gru(trf)
         trf_out = th_n[0]
-        trf_gate_out = self.sigmoid(self.tr_gate(trf_out))
-        trf_out = trf_out * trf_gate_out
+        # trf_gate_out = self.sigmoid(self.tr_gate(trf_out))
+        # trf_out = trf_out * trf_gate_out
         out = torch.cat([trf_out, cnn_out], dim=-1)
         
         logits = self.fc(out)
