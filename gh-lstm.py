@@ -37,28 +37,24 @@ class MyModel(nn.Module):
         # 处理sce_input序列数据
         sce_lstm_out, _ = self.sce_lstm(sce_input)
         sce_lstm_out_last = sce_lstm_out[:, -1, :]  # 取最后一个时间步的输出
-        # print(sce_lstm_out_last.shape)
 
         # 应用门控机制
-        # sce_gate_output = self.sce_gate(sce_lstm_out_last)
         sce_gate_output = self.sigmoid(self.sce_gate(sce_lstm_out_last))
         # print(sce_gate_output.shape)
         gated_sce_lstm_out = sce_lstm_out_last * sce_gate_output
-        print(gated_sce_lstm_out.shape)
 
         # 处理promise_input数据
         promise_lstm_out, _ = self.promise_lstm(promise_input)
         promise_lstm_out_last = promise_lstm_out[:, -1, :]  # 取最后一个时间步的输出
 
         # 应用门控机制
-        # promise_gate_output = self.promise_gate(promise_lstm_out_last)
         promise_gate_output = self.sigmoid(self.promise_gate(promise_lstm_out_last))
         # print(promise_gate_output.shape)
         gated_promise_lstm_out = promise_lstm_out_last * promise_gate_output
 
         # 合并两个部分
         merged = torch.cat((gated_sce_lstm_out, gated_promise_lstm_out), dim=-1)
-        print(merged.shape)
+        # print(merged.shape)
 
         # 全连接层
         fc_output = self.fc(merged)
@@ -70,10 +66,10 @@ train_data = MyDataset('/kaggle/input/sdp-own/poi25_train.pt', '/kaggle/input/sd
 test_data = MyDataset('/kaggle/input/sdp-own/poi30_test.pt', '/kaggle/input/sdp-own/poi30.csv')
 df = pd.read_csv('/kaggle/input/sdp-own/poi25.csv')
 labels = df["bug"]
-# print(labels.shape)
 
 class_weights = compute_class_weight(class_weight='balanced', classes=[0, 1], y=labels)
 print(class_weights)
+
 pos_weight = torch.tensor(class_weights[1] / class_weights[0])
 print(pos_weight)
 
@@ -119,7 +115,7 @@ for epoch in range(200):
         recall.update(rec, batch_size)
         f_measure.update(f1, batch_size)
 
-    print(f'Epoch {epoch + 1}/{200}, Loss: {losses.avg}, Precision: {precision.avg}, Recall: {recall.avg}, F1 Score: {f_measure.avg}')
+    print(f'Epoch {epoch + 1}/{200}, Loss: {losses.avg:.3f}, Precision: {precision.avg:.3f}, Recall: {recall.avg:.3f}, F1 Score: {f_measure.avg:.3f}')
 
 model.eval
 with torch.no_grad():
@@ -144,4 +140,4 @@ with torch.no_grad():
         recall.update(rec, batch_size)
         f_measure.update(f1, batch_size)
 
-    print(f'Test Loss: {losses.avg}, Precision: {precision.avg}, Recall: {recall.avg}, F1 Score: {f_measure.avg}')
+    print(f'Test Loss: {losses.avg:.3f}, Precision: {precision.avg:.3f}, Recall: {recall.avg:.3f}, F1 Score: {f_measure.avg:.3f}')
