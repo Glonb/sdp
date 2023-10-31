@@ -60,7 +60,9 @@ class Network(nn.Module):
         
         # adaptive pooling output
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
-        
+
+        self.cnn_gate = nn.Linear(c * 2, c * 2)
+        self.tr_gate = nn.Linear(48, 48)
         self.fc = nn.Linear(out_dim, 1)
 
         # k is the total number of edges
@@ -104,6 +106,8 @@ class Network(nn.Module):
         # cnn_out = self.global_pooling(states[-1])
         
         cnn_out = cnn_out.view(cnn_out.size(0), -1)
+        cnn_gate_out = nn.Sigmoid(self.cnn_gate(cnn_out))
+        cnn_out = cnn_out * cnn_gate_out
         # print(cnn_out.shape)
         
         # bl_out, (h_n, c_n) = self.bilstm(input)
@@ -115,6 +119,8 @@ class Network(nn.Module):
 
         _, th_n = self.tr_gru(trf)
         trf_out = th_n[0]
+        trf_gate_out = nn.Sigmoid(self.tr_gate(trf_out))
+        trf_out = trf_out * trf_gate_out
         
         out = torch.cat([trf_out, cnn_out], dim=-1)
         # print(out.shape)
