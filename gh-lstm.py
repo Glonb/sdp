@@ -43,7 +43,7 @@ class MyModel(nn.Module):
         # sce_gate_output = self.sce_gate(sce_lstm_out_last)
         sce_gate_output = self.sigmoid(self.sce_gate(sce_lstm_out_last))
         # print(sce_gate_output.shape)
-        gated_sce_lstm_out = sce_lstm_out_last * sce_gate_output.unsqueeze(1)
+        gated_sce_lstm_out = sce_lstm_out_last * sce_gate_output
         print(gated_sce_lstm_out.shape)
 
         # 处理promise_input数据
@@ -54,7 +54,7 @@ class MyModel(nn.Module):
         # promise_gate_output = self.promise_gate(promise_lstm_out_last)
         promise_gate_output = self.sigmoid(self.promise_gate(promise_lstm_out_last))
         # print(promise_gate_output.shape)
-        gated_promise_lstm_out = promise_lstm_out_last * promise_gate_output.unsqueeze(1)
+        gated_promise_lstm_out = promise_lstm_out_last * promise_gate_output
 
         # 合并两个部分
         merged = torch.cat((gated_sce_lstm_out, gated_promise_lstm_out), dim=-1)
