@@ -7,7 +7,7 @@ import  argparse
 import  torch.nn as nn
 from    torch import optim
 import  torch.backends.cudnn as cudnn
-
+from    sklearn.utils.class_weight import compute_class_weight
 from    model_search import Network
 from    arch import Arch
 from    my_dataset import MyDataset
@@ -71,6 +71,8 @@ def main():
 
     data_path = '/kaggle/input/sdp-own/'
     train_data = MyDataset(data_path + args.data + '_train.pt', data_path + args.data + '.csv')
+    df = pd.read_csv(data_path + args.data + '.csv')
+    labels = df["bug"]
 
     # num_train = len(train_data) 
     # indices = list(range(num_train))
@@ -91,7 +93,8 @@ def main():
     valid_queue = torch.utils.data.DataLoader(
         train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
 
-    pos_weight = torch.tensor(1.0)
+    class_weight = compute_class_weight(class_weight='balenced', class=[0, 1], y=labels)
+    pos_weight = torch.tensor(class_weight[0] / class_weight[1])
     criterion = nn.BCEWithLogitsLoss(pos_weight = pos_weight).to(device)
     model = Network(args.channels, args.layers, args.hiddensz, criterion).to(device)
 
