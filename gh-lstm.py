@@ -87,7 +87,7 @@ class MyModel(nn.Module):
         # 全连接层
         fc_output = self.fc(merged)
 
-        return self.sigmoid(fc_output)
+        return fc_output
 
 
 data_loc = '/kaggle/input/sdp-own/'
