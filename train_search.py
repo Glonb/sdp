@@ -12,6 +12,7 @@ from    sklearn.utils.class_weight import compute_class_weight
 from    model_search import Network
 from    arch import Arch
 from    my_dataset import MyDataset
+from    utils import my_loss
 
 
 parser = argparse.ArgumentParser("SDP")
