@@ -37,7 +37,7 @@ class MyModel(nn.Module):
 
     def forward(self, sce_input, promise_input):
         # 处理sce_input序列数据
-        sce_lstm_out, _ = self.sce_dropout(self.sce_lstm(sce_input))
+        sce_lstm_out, _ = self.sce_lstm(self.sce_dropout(sce_input))
         sce_lstm_out_last = sce_lstm_out[:, -1, :]  # 取最后一个时间步的输出
 
         # 应用门控机制
@@ -46,7 +46,7 @@ class MyModel(nn.Module):
         gated_sce_lstm_out = sce_lstm_out_last * sce_gate_output
 
         # 处理promise_input数据
-        promise_lstm_out, _ = self.promise_dropout(self.promise_lstm(promise_input))
+        promise_lstm_out, _ = self.promise_lstm(self.promise_dropout(promise_input))
         promise_lstm_out_last = promise_lstm_out[:, -1, :]  # 取最后一个时间步的输出
 
         # 应用门控机制
