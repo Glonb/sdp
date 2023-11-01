@@ -139,10 +139,10 @@ for epoch in range(args.epochs):
         optimizer.step()
 
         prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(output, label)
-        losses.update(loss.item(), batch_size)
-        precision.update(prec, batch_size)
-        recall.update(rec, batch_size)
-        f_measure.update(f1, batch_size)
+        losses.update(loss.item(), args.batchsz)
+        precision.update(prec, args.batchsz)
+        recall.update(rec, args.batchsz)
+        f_measure.update(f1, args.batchsz)
 
     print(f'Epoch {epoch + 1}/{args.epochs}, Loss: {losses.avg:.3f}, Precision: {precision.avg:.3f}, Recall: {recall.avg:.3f}, F1 Score: {f_measure.avg:.3f}')
 
@@ -164,9 +164,9 @@ with torch.no_grad():
         loss = criterion(output, label.float())
 
         prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(output, label)
-        losses.update(loss.item(), batch_size)
-        precision.update(prec, batch_size)
-        recall.update(rec, batch_size)
-        f_measure.update(f1, batch_size)
+        losses.update(loss.item(), args.batchsz)
+        precision.update(prec, args.batchsz)
+        recall.update(rec, args.batchsz)
+        f_measure.update(f1, args.batchsz)
 
     print(f'Test Loss: {losses.avg:.3f}, Precision: {precision.avg:.3f}, Recall: {recall.avg:.3f}, F1 Score: {f_measure.avg:.3f}')
