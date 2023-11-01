@@ -95,8 +95,8 @@ def main():
     valid_queue = torch.utils.data.DataLoader(
         train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
 
-    # class_weight = compute_class_weight(class_weight='balanced', classes=[0, 1], y=labels)
-    # pos_weight = torch.tensor(class_weight[0] / class_weight[1])
+    class_weight = compute_class_weight(class_weight='balanced', classes=[0, 1], y=labels)
+    pos_weight = torch.tensor(class_weight[0] / class_weight[1])
     # criterion = nn.BCEWithLogitsLoss(pos_weight = pos_weight).to(device)
     criterion = my_loss
     model = Network(args.channels, args.layers, args.hiddensz, criterion).to(device)
@@ -160,7 +160,7 @@ def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
         arch.step(x, trf, target, x_search, trf_search, target_search, lr, optimizer, unrolled=True)
 
         logits = model(x, trf)
-        loss = criterion(logits, target.float())
+        loss = criterion(logits, target.float(), pos_weight)
 
         # 2. update weight
         optimizer.zero_grad()
@@ -209,7 +209,7 @@ def infer(valid_queue, model, criterion):
             batchsz = x.size(0)
 
             logits = model(x, trf)
-            loss = criterion(logits, target.float())
+            loss = criterion(logits, target.float(), 1.0)
 
             prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(logits, target)
             losses.update(loss.item(), batchsz)
