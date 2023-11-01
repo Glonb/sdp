@@ -43,7 +43,7 @@ def metrics(output, target, threshold = 0.5):
     return  precision, recall, fpr, fnr, f1, g1, mcc
 
 
-def my_loss(y_pred, y_true):
+def my_loss(y_pred, y_true, pos_weight):
     margin = 0.6
 
     # Define theta function
@@ -54,7 +54,7 @@ def my_loss(y_pred, y_true):
     loss = -(
         (1 - theta(y_true - margin) * theta(y_pred - margin) 
         - theta(1 - margin - y_true) * theta(1 - margin - y_pred)) * 
-        (y_true * torch.log(y_pred + 1e-8) + (1 - y_true) * torch.log(1 - y_pred + 1e-8))
+        (pos_weight * y_true * torch.log(y_pred + 1e-8) + (1 - y_true) * torch.log(1 - y_pred + 1e-8))
     )
     
     return loss.mean()  # You can use .mean() to compute the average loss
