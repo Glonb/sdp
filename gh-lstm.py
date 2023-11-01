@@ -16,7 +16,7 @@ else:
 
 
 def my_loss(y_pred, y_true):
-    print(y_pred)
+    # print(y_pred)
     margin = 0.6
 
     # Define theta function
@@ -79,7 +79,7 @@ class MyModel(nn.Module):
         # 全连接层
         fc_output = self.fc(merged)
 
-        return fc_output
+        return self.sigmoid(fc_output)
 
 
 train_data = MyDataset('/kaggle/input/sdp-own/ant15_train.pt', '/kaggle/input/sdp-own/ant15.csv')
