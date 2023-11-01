@@ -84,7 +84,7 @@ criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
 # 定义优化器
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-batch_size = 2048
+batch_size = 64
 train_dataloader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
 test_dataloader = DataLoader(test_data, batch_size=batch_size, shuffle=True)
 
