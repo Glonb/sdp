@@ -79,7 +79,7 @@ print(pos_weight)
 model = MyModel(input_dim=40, hidden_dim=128).to(device)
 
 # 定义损失函数
-criterion = nn.BCEWithLogitsLoss(pos_weight=1.0)
+criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor(1.0))
 
 # 定义优化器
 optimizer = optim.Adam(model.parameters(), lr=0.001)
