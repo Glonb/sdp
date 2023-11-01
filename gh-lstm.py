@@ -79,7 +79,7 @@ print(pos_weight)
 model = MyModel(input_dim=40, hidden_dim=128).to(device)
 
 # 定义损失函数
-criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
+criterion = nn.BCEWithLogitsLoss(pos_weight=1.0)
 
 # 定义优化器
 optimizer = optim.Adam(model.parameters(), lr=0.001)
@@ -89,7 +89,7 @@ train_dataloader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
 test_dataloader = DataLoader(test_data, batch_size=batch_size, shuffle=True)
 
 # 训练模型和预测的过程需要根据你的数据和训练流程进行调整
-for epoch in range(100):
+for epoch in range(200):
     model.train()
     # lr = optimizer.param_groups[0]['lr']
     losses = utils.AverageMeter()
