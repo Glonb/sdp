@@ -57,6 +57,7 @@ class Network(nn.Module):
         # self.bilstm = nn.LSTM(input_size=self.c, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
         # self.gru = nn.GRU(input_size=self.c, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
         self.tr_gru = nn.GRU(input_size=18, hidden_size=48, batch_first=True)
+        self.tr_dropout = nn.Dropout(0.2)
         
         # adaptive pooling output
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
@@ -118,7 +119,7 @@ class Network(nn.Module):
         # _, h_n = self.gru(input)
         # gru_out = torch.cat((h_n[0], h_n[1]), dim=-1)
 
-        _, th_n = self.tr_gru(trf)
+        _, th_n = self.tr_gru(self.tr_dropout(trf))
         trf_out = th_n[0]
         # trf_gate_out = self.sigmoid(self.tr_gate(trf_out))
         # trf_out = trf_out * trf_gate_out
