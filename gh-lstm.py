@@ -20,13 +20,13 @@ def my_loss(y_pred, y_true):
 
     # Define theta function
     def theta(t):
-        return (torch.sign(torch.tensor(t)) + 1) / 2
+        return (torch.sign(t) + 1) / 2
 
     # Compute the loss
     loss = -(
         (1 - theta(y_true - margin) * theta(y_pred - margin) 
         - theta(1 - margin - y_true) * theta(1 - margin - y_pred)) * 
-        (y_true * torch.log(torch.tensor(y_pred + 1e-8)) + (1 - y_true) * torch.log(torch.tensor(1 - y_pred + 1e-8)))
+        (y_true * torch.log(y_pred + 1e-8) + (1 - y_true) * torch.log(1 - y_pred + 1e-8))
     )
 
     return loss.mean()  # You can use .mean() to compute the average loss
