@@ -94,9 +94,10 @@ def main():
     valid_queue = torch.utils.data.DataLoader(
         train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
 
-    class_weight = compute_class_weight(class_weight='balanced', classes=[0, 1], y=labels)
-    pos_weight = torch.tensor(class_weight[0] / class_weight[1])
-    criterion = nn.BCEWithLogitsLoss(pos_weight = pos_weight).to(device)
+    # class_weight = compute_class_weight(class_weight='balanced', classes=[0, 1], y=labels)
+    # pos_weight = torch.tensor(class_weight[0] / class_weight[1])
+    # criterion = nn.BCEWithLogitsLoss(pos_weight = pos_weight).to(device)
+    criterion = my_loss
     model = Network(args.channels, args.layers, args.hiddensz, criterion).to(device)
 
     logging.info("Total param size = %f MB", utils.count_parameters_in_MB(model))
