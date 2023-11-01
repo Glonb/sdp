@@ -23,7 +23,7 @@ class Network(nn.Module):
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
         # self.cnn_gate = nn.Linear(C * 2, C * 2)
         # self.tr_gate = nn.Linear(48, 48)
-        # self.sigmoid = nn.Sigmoid()
+        self.sigmoid = nn.Sigmoid()
         self.fc = nn.Linear(out_dim, 1)
 
     def _compile(self, C, op_names, indices, concat):
@@ -75,4 +75,4 @@ class Network(nn.Module):
         
         logits = self.fc(out)
         
-        return logits
+        return self.sigmoid(logits)
