@@ -64,9 +64,9 @@ class MyModel(nn.Module):
         return fc_output
 
 
-train_data = MyDataset('/kaggle/input/sdp-own/lucene20_train.pt', '/kaggle/input/sdp-own/lucene20.csv')
-test_data = MyDataset('/kaggle/input/sdp-own/lucene22_test.pt', '/kaggle/input/sdp-own/lucene22.csv')
-df = pd.read_csv('/kaggle/input/sdp-own/lucene20.csv')
+train_data = MyDataset('/kaggle/input/sdp-own/ant15_train.pt', '/kaggle/input/sdp-own/ant15.csv')
+test_data = MyDataset('/kaggle/input/sdp-own/ant16_test.pt', '/kaggle/input/sdp-own/ant16.csv')
+df = pd.read_csv('/kaggle/input/sdp-own/ant15.csv')
 labels = df["bug"]
 
 class_weights = compute_class_weight(class_weight='balanced', classes=[0, 1], y=labels)
