@@ -82,9 +82,9 @@ class MyModel(nn.Module):
         return self.sigmoid(fc_output)
 
 
-train_data = MyDataset('/kaggle/input/sdp-own/poi15_train.pt', '/kaggle/input/sdp-own/poi15.csv')
-test_data = MyDataset('/kaggle/input/sdp-own/poi25_test.pt', '/kaggle/input/sdp-own/poi25.csv')
-df = pd.read_csv('/kaggle/input/sdp-own/poi15.csv')
+train_data = MyDataset('/kaggle/input/sdp-own/poi25_train.pt', '/kaggle/input/sdp-own/poi25.csv')
+test_data = MyDataset('/kaggle/input/sdp-own/poi30_test.pt', '/kaggle/input/sdp-own/poi30.csv')
+df = pd.read_csv('/kaggle/input/sdp-own/poi25.csv')
 labels = df["bug"]
 
 class_weights = compute_class_weight(class_weight='balanced', classes=[0, 1], y=labels)
@@ -103,7 +103,7 @@ criterion = my_loss
 # 定义优化器
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-batch_size = 2048
+batch_size = 64
 train_dataloader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
 test_dataloader = DataLoader(test_data, batch_size=batch_size, shuffle=True)
 
