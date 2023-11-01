@@ -86,7 +86,7 @@ def infer(test_queue, model, criterion):
             x, trf, target = x.cuda(), trf.cuda(), target.cuda(non_blocking=True)
 
             logits = model(x, trf)
-            loss = criterion(logits, target.float())
+            loss = criterion(logits, target.float(), 1)
 
             batchsz = x.size(0)
             prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(logits, target)
