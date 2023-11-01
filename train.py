@@ -86,7 +86,7 @@ def main():
     # class_weight = compute_class_weight(class_weight='balanced', classes=[0, 1], y=labels)
     # pos_weight = torch.tensor(class_weight[0] / class_weight[1])
     # criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight).cuda()
-    criterion = my_loss
+    criterion = my_loss.cuda()
   
     # optimizer = torch.optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd)
     # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, float(args.epochs))
