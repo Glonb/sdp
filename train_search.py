@@ -123,7 +123,7 @@ def main():
         logging.info('Genotype: %s', genotype)
 
         # training
-        train_prec, train_rec, train_f1 = train(train_queue, valid_queue, model, arch, criterion, optimizer, lr)
+        train_prec, train_rec, train_f1 = train(train_queue, valid_queue, model, arch, criterion, optimizer, lr, pos_weight)
         print('train precision: %.5f' %train_prec.item())
 
         # update lr
@@ -134,7 +134,7 @@ def main():
         print('valid precision: %.5f' %valid_prec.item())
 
 
-def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
+def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr, pos_weight):
     
     losses = utils.AverageMeter()
     precision = utils.AverageMeter()
