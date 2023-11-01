@@ -1,12 +1,20 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import  argparse
 import pandas as pd
 import utils
 from torch.utils.data import DataLoader
 from my_dataset import MyDataset
 from sklearn.utils.class_weight import compute_class_weight
 
+
+parser = argparse.ArgumentParser("GH-LSTM")
+parser.add_argument('--train_data', type=str, default='ant15', help='train dataset')
+parser.add_argument('--test_data', type=str, default='ant16', help='test dataset')
+parser.add_argument('--batchsz', type=int, default=2048, help='batch size')
+parser.add_argument('--epochs', type=int, default=200, help='num of training epochs')
+args = parser.parse_args()
 
 # 检查 GPU 可用性
 if torch.cuda.is_available():
@@ -82,9 +90,10 @@ class MyModel(nn.Module):
         return self.sigmoid(fc_output)
 
 
-train_data = MyDataset('/kaggle/input/sdp-own/lucene22_train.pt', '/kaggle/input/sdp-own/lucene22.csv')
-test_data = MyDataset('/kaggle/input/sdp-own/lucene24_test.pt', '/kaggle/input/sdp-own/lucene24.csv')
-df = pd.read_csv('/kaggle/input/sdp-own/lucene22.csv')
+data_loc = '/kaggle/input/sdp-own/'
+train_data = MyDataset(data_loc + args.train_data + '_train.pt', data_loc + args.train_data + '.csv')
+test_data = MyDataset(data_loc + args.test_data + '_test.pt', data_loc + args.test_data + '.csv')
+df = pd.read_csv(data_loc + args.train_data + '.csv')
 labels = df["bug"]
 
 class_weights = compute_class_weight(class_weight='balanced', classes=[0, 1], y=labels)
@@ -97,19 +106,17 @@ print(pos_weight)
 model = MyModel(input_dim=40, hidden_dim=128).to(device)
 
 # 定义损失函数
-# criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
-criterion = my_loss
+criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
+# criterion = my_loss
 
 # 定义优化器
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-batch_size = 64
-epoch_count = 200
-train_dataloader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
-test_dataloader = DataLoader(test_data, batch_size=batch_size, shuffle=True)
+train_dataloader = DataLoader(train_data, batch_size=args.batchsz, shuffle=True)
+test_dataloader = DataLoader(test_data, batch_size=args.batchsz, shuffle=True)
 
 # 训练模型和预测的过程需要根据你的数据和训练流程进行调整
-for epoch in range(epoch_count):
+for epoch in range(args.epochs):
     model.train()
     # lr = optimizer.param_groups[0]['lr']
     losses = utils.AverageMeter()
@@ -137,7 +144,7 @@ for epoch in range(epoch_count):
         recall.update(rec, batch_size)
         f_measure.update(f1, batch_size)
 
-    print(f'Epoch {epoch + 1}/{epoch_count}, Loss: {losses.avg:.3f}, Precision: {precision.avg:.3f}, Recall: {recall.avg:.3f}, F1 Score: {f_measure.avg:.3f}')
+    print(f'Epoch {epoch + 1}/{args.epochs}, Loss: {losses.avg:.3f}, Precision: {precision.avg:.3f}, Recall: {recall.avg:.3f}, F1 Score: {f_measure.avg:.3f}')
 
 model.eval
 with torch.no_grad():
