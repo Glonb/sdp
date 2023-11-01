@@ -83,8 +83,8 @@ def main():
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
 
-    # class_weight = compute_class_weight(class_weight='balanced', classes=[0, 1], y=labels)
-    # pos_weight = torch.tensor(class_weight[0] / class_weight[1])
+    class_weight = compute_class_weight(class_weight='balanced', classes=[0, 1], y=labels)
+    pos_weight = torch.tensor(class_weight[0] / class_weight[1])
     # criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight).cuda()
     criterion = my_loss
   
@@ -100,7 +100,7 @@ def main():
 
         logging.info('epoch %d lr %e', epoch, lr)
 
-        train_prec, train_rec, train_f1 = train(train_queue, model, criterion, optimizer)
+        train_prec, train_rec, train_f1 = train(train_queue, model, criterion, optimizer, pos_weight)
         print('train precision: %.5f' %train_prec.item())
 
         valid_prec, valid_rec, valid_f1 = infer(valid_queue, model, criterion)
@@ -111,7 +111,7 @@ def main():
         utils.save(model, os.path.join(args.save, 'trained.pt'))
 
 
-def train(train_queue, model, criterion, optimizer):
+def train(train_queue, model, criterion, optimizer, pos_weight):
 
     losses = utils.AverageMeter()
     precision = utils.AverageMeter()
@@ -131,7 +131,7 @@ def train(train_queue, model, criterion, optimizer):
         optimizer.zero_grad()
         logits = model(x, trf)
         # print(logits)
-        loss = criterion(logits, target.float())
+        loss = criterion(logits, target.float(), pos_weight)
         loss.backward()
         nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
         optimizer.step()
@@ -179,7 +179,7 @@ def infer(valid_queue, model, criterion):
         with torch.no_grad():
             logits = model(x, trf)
             # print(logits)
-            loss = criterion(logits, target.float())
+            loss = criterion(logits, target.float(), 1)
 
             prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(logits, target)
             batchsz = x.size(0)
