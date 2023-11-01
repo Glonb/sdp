@@ -15,6 +15,23 @@ else:
     device = torch.device("cpu")
 
 
+def my_loss(y_true, y_pred):
+    margin = 0.6
+
+    # Define theta function
+    def theta(t):
+        return (t.sign() + 1) / 2
+
+    # Compute the loss
+    loss = -(
+        (1 - theta(y_true - margin) * theta(y_pred - margin) 
+        - theta(1 - margin - y_true) * theta(1 - margin - y_pred)) * 
+        (y_true * torch.log(y_pred + 1e-8) + (1 - y_true) * torch.log(1 - y_pred + 1e-8))
+    )
+
+    return loss.mean()  # You can use .mean() to compute the average loss
+    
+
 class MyModel(nn.Module):
     def __init__(self, input_dim, hidden_dim):
         super(MyModel, self).__init__()
