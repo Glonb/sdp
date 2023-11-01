@@ -157,7 +157,7 @@ def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
         x_search, trf_search, target_search = x_search.to(device), trf_search.to(device), target_search.cuda(non_blocking=True)
 
         # 1. update alpha
-        arch.step(x, trf, target, x_search, trf_search, target_search, lr, optimizer, unrolled=True)
+        arch.step(x, trf, target, x_search, trf_search, target_search, lr, optimizer, pos_weight, unrolled=True)
 
         logits = model(x, trf)
         loss = criterion(logits, target.float(), pos_weight)
