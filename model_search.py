@@ -132,10 +132,10 @@ class Network(nn.Module):
         
         return self.sigmoid(logits)
 
-    def loss(self, x, trf, target):
+    def loss(self, x, trf, target, pos_weight):
         logits = self(x, trf)
         # print(logits.shape)
-        return self.criterion(logits, target.float())
+        return self.criterion(logits, target.float(), pos_weight)
 
 
     def arch_parameters(self):
