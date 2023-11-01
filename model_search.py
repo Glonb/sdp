@@ -63,7 +63,7 @@ class Network(nn.Module):
 
         # self.cnn_gate = nn.Linear(c * 2, c * 2)
         # self.tr_gate = nn.Linear(48, 48)
-        self.sigmoid = nn.Sigmoid()
+        # self.sigmoid = nn.Sigmoid()
         self.fc = nn.Linear(out_dim, 1)
 
         # k is the total number of edges
@@ -128,7 +128,7 @@ class Network(nn.Module):
         
         logits = self.fc(out)
         
-        return self.sigmoid(logits)
+        return logits
 
     def loss(self, x, trf, target):
         logits = self(x, trf)
