@@ -23,7 +23,7 @@ else:
     device = torch.device("cpu")
 
 
-def my_loss(y_pred, y_true):
+def my_loss(y_pred, y_true, pos_weight):
     # print(y_pred)
     margin = 0.6
 
@@ -35,7 +35,7 @@ def my_loss(y_pred, y_true):
     loss = -(
         (1 - theta(y_true - margin) * theta(y_pred - margin) 
         - theta(1 - margin - y_true) * theta(1 - margin - y_pred)) * 
-        (2.7 * y_true * torch.log(y_pred + 1e-8) + (1 - y_true) * torch.log(1 - y_pred + 1e-8))
+        (pos_weight * y_true * torch.log(y_pred + 1e-8) + (1 - y_true) * torch.log(1 - y_pred + 1e-8))
     )
     
     return loss.mean()  # You can use .mean() to compute the average loss
@@ -133,7 +133,7 @@ for epoch in range(args.epochs):
         sce = emb_data.permute(0, 2, 1)
         trf = tr_data.unsqueeze(1)
         output = model(sce, trf)
-        loss = criterion(output, label.float())
+        loss = criterion(output, label.float(), pos_weight)
 
         loss.backward()
         optimizer.step()
@@ -161,7 +161,7 @@ with torch.no_grad():
         sce = emb_data.permute(0, 2, 1)
         trf = tr_data.unsqueeze(1)
         output = model(sce, trf)
-        loss = criterion(output, label.float())
+        loss = criterion(output, label.float(), 1)
 
         prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(output, label)
         losses.update(loss.item(), args.batchsz)
