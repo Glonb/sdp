@@ -133,7 +133,7 @@ for epoch in range(args.epochs):
         sce = emb_data.permute(0, 2, 1)
         trf = tr_data.unsqueeze(1)
         output = model(sce, trf)
-        loss = criterion(output, label.float(), 1)
+        loss = criterion(output, label.float(), pos_weight)
 
         loss.backward()
         optimizer.step()
