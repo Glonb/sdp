@@ -104,11 +104,12 @@ criterion = my_loss
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 batch_size = 64
+epoch_count = 100
 train_dataloader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
 test_dataloader = DataLoader(test_data, batch_size=batch_size, shuffle=True)
 
 # 训练模型和预测的过程需要根据你的数据和训练流程进行调整
-for epoch in range(200):
+for epoch in range(epoch_count):
     model.train()
     # lr = optimizer.param_groups[0]['lr']
     losses = utils.AverageMeter()
@@ -136,7 +137,7 @@ for epoch in range(200):
         recall.update(rec, batch_size)
         f_measure.update(f1, batch_size)
 
-    print(f'Epoch {epoch + 1}/{200}, Loss: {losses.avg:.3f}, Precision: {precision.avg:.3f}, Recall: {recall.avg:.3f}, F1 Score: {f_measure.avg:.3f}')
+    print(f'Epoch {epoch + 1}/{epoch_count}, Loss: {losses.avg:.3f}, Precision: {precision.avg:.3f}, Recall: {recall.avg:.3f}, F1 Score: {f_measure.avg:.3f}')
 
 model.eval
 with torch.no_grad():
