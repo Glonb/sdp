@@ -152,6 +152,8 @@ with torch.no_grad():
     precision = utils.AverageMeter()
     recall = utils.AverageMeter()
     f_measure = utils.AverageMeter()
+    g_measure = utils.AverageMeter()
+    mcc = utils.AverageMeter()
 
     for i, (emb_data, tr_data, label) in enumerate(test_dataloader):
         emb_data = emb_data.to(device)
@@ -168,5 +170,7 @@ with torch.no_grad():
         precision.update(prec, args.batchsz)
         recall.update(rec, args.batchsz)
         f_measure.update(f1, args.batchsz)
+        g_measure.update(g1, args.batchsz)
+        mcc.update(MCC, args.batchsz)
 
-    print(f'Test Loss: {losses.avg:.3f}, Precision: {precision.avg:.3f}, Recall: {recall.avg:.3f}, F1 Score: {f_measure.avg:.3f}')
+    print(f'Test Loss: {losses.avg:.3f}, Precision: {precision.avg:.3f}, Recall: {recall.avg:.3f}, F1 Score: {f_measure.avg:.3f}, G1 Score: {g_measure.avg:.3f}')
