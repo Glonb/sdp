@@ -79,7 +79,7 @@ class MyModel(nn.Module):
         # 全连接层
         fc_output = self.fc(merged)
 
-        return fc_output
+        return self.sigmoid(fc_output)
 
 
 train_data = MyDataset('/kaggle/input/sdp-own/lucene22_train.pt', '/kaggle/input/sdp-own/lucene22.csv')
@@ -97,8 +97,8 @@ print(pos_weight)
 model = MyModel(input_dim=40, hidden_dim=128).to(device)
 
 # 定义损失函数
-criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor(1.0))
-# criterion = my_loss
+# criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
+criterion = my_loss
 
 # 定义优化器
 optimizer = optim.Adam(model.parameters(), lr=0.001)
