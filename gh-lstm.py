@@ -28,7 +28,7 @@ def my_loss(y_pred, y_true):
         - theta(1 - margin - y_true) * theta(1 - margin - y_pred)) * 
         (y_true * torch.log(y_pred + 1e-8) + (1 - y_true) * torch.log(1 - y_pred + 1e-8))
     )
-
+    print(loss)
     return loss.mean()  # You can use .mean() to compute the average loss
     
 
