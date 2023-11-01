@@ -89,7 +89,7 @@ train_dataloader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
 test_dataloader = DataLoader(test_data, batch_size=batch_size, shuffle=True)
 
 # 训练模型和预测的过程需要根据你的数据和训练流程进行调整
-for epoch in range(200):
+for epoch in range(100):
     model.train()
     # lr = optimizer.param_groups[0]['lr']
     losses = utils.AverageMeter()
