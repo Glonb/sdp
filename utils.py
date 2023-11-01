@@ -43,6 +43,23 @@ def metrics(output, target, threshold = 0.5):
     return  precision, recall, fpr, fnr, f1, g1, mcc
 
 
+def my_loss(y_pred, y_true):
+    margin = 0.6
+
+    # Define theta function
+    def theta(t):
+        return (torch.sign(t) + 1) / 2
+
+    # Compute the loss
+    loss = -(
+        (1 - theta(y_true - margin) * theta(y_pred - margin) 
+        - theta(1 - margin - y_true) * theta(1 - margin - y_pred)) * 
+        (y_true * torch.log(y_pred + 1e-8) + (1 - y_true) * torch.log(1 - y_pred + 1e-8))
+    )
+    
+    return loss.mean()  # You can use .mean() to compute the average loss
+
+
 def count_parameters_in_MB(model):
     
     return np.sum(v.numel() for name, v in model.named_parameters()) / 1e6
