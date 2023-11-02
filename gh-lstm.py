@@ -87,13 +87,13 @@ class MyModel(nn.Module):
         # 全连接层
         fc_output = self.fc(merged)
 
-        return self.sigmoid(fc_output)
+        return fc_output
 
 
 data_loc = '/kaggle/input/sdp-own/'
-train_data = MyDataset(data_loc + args.train_data + '_train.pt', data_loc + args.train_data + '.csv')
-test_data = MyDataset(data_loc + args.test_data + '_test.pt', data_loc + args.test_data + '.csv')
-df = pd.read_csv(data_loc + args.train_data + '.csv')
+train_data = MyDataset(data_loc + args.train_data + '_ov_train.pt', data_loc + args.train_data + '_oversampled.csv')
+test_data = MyDataset(data_loc + args.test_data + '_ov_test.pt', data_loc + args.test_data + '.csv')
+df = pd.read_csv(data_loc + args.train_data + '_oversampled.csv')
 labels = df["bug"]
 
 class_weights = compute_class_weight(class_weight='balanced', classes=[0, 1], y=labels)
@@ -106,8 +106,8 @@ print(pos_weight)
 model = MyModel(input_dim=40, hidden_dim=128).to(device)
 
 # 定义损失函数
-# criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
-criterion = my_loss
+criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
+# criterion = my_loss
 
 # 定义优化器
 optimizer = optim.Adam(model.parameters(), lr=0.001)
@@ -133,7 +133,7 @@ for epoch in range(args.epochs):
         sce = emb_data.permute(0, 2, 1)
         trf = tr_data.unsqueeze(1)
         output = model(sce, trf)
-        loss = criterion(output, label.float(), pos_weight)
+        loss = criterion(output, label.float())
 
         loss.backward()
         optimizer.step()
@@ -163,7 +163,7 @@ with torch.no_grad():
         sce = emb_data.permute(0, 2, 1)
         trf = tr_data.unsqueeze(1)
         output = model(sce, trf)
-        loss = criterion(output, label.float(), 1)
+        loss = criterion(output, label.float())
 
         prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(output, label)
         losses.update(loss.item(), args.batchsz)
