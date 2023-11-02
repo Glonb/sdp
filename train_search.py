@@ -97,8 +97,8 @@ def main():
 
     class_weight = compute_class_weight(class_weight='balanced', classes=[0, 1], y=labels)
     pos_weight = torch.tensor(class_weight[0] / class_weight[1])
-    # criterion = nn.BCEWithLogitsLoss(pos_weight = pos_weight).to(device)
-    criterion = my_loss
+    criterion = nn.BCEWithLogitsLoss(pos_weight = pos_weight).to(device)
+    # criterion = my_loss
     model = Network(args.channels, args.layers, args.hiddensz, criterion).to(device)
 
     logging.info("Total param size = %f MB", utils.count_parameters_in_MB(model))
@@ -123,7 +123,7 @@ def main():
         logging.info('Genotype: %s', genotype)
 
         # training
-        train_prec, train_rec, train_f1 = train(train_queue, valid_queue, model, arch, criterion, optimizer, lr, pos_weight)
+        train_prec, train_rec, train_f1 = train(train_queue, valid_queue, model, arch, criterion, optimizer, lr)
         print('train precision: %.5f' %train_prec.item())
 
         # update lr
@@ -134,7 +134,7 @@ def main():
         print('valid precision: %.5f' %valid_prec.item())
 
 
-def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr, pos_weight):
+def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
     
     losses = utils.AverageMeter()
     precision = utils.AverageMeter()
@@ -157,10 +157,10 @@ def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr, pos_w
         x_search, trf_search, target_search = x_search.to(device), trf_search.to(device), target_search.cuda(non_blocking=True)
 
         # 1. update alpha
-        arch.step(x, trf, target, x_search, trf_search, target_search, lr, optimizer, pos_weight, unrolled=True)
+        arch.step(x, trf, target, x_search, trf_search, target_search, lr, optimizer, unrolled=True)
 
         logits = model(x, trf)
-        loss = criterion(logits, target.float(), pos_weight)
+        loss = criterion(logits, target.float())
 
         # 2. update weight
         optimizer.zero_grad()
@@ -209,7 +209,7 @@ def infer(valid_queue, model, criterion):
             batchsz = x.size(0)
 
             logits = model(x, trf)
-            loss = criterion(logits, target.float(), 1.0)
+            loss = criterion(logits, target.float())
 
             prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(logits, target)
             losses.update(loss.item(), batchsz)
