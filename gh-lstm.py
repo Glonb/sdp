@@ -71,8 +71,8 @@ class MyModel(nn.Module):
 
 # 加载训练集和测试集
 data_loc = '/kaggle/input/sdp-own/'
-train_data = MyDataset(data_loc + args.train_data + '_ov_train.pt', data_loc + args.train_data + '_oversampled.csv')
-test_data = MyDataset(data_loc + args.test_data + '_ov_test.pt', data_loc + args.test_data + '.csv')
+train_data = MyDataset(data_loc + args.train_data + '_train.pt', data_loc + args.train_data + '_train.csv')
+test_data = MyDataset(data_loc + args.test_data + '_test.pt', data_loc + args.test_data + '_test.csv')
 
 train_dataloader = DataLoader(train_data, batch_size=args.batchsz, shuffle=True)
 test_dataloader = DataLoader(test_data, batch_size=args.batchsz, shuffle=True)
