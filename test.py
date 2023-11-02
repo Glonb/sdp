@@ -8,7 +8,7 @@ import  torch.nn as nn
 import  genotypes
 import  torchvision.datasets as dset
 import  torch.backends.cudnn as cudnn
-from    utils import my_loss
+from    utils import GH_Loss
 from    model import Network
 from    my_dataset import MyDataset
 
