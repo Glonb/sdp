@@ -8,11 +8,10 @@ import  torch.nn as nn
 from    torch import optim
 import  torch.backends.cudnn as cudnn
 import  pandas as pd
-from    sklearn.utils.class_weight import compute_class_weight
 from    model_search import Network
 from    arch import Arch
 from    my_dataset import MyDataset
-from    utils import my_loss
+from    utils import GH_Loss
 
 
 parser = argparse.ArgumentParser("SDP")
@@ -28,7 +27,7 @@ parser.add_argument('--epochs', type=int, default=10, help='num of training epoc
 parser.add_argument('--channels', type=int, default=40, help='num of channels')
 parser.add_argument('--layers', type=int, default=4, help='total number of layers')
 parser.add_argument('--hiddensz', type=int, default=64, help='hidden size of bilstm')
-parser.add_argument('--dropout_prob', type=float, default=0.5, help='dropout probability')
+parser.add_argument('--dropout_prob', type=float, default=0.2, help='dropout probability')
 parser.add_argument('--exp_path', type=str, default='search', help='experiment name')
 parser.add_argument('--seed', type=int, default=2, help='random seed')
 parser.add_argument('--train_portion', type=float, default=0.5, help='portion of training/val splitting')
@@ -49,7 +48,6 @@ logging.getLogger().addHandler(fh)
 
 
 os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu)
-# os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 device = torch.device('cuda:0')
 
 
@@ -72,50 +70,25 @@ def main():
     logging.info("args = %s", args)
 
     data_path = '/kaggle/input/sdp-own/'
-    train_data = MyDataset(data_path + args.data + '_train.pt', data_path + args.data + '.csv')
-    # df = pd.read_csv(data_path + args.data + '.csv')
-    # labels = df["bug"]
-
-    # num_train = len(train_data) 
-    # indices = list(range(num_train))
-    # split = int(np.floor(args.train_portion * num_train))
-
-    # train_queue = torch.utils.data.DataLoader(
-    #     train_data, batch_size=args.batchsz,
-    #     sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[:split]),
-    #     pin_memory=True, num_workers=2)
-
-    # valid_queue = torch.utils.data.DataLoader(
-    #     train_data, batch_size=args.batchsz,
-    #     sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[split:]),
-    #     pin_memory=True, num_workers=2)
+    train_data = MyDataset(data_path + args.data + '_ov_train.pt', data_path + args.data + '_oversampled.csv')
 
     train_queue = torch.utils.data.DataLoader(
         train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
     valid_queue = torch.utils.data.DataLoader(
         train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
 
-    # class_weight = compute_class_weight(class_weight='balanced', classes=[0, 1], y=labels)
-    # pos_weight = torch.tensor(class_weight[0] / class_weight[1])
-    # criterion = nn.BCEWithLogitsLoss(pos_weight = pos_weight).to(device)
-    criterion = nn.BCELoss().to(device)
-    # criterion = my_loss
+    # criterion = nn.BCELoss().to(device)
+    criterion = GH_Loss().to(device)
     model = Network(args.channels, args.layers, args.hiddensz, criterion).to(device)
 
     logging.info("Total param size = %f MB", utils.count_parameters_in_MB(model))
 
-    # this is the optimizer to optimize
-    # optimizer = optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd)
-    # scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, float(args.epochs), eta_min=args.lr_min)
-
     optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
-    # scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
 
     arch = Arch(model, args)
 
     for epoch in range(args.epochs):
 
-        # lr = scheduler.get_last_lr()[0]
         lr = optimizer.param_groups[0]['lr']
         logging.info('Epoch: %d lr: %e', epoch, lr)
         print('Epoch: %d' %epoch)
@@ -126,9 +99,6 @@ def main():
         # training
         train_prec, train_rec, train_f1 = train(train_queue, valid_queue, model, arch, criterion, optimizer, lr)
         print('train precision: %.5f' %train_prec.item())
-
-        # update lr
-        # scheduler.step()
 
         # validation
         valid_prec, valid_rec, valid_f1 = infer(valid_queue, model, criterion)
@@ -161,7 +131,7 @@ def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
         arch.step(x, trf, target, x_search, trf_search, target_search, lr, optimizer, unrolled=True)
 
         logits = model(x, trf)
-        loss = criterion(logits, target.float())
+        loss = criterion(logits, target)
 
         # 2. update weight
         optimizer.zero_grad()
@@ -210,7 +180,7 @@ def infer(valid_queue, model, criterion):
             batchsz = x.size(0)
 
             logits = model(x, trf)
-            loss = criterion(logits, target.float())
+            loss = criterion(logits, target)
 
             prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(logits, target)
             losses.update(loss.item(), batchsz)
