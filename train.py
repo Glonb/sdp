@@ -65,8 +65,8 @@ def main():
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
 
-    # criterion = nn.BCELoss().cuda()
-    criterion = GH_Loss().cuda()
+    criterion = nn.BCELoss().cuda()
+    # criterion = GH_Loss().cuda()
   
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
 
