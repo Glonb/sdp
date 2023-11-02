@@ -6,7 +6,6 @@ import pandas as pd
 import utils
 from torch.utils.data import DataLoader
 from my_dataset import MyDataset
-from sklearn.utils.class_weight import compute_class_weight
 
 
 parser = argparse.ArgumentParser("GH-LSTM")
@@ -24,7 +23,6 @@ else:
 
 
 def my_loss(y_pred, y_true):
-    # print(y_pred)
     margin = 0.6
 
     # Define theta function
@@ -38,7 +36,7 @@ def my_loss(y_pred, y_true):
         (y_true * torch.log(y_pred + 1e-8) + (1 - y_true) * torch.log(1 - y_pred + 1e-8))
     )
     
-    return loss.mean()  # You can use .mean() to compute the average loss
+    return loss.mean()  
     
 
 class MyModel(nn.Module):
@@ -87,28 +85,21 @@ class MyModel(nn.Module):
         # 全连接层
         fc_output = self.fc(merged)
 
-        return fc_output
+        return self.sigmoid(fc_output)
 
 
 data_loc = '/kaggle/input/sdp-own/'
 train_data = MyDataset(data_loc + args.train_data + '_ov_train.pt', data_loc + args.train_data + '_oversampled.csv')
 test_data = MyDataset(data_loc + args.test_data + '_ov_test.pt', data_loc + args.test_data + '.csv')
-df = pd.read_csv(data_loc + args.train_data + '_oversampled.csv')
-labels = df["bug"]
 
-class_weights = compute_class_weight(class_weight='balanced', classes=[0, 1], y=labels)
-print(class_weights)
-
-pos_weight = torch.tensor(class_weights[1] / class_weights[0])
-print(pos_weight)
 
 # 创建模型实例
 model = MyModel(input_dim=40, hidden_dim=128).to(device)
 print(f'Total param size: {utils.count_parameters_in_MB(model)} MB')
 
 # 定义损失函数
-criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
-# criterion = my_loss
+# criterion = nn.BCELoss()
+criterion = my_loss()
 
 # 定义优化器
 optimizer = optim.Adam(model.parameters(), lr=0.001)
@@ -124,6 +115,8 @@ for epoch in range(args.epochs):
     precision = utils.AverageMeter()
     recall = utils.AverageMeter()
     f_measure = utils.AverageMeter()
+    g_measure = utils.AverageMeter()
+    mcc = utils.AverageMeter()
 
     for i, (emb_data, tr_data, label) in enumerate(train_dataloader):
         emb_data = emb_data.to(device)
@@ -144,6 +137,8 @@ for epoch in range(args.epochs):
         precision.update(prec, args.batchsz)
         recall.update(rec, args.batchsz)
         f_measure.update(f1, args.batchsz)
+        g_measure.update(g1, args.batchsz)
+        mcc.update(MCC, args.batchsz)
 
     print(f'Epoch {epoch + 1}/{args.epochs}, Loss: {losses.avg:.3f}, Precision: {precision.avg:.3f}, Recall: {recall.avg:.3f}, F1 Score: {f_measure.avg:.3f}')
 
