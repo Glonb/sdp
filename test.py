@@ -45,7 +45,7 @@ def main():
     logging.info("args = %s", args)
 
     data_path = '/kaggle/input/sdp-own/'
-    test_data = MyDataset(data_path + args.data + '_test.pt', data_path + args.data + '.csv')
+    test_data = MyDataset(data_path + args.data + '_ov_test.pt', data_path + args.data + '.csv')
 
     test_queue = torch.utils.data.DataLoader(
         test_data, batch_size=args.batchsz, 
@@ -59,9 +59,8 @@ def main():
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
 
-    # criterion = nn.BCEWithLogitsLoss().cuda()
-    criterion = nn.BCELoss().cuda()
-    # criterion = my_loss
+    # criterion = nn.BCELoss().cuda()
+    criterion = GH_Loss.cuda()
   
     test_prec, test_rec, test_f1 = infer(test_queue, model, criterion)
     
@@ -87,7 +86,7 @@ def infer(test_queue, model, criterion):
             x, trf, target = x.cuda(), trf.cuda(), target.cuda(non_blocking=True)
 
             logits = model(x, trf)
-            loss = criterion(logits, target.float())
+            loss = criterion(logits, target)
 
             batchsz = x.size(0)
             prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(logits, target)
