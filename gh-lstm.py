@@ -1,11 +1,11 @@
-import torch
-import torch.nn as nn
-import torch.optim as optim
-import  argparse
-import pandas as pd
-import utils
-from torch.utils.data import DataLoader
-from my_dataset import MyDataset
+import    torch
+import    torch.nn as nn
+import    torch.optim as optim
+import    argparse
+import    pandas as pd
+import    utils
+from      torch.utils.data import DataLoader
+from      my_dataset import MyDataset
 
 
 parser = argparse.ArgumentParser("GH-LSTM")
@@ -22,21 +22,21 @@ else:
     device = torch.device("cpu")
 
 
-def my_loss(y_pred, y_true):
-    margin = 0.6
+# def my_loss(y_pred, y_true):
+#     margin = 0.6
 
-    # Define theta function
-    def theta(t):
-        return (torch.sign(t) + 1) / 2
+#     # Define theta function
+#     def theta(t):
+#         return (torch.sign(t) + 1) / 2
 
-    # Compute the loss
-    loss = -(
-        (1 - theta(y_true - margin) * theta(y_pred - margin) 
-        - theta(1 - margin - y_true) * theta(1 - margin - y_pred)) * 
-        (y_true * torch.log(y_pred + 1e-8) + (1 - y_true) * torch.log(1 - y_pred + 1e-8))
-    )
+#     # Compute the loss
+#     loss = -(
+#         (1 - theta(y_true - margin) * theta(y_pred - margin) 
+#         - theta(1 - margin - y_true) * theta(1 - margin - y_pred)) * 
+#         (y_true * torch.log(y_pred + 1e-8) + (1 - y_true) * torch.log(1 - y_pred + 1e-8))
+#     )
     
-    return loss.mean()  
+#     return loss.mean()  
     
 
 class MyModel(nn.Module):
@@ -99,7 +99,7 @@ print(f'Total param size: {utils.count_parameters_in_MB(model)} MB')
 
 # 定义损失函数
 # criterion = nn.BCELoss()
-criterion = my_loss.to(device)
+criterion = utils.GH_Loss().to(device)
 
 # 定义优化器
 optimizer = optim.Adam(model.parameters(), lr=0.001)
