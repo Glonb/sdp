@@ -59,8 +59,8 @@ def main():
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
 
-    # criterion = nn.BCEWithLogitsLoss().cuda()
-    criterion = my_loss
+    criterion = nn.BCEWithLogitsLoss().cuda()
+    # criterion = my_loss
   
     test_prec, test_rec, test_f1 = infer(test_queue, model, criterion)
     
@@ -86,7 +86,7 @@ def infer(test_queue, model, criterion):
             x, trf, target = x.cuda(), trf.cuda(), target.cuda(non_blocking=True)
 
             logits = model(x, trf)
-            loss = criterion(logits, target.float(), 1)
+            loss = criterion(logits, target.float())
 
             batchsz = x.size(0)
             prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(logits, target)
