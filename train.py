@@ -9,11 +9,9 @@ import  genotypes
 import  torch.utils
 import  torchvision.datasets as dset
 import  torch.backends.cudnn as cudnn
-import  pandas as pd
 from    model import Network
 from    my_dataset import MyDataset
-from    sklearn.utils.class_weight import compute_class_weight
-from    utils import my_loss
+from    utils import GH_Loss
 
 parser = argparse.ArgumentParser("SDP")
 parser.add_argument('--data', type=str, default='xalan25', help='dataset')
@@ -55,23 +53,7 @@ def main():
     logging.info("args = %s", args)
 
     data_path = '/kaggle/input/sdp-own/'
-    train_data = MyDataset(data_path + args.data + '_train.pt', data_path + args.data + '.csv')
-    # df = pd.read_csv(data_path + args.data + '.csv')
-    # labels = df["bug"]
-
-    # num_data = len(train_data) 
-    # indices = list(range(num_data))
-    # split = int(np.floor(0.8 * num_data))
-    
-    # train_queue = torch.utils.data.DataLoader(
-    #     train_data, batch_size=args.batchsz,
-    #     sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[:split]),
-    #     pin_memory=True, num_workers=2)
-
-    # valid_queue = torch.utils.data.DataLoader(
-    #     train_data, batch_size=args.batchsz,
-    #     sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[split:]),
-    #     pin_memory=True, num_workers=2)
+    train_data = MyDataset(data_path + args.data + '_ov_train.pt', data_path + args.data + '_oversampled.csv')
   
     train_queue = torch.utils.data.DataLoader(
         train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
@@ -83,17 +65,10 @@ def main():
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
 
-    # class_weight = compute_class_weight(class_weight='balanced', classes=[0, 1], y=labels)
-    # pos_weight = torch.tensor(class_weight[0] / class_weight[1])
-    # criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight).cuda()
-    criterion = nn.BCELoss().cuda()
-    # criterion = my_loss
-  
-    # optimizer = torch.optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd)
-    # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, float(args.epochs))
+    # criterion = nn.BCELoss().cuda()
+    criterion = GH_Loss().cuda()
   
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
-    # scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95)
 
     for epoch in range(args.epochs):
 
@@ -106,8 +81,6 @@ def main():
 
         valid_prec, valid_rec, valid_f1 = infer(valid_queue, model, criterion)
         print('valid precision: %.5f' %valid_prec.item())
-
-        # scheduler.step()
       
         utils.save(model, os.path.join(args.save, 'trained.pt'))
 
@@ -131,8 +104,8 @@ def train(train_queue, model, criterion, optimizer):
 
         optimizer.zero_grad()
         logits = model(x, trf)
-        # print(logits)
-        loss = criterion(logits, target.float())
+  
+        loss = criterion(logits, target)
         loss.backward()
         nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
         optimizer.step()
@@ -179,8 +152,8 @@ def infer(valid_queue, model, criterion):
 
         with torch.no_grad():
             logits = model(x, trf)
-            # print(logits)
-            loss = criterion(logits, target.float())
+            
+            loss = criterion(logits, target)
 
             prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(logits, target)
             batchsz = x.size(0)
