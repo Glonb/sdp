@@ -60,6 +60,7 @@ class Network(nn.Module):
         # self.dropout = nn.Dropout(0.2)
         self.tr_gru = nn.GRU(input_size=18, hidden_size=128, batch_first=True)
         self.tr_dropout = nn.Dropout(0.2)
+        self.cnn_dropout = nn.Dropout(0.2)
         
         # adaptive pooling output
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
@@ -91,7 +92,7 @@ class Network(nn.Module):
         input = x.permute(0, 2, 1)
         trf = trf.unsqueeze(1)
         # print(input.shape)
-        states = [x]
+        states = [self.cnn_dropout(x)]
         offset = 0
         
         # for each node, receive input from all previous intermediate nodes and x
