@@ -23,7 +23,7 @@ else:
     device = torch.device("cpu")
 
 
-def my_loss(y_pred, y_true, pos_weight):
+def my_loss(y_pred, y_true):
     # print(y_pred)
     margin = 0.6
 
@@ -35,7 +35,7 @@ def my_loss(y_pred, y_true, pos_weight):
     loss = -(
         (1 - theta(y_true - margin) * theta(y_pred - margin) 
         - theta(1 - margin - y_true) * theta(1 - margin - y_pred)) * 
-        (pos_weight * y_true * torch.log(y_pred + 1e-8) + (1 - y_true) * torch.log(1 - y_pred + 1e-8))
+        (y_true * torch.log(y_pred + 1e-8) + (1 - y_true) * torch.log(1 - y_pred + 1e-8))
     )
     
     return loss.mean()  # You can use .mean() to compute the average loss
@@ -87,7 +87,7 @@ class MyModel(nn.Module):
         # 全连接层
         fc_output = self.fc(merged)
 
-        return fc_output
+        return self.sigmoid(fc_output)
 
 
 data_loc = '/kaggle/input/sdp-own/'
@@ -106,8 +106,8 @@ print(pos_weight)
 model = MyModel(input_dim=40, hidden_dim=128).to(device)
 
 # 定义损失函数
-criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
-# criterion = my_loss
+# criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
+criterion = my_loss
 
 # 定义优化器
 optimizer = optim.Adam(model.parameters(), lr=0.001)
