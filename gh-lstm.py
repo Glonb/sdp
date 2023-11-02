@@ -99,7 +99,7 @@ print(f'Total param size: {utils.count_parameters_in_MB(model)} MB')
 
 # 定义损失函数
 # criterion = nn.BCELoss()
-criterion = my_loss().to(device)
+criterion = my_loss.to(device)
 
 # 定义优化器
 optimizer = optim.Adam(model.parameters(), lr=0.001)
