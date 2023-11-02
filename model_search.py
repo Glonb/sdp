@@ -121,8 +121,8 @@ class Network(nn.Module):
         # _, h_n = self.gru(self.dropout(input))
         # gru_out = torch.cat((h_n[0], h_n[1]), dim=-1)
 
-        _, th_n = self.tr_gru(self.tr_dropout(trf))
-        trf_out = th_n[0]
+        trf_out, _ = self.tr_gru(self.tr_dropout(trf))
+        trf_out = trf_out[:, -1, :]
         # trf_gate_out = self.sigmoid(self.tr_gate(trf_out))
         # trf_out = trf_out * trf_gate_out
         
