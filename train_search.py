@@ -72,7 +72,7 @@ def main():
     logging.info("args = %s", args)
 
     data_path = '/kaggle/input/sdp-own/'
-    train_data = MyDataset(data_path + args.data + '_ov_train.pt', data_path + args.data + '_oversampled.csv')
+    train_data = MyDataset(data_path + args.data + '_train.pt', data_path + args.data + '.csv')
     # df = pd.read_csv(data_path + args.data + '.csv')
     # labels = df["bug"]
 
