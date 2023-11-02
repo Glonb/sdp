@@ -20,23 +20,6 @@ if torch.cuda.is_available():
     device = torch.device("cuda")
 else:
     device = torch.device("cpu")
-
-
-# def my_loss(y_pred, y_true):
-#     margin = 0.6
-
-#     # Define theta function
-#     def theta(t):
-#         return (torch.sign(t) + 1) / 2
-
-#     # Compute the loss
-#     loss = -(
-#         (1 - theta(y_true - margin) * theta(y_pred - margin) 
-#         - theta(1 - margin - y_true) * theta(1 - margin - y_pred)) * 
-#         (y_true * torch.log(y_pred + 1e-8) + (1 - y_true) * torch.log(1 - y_pred + 1e-8))
-#     )
-    
-#     return loss.mean()  
     
 
 class MyModel(nn.Module):
@@ -53,8 +36,8 @@ class MyModel(nn.Module):
         self.fc = nn.Linear(hidden_dim * 2, 1)
 
         # 门控层
-        self.sce_gate = nn.Linear(hidden_dim, 128)
-        self.promise_gate = nn.Linear(hidden_dim, 128)
+        self.sce_gate = nn.Linear(hidden_dim, hidden_dim)
+        self.promise_gate = nn.Linear(hidden_dim, hidden_dim)
 
         # Sigmoid激活函数
         self.sigmoid = nn.Sigmoid()
@@ -66,7 +49,6 @@ class MyModel(nn.Module):
 
         # 应用门控机制
         sce_gate_output = self.sigmoid(self.sce_gate(sce_lstm_out_last))
-        # print(sce_gate_output.shape)
         gated_sce_lstm_out = sce_lstm_out_last * sce_gate_output
 
         # 处理promise_input数据
@@ -75,39 +57,38 @@ class MyModel(nn.Module):
 
         # 应用门控机制
         promise_gate_output = self.sigmoid(self.promise_gate(promise_lstm_out_last))
-        # print(promise_gate_output.shape)
         gated_promise_lstm_out = promise_lstm_out_last * promise_gate_output
 
         # 合并两个部分
-        merged = torch.cat((gated_sce_lstm_out, gated_promise_lstm_out), dim=-1)
-        # print(merged.shape)
+        merged_out = torch.cat((gated_sce_lstm_out, gated_promise_lstm_out), dim=-1)
 
         # 全连接层
-        fc_output = self.fc(merged)
+        fc_output = self.fc(merged_out)
+        output = self.sigmoid(fc_output)
 
-        return self.sigmoid(fc_output)
+        return output
 
 
+# 加载训练集和测试集
 data_loc = '/kaggle/input/sdp-own/'
 train_data = MyDataset(data_loc + args.train_data + '_ov_train.pt', data_loc + args.train_data + '_oversampled.csv')
 test_data = MyDataset(data_loc + args.test_data + '_ov_test.pt', data_loc + args.test_data + '.csv')
 
+train_dataloader = DataLoader(train_data, batch_size=args.batchsz, shuffle=True)
+test_dataloader = DataLoader(test_data, batch_size=args.batchsz, shuffle=True)
 
 # 创建模型实例
 model = MyModel(input_dim=40, hidden_dim=128).to(device)
 print(f'Total param size: {utils.count_parameters_in_MB(model)} MB')
 
 # 定义损失函数
-# criterion = nn.BCELoss()
+# criterion = nn.BCELoss().to(device)
 criterion = utils.GH_Loss().to(device)
 
 # 定义优化器
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-train_dataloader = DataLoader(train_data, batch_size=args.batchsz, shuffle=True)
-test_dataloader = DataLoader(test_data, batch_size=args.batchsz, shuffle=True)
-
-# 训练模型和预测的过程需要根据你的数据和训练流程进行调整
+# 训练模型和预测
 for epoch in range(args.epochs):
     model.train()
     # lr = optimizer.param_groups[0]['lr']
@@ -127,7 +108,7 @@ for epoch in range(args.epochs):
         sce = emb_data.permute(0, 2, 1)
         trf = tr_data.unsqueeze(1)
         output = model(sce, trf)
-        loss = criterion(output, label.float())
+        loss = criterion(output, label)
 
         loss.backward()
         optimizer.step()
@@ -159,7 +140,7 @@ with torch.no_grad():
         sce = emb_data.permute(0, 2, 1)
         trf = tr_data.unsqueeze(1)
         output = model(sce, trf)
-        loss = criterion(output, label.float())
+        loss = criterion(output, label)
 
         prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(output, label)
         losses.update(loss.item(), args.batchsz)
