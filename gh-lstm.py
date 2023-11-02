@@ -104,6 +104,7 @@ print(pos_weight)
 
 # 创建模型实例
 model = MyModel(input_dim=40, hidden_dim=128).to(device)
+print(f'Total param size: {utils.count_parameters_in_MB(model)} MB')
 
 # 定义损失函数
 criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
