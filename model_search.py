@@ -44,7 +44,7 @@ class Network(nn.Module):
         self.criterion = criterion
         
         # out_dim = c * 2 + 2 * hidden_size + 48
-        out_dim = c
+        out_dim = 168
         
         self.layers = nn.ModuleList()
 
@@ -58,8 +58,8 @@ class Network(nn.Module):
         # self.bilstm = nn.LSTM(input_size=self.c, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
         # self.gru = nn.GRU(input_size=self.c, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
         # self.dropout = nn.Dropout(0.2)
-        # self.tr_gru = nn.GRU(input_size=18, hidden_size=128, batch_first=True)
-        # self.tr_dropout = nn.Dropout(0.2)
+        self.tr_gru = nn.GRU(input_size=18, hidden_size=128, batch_first=True)
+        self.tr_dropout = nn.Dropout(0.2)
         self.cnn_dropout = nn.Dropout(0.2)
         
         # adaptive pooling output
@@ -122,17 +122,18 @@ class Network(nn.Module):
         # _, h_n = self.gru(self.dropout(input))
         # gru_out = torch.cat((h_n[0], h_n[1]), dim=-1)
 
-        # trf_out, _ = self.tr_gru(self.tr_dropout(trf))
-        # trf_out = trf_out[:, -1, :]
+        trf_out, _ = self.tr_gru(self.tr_dropout(trf))
+        trf_out = trf_out[:, -1, :]
         # trf_gate_out = self.sigmoid(self.tr_gate(trf_out))
         # trf_out = trf_out * trf_gate_out
         
-        # out = torch.cat([trf_out, cnn_out], dim=-1)
+        out = torch.cat([trf_out, cnn_out], dim=-1)
         # print(out.shape)
         
-        logits = self.fc(cnn_out)
+        logits = self.fc(out)
+        output = self.sigmoid(logits)
         
-        return self.sigmoid(logits)
+        return output
 
     def loss(self, x, trf, target):
         logits = self(x, trf)
