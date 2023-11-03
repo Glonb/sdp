@@ -58,7 +58,7 @@ class Network(nn.Module):
         # self.bilstm = nn.LSTM(input_size=self.c, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
         # self.gru = nn.GRU(input_size=self.c, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
         # self.dropout = nn.Dropout(0.2)
-        self.tr_gru = nn.GRU(input_size=18, hidden_size=128, batch_first=True)
+        self.tr_gru = nn.GRU(input_size=18, hidden_size=64, bidirectional=True, batch_first=True)
         self.tr_dropout = nn.Dropout(0.2)
         self.cnn_dropout = nn.Dropout(0.2)
         
