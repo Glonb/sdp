@@ -36,9 +36,9 @@ PRIMITIVES = [
 ]
 
 SDP_Genotype = Genotype(
-    geno=[('conv_4_2', 0),
+    geno=[('conv_5_2', 0),
+          ('conv_5_2', 0),
           ('conv_7_2', 0),
-          ('conv_5_2', 0), 
           ('conv_7_1', 0)],
     geno_concat=range(1, 5)
 )
