@@ -43,7 +43,7 @@ class Network(nn.Module):
         self._indices = indices
 
     def forward(self, x, trf):
-        x = self.dropout(x)
+        x = self.cnn_dropout(x)
         input = x.permute(0, 2, 1)
         trf = trf.unsqueeze(1)
         states = [x]
