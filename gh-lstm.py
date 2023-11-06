@@ -150,4 +150,4 @@ with torch.no_grad():
         g_measure.update(g1, args.batchsz)
         mcc.update(MCC, args.batchsz)
 
-    print(f'Test Loss: {losses.avg:.3f}, Precision: {precision.avg:.3f}, Recall: {recall.avg:.3f}, F1 Score: {f_measure.avg:.3f}, G1 Score: {g_measure.avg:.3f}')
+    print(f'Test Loss: {losses.avg:.3f}, Precision: {precision.avg:.3f}, Recall: {recall.avg:.3f}, F1: {f_measure.avg:.3f}, G1: {g_measure.avg:.3f}, MCC: {mcc.avg:.3f}')
