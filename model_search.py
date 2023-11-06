@@ -60,7 +60,7 @@ class Network(nn.Module):
         # self.dropout = nn.Dropout(0.2)
         self.tr_gru = nn.GRU(input_size=18, hidden_size=128, batch_first=True)
         self.tr_dropout = nn.Dropout(0.2)
-        self.cnn_dropout = nn.Dropout(0.2)
+        self.cnn_dropout = nn.Dropout(0.5)
         
         # adaptive pooling output
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
