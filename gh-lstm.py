@@ -82,8 +82,8 @@ model = MyModel(input_dim=40, hidden_dim=128).to(device)
 print(f'Total param size: {utils.count_parameters_in_MB(model)} MB')
 
 # 定义损失函数
-# criterion = nn.BCELoss().to(device)
-criterion = utils.GH_Loss().to(device)
+criterion = nn.BCELoss().to(device)
+# criterion = utils.GH_Loss().to(device)
 
 # 定义优化器
 optimizer = optim.Adam(model.parameters(), lr=0.001)
