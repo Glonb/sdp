@@ -44,7 +44,7 @@ class Network(nn.Module):
         self.criterion = criterion
         
         # out_dim = c * 2 + 2 * hidden_size + 48
-        out_dim = 208
+        out_dim = 168
         
         self.layers = nn.ModuleList()
 
@@ -105,10 +105,10 @@ class Network(nn.Module):
             # append one state since s is the elem-wise addition of all output
             states.append(s)
 
-        pooled_states = [self.global_pooling(h) for h in states[-2:]]
-        cnn_out = torch.cat(pooled_states, dim=-1)
+        # pooled_states = [self.global_pooling(h) for h in states[-2:]]
+        # cnn_out = torch.cat(pooled_states, dim=-1)
         
-        # cnn_out = self.global_pooling(states[-1])
+        cnn_out = self.global_pooling(states[-1])
         
         cnn_out = cnn_out.view(cnn_out.size(0), -1)
         # cnn_gate_out = self.sigmoid(self.cnn_gate(cnn_out))
