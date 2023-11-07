@@ -36,10 +36,10 @@ PRIMITIVES = [
 ]
 
 SDP_Genotype = Genotype(
-    geno=[('conv_7_1', 0),
-          ('conv_6_2', 0),
-          ('conv_7_2', 0), ('max_pool_7', 1),
-          ('conv_7_1', 0), ('conv_7_1', 1)], 
+    geno=[('conv_7_2', 0),
+          ('conv_6_2', 0), 
+          ('conv_7_2', 0), ('max_pool_7', 1), 
+          ('conv_7_2', 0), ('max_pool_3', 2)],
     geno_concat=range(1, 5)
 )
 SDP = SDP_Genotype
