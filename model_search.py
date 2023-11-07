@@ -25,7 +25,7 @@ class MixedLayer(nn.Module):
         out = [w * layer(x) for w, layer in zip(weights, self.layers)]
 
         # max_length = max(tensor.size(-1) for tensor in out)
-        max_length = 2500
+        max_length = 500
         padded_tensors = [F.pad(tensor, (0, max_length - tensor.size(-1))) for tensor in out]
         output = sum(padded_tensors)
         
@@ -44,7 +44,7 @@ class Network(nn.Module):
         self.criterion = criterion
         
         # out_dim = c * 2 + 2 * hidden_size + 48
-        out_dim = 168
+        out_dim = 128
         
         self.layers = nn.ModuleList()
 
@@ -58,7 +58,7 @@ class Network(nn.Module):
         # self.bilstm = nn.LSTM(input_size=self.c, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
         # self.gru = nn.GRU(input_size=self.c, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
         # self.dropout = nn.Dropout(0.2)
-        self.tr_gru = nn.GRU(input_size=18, hidden_size=128, batch_first=True)
+        self.tr_gru = nn.GRU(input_size=18, hidden_size=88, batch_first=True)
         self.tr_dropout = nn.Dropout(0.2)
         self.cnn_dropout = nn.Dropout(0.5)
         
