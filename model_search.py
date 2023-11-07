@@ -60,7 +60,7 @@ class Network(nn.Module):
         # self.dropout = nn.Dropout(0.2)
         self.tr_gru = nn.GRU(input_size=18, hidden_size=88, batch_first=True)
         self.tr_dropout = nn.Dropout(0.2)
-        self.cnn_dropout = nn.Dropout(0.5)
+        self.cnn_dropout = nn.Dropout(0.1)
         
         # adaptive pooling output
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
@@ -151,7 +151,7 @@ class Network(nn.Module):
             n = 1
             start = 0
             for i in range(self.steps): # for each node
-                idx = 1
+                idx = i // 2 + 1
                 end = start + n
                 W = weights[start:end].copy()
                 edges = sorted(range(i + 1), # i+1 is the number of connection for node i
