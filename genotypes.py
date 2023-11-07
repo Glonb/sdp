@@ -39,7 +39,7 @@ SDP_Genotype = Genotype(
     geno=[('conv_7_1', 0),  
           ('conv_7_1', 0),
           ('conv_7_1', 0),
-          ('conv_7_1', 0), 
+          ('conv_7_1', 0)], 
     geno_concat=range(1, 5)
 )
 SDP = SDP_Genotype
