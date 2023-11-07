@@ -29,12 +29,12 @@ OPS = {
     'dil_conv_3_1':    lambda C: DilConv(C, C, 3, 1, 2),
     'dil_conv_5_1':    lambda C: DilConv(C, C, 5, 1, 2),
     'dil_conv_7_1':    lambda C: DilConv(C, C, 7, 1, 2),
-    'avg_pool_3':    lambda C, stride: AvgPoolPadding(3, stride, 1),
-    'avg_pool_5':    lambda C, stride: AvgPoolPadding(5, stride, 2),
-    'avg_pool_7':    lambda C, stride: AvgPoolPadding(7, stride, 3),
-    'max_pool_3':    lambda C, stride: MaxPoolPadding(3, stride, 1),
-    'max_pool_5':    lambda C, stride: MaxPoolPadding(5, stride, 2),
-    'max_pool_7':    lambda C, stride: MaxPoolPadding(7, stride, 3)
+    'avg_pool_3_1':    lambda C: nn.AvgPool1d(kernel_size=3, stride=2, padding=1, count_include_pad=False),
+    'avg_pool_5_1':    lambda C: nn.AvgPool1d(kernel_size=5, stride=2, padding=2, count_include_pad=False),
+    'avg_pool_7_1':    lambda C: nn.AvgPool1d(kernel_size=7, stride=2, padding=3, count_include_pad=False),
+    'max_pool_3_1':    lambda C: nn.MaxPool1d(kernel_size=3, stride=2, padding=1),
+    'max_pool_5_1':    lambda C: nn.MaxPool1d(kernel_size=5, stride=2, padding=2),
+    'max_pool_7_1':    lambda C: nn.MaxPool1d(kernel_size=7, stride=2, padding=3)
 }
 
 class ConvReLU(nn.Module):
@@ -90,38 +90,38 @@ class SepConv(nn.Module):
         return self.op(x)
 
 
-class AvgPoolPadding(nn.Module):
+# class AvgPool(nn.Module):
     
-    def __init__(self, kernel_size, stride, padding):
+#     def __init__(self, kernel_size, stride, padding):
         
-        super(AvgPoolPadding, self).__init__()
+#         super(AvgPool, self).__init__()
 
-        self.op = nn.AvgPool1d(kernel_size=kernel_size, stride=2*stride, padding=padding, count_include_pad=False)
+#         self.op = nn.AvgPool1d(kernel_size=kernel_size, stride=2*stride, padding=padding, count_include_pad=False)
            
-    def forward(self, x):
-        x = self.op(x)
-        batch_size, channels, length = x.size()
+#     def forward(self, x):
+#         x = self.op(x)
+#         batch_size, channels, length = x.size()
 
-        padding_layer = nn.ConstantPad1d(padding=(0, length), value=0.0)
+#         padding_layer = nn.ConstantPad1d(padding=(0, length), value=0.0)
         
-        return padding_layer(x)
+#         return padding_layer(x)
 
 
-class MaxPoolPadding(nn.Module):
+# class MaxPoolPadding(nn.Module):
     
-    def __init__(self, kernel_size, stride, padding):
+#     def __init__(self, kernel_size, stride, padding):
         
-        super(MaxPoolPadding, self).__init__()
+#         super(MaxPoolPadding, self).__init__()
         
-        self.op = nn.MaxPool1d(kernel_size=kernel_size, stride=2*stride, padding=padding)
+#         self.op = nn.MaxPool1d(kernel_size=kernel_size, stride=2*stride, padding=padding)
 
-    def forward(self, x):
-        x = self.op(x)
-        batch_size, channels, length = x.size()
+#     def forward(self, x):
+#         x = self.op(x)
+#         batch_size, channels, length = x.size()
         
-        padding_layer = nn.ConstantPad1d(padding=(0, length), value=0.0)
+#         padding_layer = nn.ConstantPad1d(padding=(0, length), value=0.0)
         
-        return padding_layer(x)
+#         return padding_layer(x)
 
 
 class Identity(nn.Module):
