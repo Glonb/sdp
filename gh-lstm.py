@@ -3,6 +3,7 @@ import    torch.nn as nn
 import    torch.optim as optim
 import    argparse
 import    pandas as pd
+import    time
 import    utils
 from      torch.utils.data import DataLoader
 from      my_dataset import MyDataset
@@ -88,6 +89,8 @@ criterion = nn.BCELoss().to(device)
 # 定义优化器
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
+start_training_time = time.time()
+
 # 训练模型和预测
 for epoch in range(args.epochs):
     model.train()
@@ -123,6 +126,13 @@ for epoch in range(args.epochs):
 
     print(f'Epoch {epoch + 1}/{args.epochs}, Loss: {losses.avg:.3f}, Precision: {precision.avg:.3f}, Recall: {recall.avg:.3f}, F1 Score: {f_measure.avg:.3f}')
 
+end_training_time = time.time()
+
+training_time = end_training_time - start_training_time
+print(f"模型训练时间：{training_time}秒")
+
+start_testing_time = time.time()
+
 model.eval
 with torch.no_grad():
     losses = utils.AverageMeter()
@@ -151,3 +161,8 @@ with torch.no_grad():
         mcc.update(MCC, args.batchsz)
 
     print(f'Test Loss: {losses.avg:.3f}, Precision: {precision.avg:.3f}, Recall: {recall.avg:.3f}, F1: {f_measure.avg:.3f}, G1: {g_measure.avg:.3f}, MCC: {mcc.avg:.3f}')
+
+end_testing_time = time.time()
+
+testing_time = end_testing_time - start_testing_time
+print(f"模型测试时间：{testing_time}秒")
