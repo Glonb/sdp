@@ -11,7 +11,7 @@ class Network(nn.Module):
         
         self.hidden_size = hidden_size
         # out_dim = C * 2 + 2 * hidden_size + 48
-        out_dim = 208
+        out_dim = 168
 
         op_names, indices = zip(*genotype.geno)
         concat = genotype.geno_concat
@@ -54,12 +54,12 @@ class Network(nn.Module):
             h = op(h)
             states += [h]
 
-        pooled_states = [self.global_pooling(h) for h in states[-4:]]
-        first_out = pooled_states[0] + pooled_states[1]
-        second_out = pooled_states[2] + pooled_states[3]
-        cnn_out = torch.cat((first_out, second_out), dim=1)
+        # pooled_states = [self.global_pooling(h) for h in states[-4:]]
+        # first_out = pooled_states[0] + pooled_states[1]
+        # second_out = pooled_states[2] + pooled_states[3]
+        # cnn_out = torch.cat((first_out, second_out), dim=1)
         
-        # cnn_out = self.global_pooling(states[-1])
+        cnn_out = self.global_pooling(states[-1])
         # print(cnn_out.shape)
         
         cnn_out = cnn_out.view(cnn_out.size(0), -1)
