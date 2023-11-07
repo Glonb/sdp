@@ -22,7 +22,7 @@ class Network(nn.Module):
         # self.dropout = nn.Dropout(0.2)
         self.tr_gru = nn.GRU(input_size=18, hidden_size=88, batch_first=True)
         self.tr_dropout = nn.Dropout(0.2)
-        self.cnn_dropout = nn.Dropout(0.5)
+        self.cnn_dropout = nn.Dropout(0.1)
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
         # self.cnn_gate = nn.Linear(C * 2, C * 2)
         # self.tr_gate = nn.Linear(48, 48)
@@ -58,8 +58,8 @@ class Network(nn.Module):
         # first_out = pooled_states[0] + pooled_states[1]
         # second_out = pooled_states[2] + pooled_states[3]
         # cnn_out = torch.cat((first_out, second_out), dim=1)
-        
-        cnn_out = self.global_pooling(states[-1])
+
+        cnn_out = self.global_pooling(states[-2]) + self.global_pooling(states[-1])
         # print(cnn_out.shape)
         
         cnn_out = cnn_out.view(cnn_out.size(0), -1)
