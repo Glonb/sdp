@@ -25,7 +25,7 @@ class MixedLayer(nn.Module):
         out = [w * layer(x) for w, layer in zip(weights, self.layers)]
 
         # max_length = max(tensor.size(-1) for tensor in out)
-        max_length = 1500
+        max_length = 900
         padded_tensors = [F.pad(tensor, (0, max_length - tensor.size(-1))) for tensor in out]
         output = sum(padded_tensors)
         
