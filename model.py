@@ -20,7 +20,7 @@ class Network(nn.Module):
         # self.bilstm = nn.LSTM(input_size=C, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
         self.gru = nn.GRU(input_size=C, hidden_size=128, bidirectional=False, batch_first=True)
         self.dropout = nn.Dropout(0.2)
-        self.tr_gru = nn.GRU(input_size=18, hidden_size=128, batch_first=True)
+        self.tr_gru = nn.GRU(input_size=18, hidden_size=48, batch_first=True)
         self.tr_dropout = nn.Dropout(0.2)
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
         # self.cnn_gate = nn.Linear(C * 2, C * 2)
@@ -44,23 +44,23 @@ class Network(nn.Module):
     def forward(self, x, trf):
         input = x.permute(0, 2, 1)
         trf = trf.unsqueeze(1)
-        # states = [x]
+        states = [x]
         
-        # for i in range(self._steps):
-        #     h = states[self._indices[i]]
-        #     op = self._ops[i]
-        #     h = op(h)
-        #     states += [h]
+        for i in range(self._steps):
+            h = states[self._indices[i]]
+            op = self._ops[i]
+            h = op(h)
+            states += [h]
 
-        # pooled_states = [self.global_pooling(h) for h in states[-4:]]
-        # first_out = pooled_states[0] + pooled_states[1]
-        # second_out = pooled_states[2] + pooled_states[3]
-        # cnn_out = torch.cat((first_out, second_out), dim=1)
+        pooled_states = [self.global_pooling(h) for h in states[-4:]]
+        first_out = pooled_states[0] + pooled_states[1]
+        second_out = pooled_states[2] + pooled_states[3]
+        cnn_out = torch.cat((first_out, second_out), dim=1)
 
         # cnn_out = self.global_pooling(states[-2]) + self.global_pooling(states[-1])
         # print(cnn_out.shape)
         
-        # cnn_out = cnn_out.view(cnn_out.size(0), -1)
+        cnn_out = cnn_out.view(cnn_out.size(0), -1)
         # cnn_gate_out = self.sigmoid(self.cnn_gate(cnn_out))
         # cnn_out = cnn_out * cnn_gate_out
 
@@ -74,7 +74,7 @@ class Network(nn.Module):
         trf_out = trf_out[:, -1, :]
         # trf_gate_out = self.sigmoid(self.tr_gate(trf_out))
         # trf_out = trf_out * trf_gate_out
-        out = torch.cat([trf_out, gru_out], dim=-1)
+        out = torch.cat([cnn_out, trf_out, gru_out], dim=-1)
         
         logits = self.fc(out)
         output = self.sigmoid(logits)
