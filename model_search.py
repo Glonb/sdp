@@ -108,7 +108,7 @@ class Network(nn.Module):
         
         # cnn_out = self.global_pooling(states[-1])
         
-        # cnn_out = cnn_out.view(cnn_out.size(0), -1)
+        cnn_out = cnn_out.view(cnn_out.size(0), -1)
         # cnn_gate_out = self.sigmoid(self.cnn_gate(cnn_out))
         # cnn_out = cnn_out * cnn_gate_out
         # print(cnn_out.shape)
