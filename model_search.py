@@ -25,7 +25,7 @@ class MixedLayer(nn.Module):
         out = [w * layer(x) for w, layer in zip(weights, self.layers)]
 
         # max_length = max(tensor.size(-1) for tensor in out)
-        max_length = 1800
+        max_length = 1200
         padded_tensors = [F.pad(tensor, (0, max_length - tensor.size(-1))) for tensor in out]
         output = sum(padded_tensors)
         
@@ -44,7 +44,7 @@ class Network(nn.Module):
         self.criterion = criterion
         
         # out_dim = c * 2 + 2 * hidden_size + 48
-        out_dim = 208
+        out_dim = 256
         
         self.layers = nn.ModuleList()
 
@@ -56,8 +56,8 @@ class Network(nn.Module):
                 self.layers.append(layer)
 
         # self.bilstm = nn.LSTM(input_size=self.c, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
-        # self.gru = nn.GRU(input_size=self.c, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
-        # self.dropout = nn.Dropout(0.2)
+        self.gru = nn.GRU(input_size=self.c, hidden_size=128, bidirectional=False, batch_first=True)
+        self.dropout = nn.Dropout(0.2)
         self.tr_gru = nn.GRU(input_size=18, hidden_size=128, batch_first=True)
         self.tr_dropout = nn.Dropout(0.2)
         
@@ -117,7 +117,8 @@ class Network(nn.Module):
         # bilstm_out = torch.cat((h_n[0], h_n[1]), dim=-1) 
         # print(bilstm_out.shape)
         
-        # _, h_n = self.gru(self.dropout(input))
+        gru_out, _ = self.gru(self.dropout(input))
+        gru_out = gru_out[:, -1, :]
         # gru_out = torch.cat((h_n[0], h_n[1]), dim=-1)
 
         trf_out, _ = self.tr_gru(self.tr_dropout(trf))
@@ -125,7 +126,7 @@ class Network(nn.Module):
         # trf_gate_out = self.sigmoid(self.tr_gate(trf_out))
         # trf_out = trf_out * trf_gate_out
         
-        out = torch.cat([trf_out, cnn_out], dim=-1)
+        out = torch.cat([trf_out, gru_out], dim=-1)
         # print(out.shape)
         
         logits = self.fc(out)
