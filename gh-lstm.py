@@ -12,6 +12,7 @@ from      my_dataset import MyDataset
 parser = argparse.ArgumentParser("GH-LSTM")
 parser.add_argument('--train_data', type=str, default='ant15', help='train dataset')
 parser.add_argument('--test_data', type=str, default='ant16', help='test dataset')
+parser.add_argument('--input_dim', type-int, default=40, help='input dim')
 parser.add_argument('--batchsz', type=int, default=2048, help='batch size')
 parser.add_argument('--epochs', type=int, default=200, help='num of training epochs')
 args = parser.parse_args()
@@ -79,7 +80,7 @@ train_dataloader = DataLoader(train_data, batch_size=args.batchsz, shuffle=True)
 test_dataloader = DataLoader(test_data, batch_size=args.batchsz, shuffle=True)
 
 # 创建模型实例
-model = MyModel(input_dim=40, hidden_dim=128).to(device)
+model = MyModel(input_dim=args.input_dim, hidden_dim=128).to(device)
 print(f'Total param size: {utils.count_parameters_in_MB(model)} MB')
 
 # 定义损失函数
