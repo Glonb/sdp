@@ -11,7 +11,7 @@ class Network(nn.Module):
         
         self.hidden_size = hidden_size
         # out_dim = C * 2 + 2 * hidden_size + 48
-        out_dim = 304
+        out_dim = 256
 
         op_names, indices = zip(*genotype.geno)
         concat = genotype.geno_concat
