@@ -11,15 +11,15 @@ class Network(nn.Module):
         
         self.hidden_size = hidden_size
         # out_dim = C * 2 + 2 * hidden_size + 48
-        out_dim = 208
+        out_dim = 256
 
         op_names, indices = zip(*genotype.geno)
         concat = genotype.geno_concat
         self._compile(C, op_names, indices, concat)
 
         # self.bilstm = nn.LSTM(input_size=C, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
-        # self.gru = nn.GRU(input_size=C, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
-        # self.dropout = nn.Dropout(0.2)
+        self.gru = nn.GRU(input_size=C, hidden_size=128, bidirectional=False, batch_first=True)
+        self.dropout = nn.Dropout(0.2)
         self.tr_gru = nn.GRU(input_size=18, hidden_size=128, batch_first=True)
         self.tr_dropout = nn.Dropout(0.2)
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
@@ -44,36 +44,37 @@ class Network(nn.Module):
     def forward(self, x, trf):
         input = x.permute(0, 2, 1)
         trf = trf.unsqueeze(1)
-        states = [x]
+        # states = [x]
         
-        for i in range(self._steps):
-            h = states[self._indices[i]]
-            op = self._ops[i]
-            h = op(h)
-            states += [h]
+        # for i in range(self._steps):
+        #     h = states[self._indices[i]]
+        #     op = self._ops[i]
+        #     h = op(h)
+        #     states += [h]
 
-        pooled_states = [self.global_pooling(h) for h in states[-4:]]
-        first_out = pooled_states[0] + pooled_states[1]
-        second_out = pooled_states[2] + pooled_states[3]
-        cnn_out = torch.cat((first_out, second_out), dim=1)
+        # pooled_states = [self.global_pooling(h) for h in states[-4:]]
+        # first_out = pooled_states[0] + pooled_states[1]
+        # second_out = pooled_states[2] + pooled_states[3]
+        # cnn_out = torch.cat((first_out, second_out), dim=1)
 
         # cnn_out = self.global_pooling(states[-2]) + self.global_pooling(states[-1])
         # print(cnn_out.shape)
         
-        cnn_out = cnn_out.view(cnn_out.size(0), -1)
+        # cnn_out = cnn_out.view(cnn_out.size(0), -1)
         # cnn_gate_out = self.sigmoid(self.cnn_gate(cnn_out))
         # cnn_out = cnn_out * cnn_gate_out
 
         # sum_out, (h_n, c_n) = self.bilstm(input)
         # bilstm_out = torch.cat((h_n[0], h_n[1]), dim=-1)
-        # _, h_n = self.gru(self.dropout(input))
+        gru_out, _ = self.gru(self.dropout(input))
+        gru_out = gru_out[:, -1, :]
         # gru_out = torch.cat((h_n[0], h_n[1]), dim=-1)
 
         trf_out, _ = self.tr_gru(self.tr_dropout(trf))
         trf_out = trf_out[:, -1, :]
         # trf_gate_out = self.sigmoid(self.tr_gate(trf_out))
         # trf_out = trf_out * trf_gate_out
-        out = torch.cat([trf_out, cnn_out], dim=-1)
+        out = torch.cat([trf_out, gru_out], dim=-1)
         
         logits = self.fc(out)
         output = self.sigmoid(logits)
