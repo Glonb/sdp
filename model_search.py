@@ -58,9 +58,8 @@ class Network(nn.Module):
         # self.bilstm = nn.LSTM(input_size=self.c, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
         # self.gru = nn.GRU(input_size=self.c, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
         # self.dropout = nn.Dropout(0.2)
-        self.tr_gru = nn.GRU(input_size=18, hidden_size=88, batch_first=True)
+        self.tr_gru = nn.GRU(input_size=18, hidden_size=48, batch_first=True)
         self.tr_dropout = nn.Dropout(0.2)
-        self.cnn_dropout = nn.Dropout(0.1)
         
         # adaptive pooling output
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
@@ -88,7 +87,6 @@ class Network(nn.Module):
         return model_new
 
     def forward(self, x, trf):
-        x = self.cnn_dropout(x)
         input = x.permute(0, 2, 1)
         trf = trf.unsqueeze(1)
         # print(input.shape)
@@ -105,10 +103,10 @@ class Network(nn.Module):
             # append one state since s is the elem-wise addition of all output
             states.append(s)
 
-        # pooled_states = [self.global_pooling(h) for h in states[-2:]]
-        # cnn_out = torch.cat(pooled_states, dim=-1)
+        pooled_states = [self.global_pooling(h) for h in states[-2:]]
+        cnn_out = torch.cat(pooled_states, dim=-1)
         
-        cnn_out = self.global_pooling(states[-1])
+        # cnn_out = self.global_pooling(states[-1])
         
         cnn_out = cnn_out.view(cnn_out.size(0), -1)
         # cnn_gate_out = self.sigmoid(self.cnn_gate(cnn_out))
