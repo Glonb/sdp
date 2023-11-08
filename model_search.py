@@ -90,25 +90,25 @@ class Network(nn.Module):
         input = x.permute(0, 2, 1)
         trf = trf.unsqueeze(1)
         # print(input.shape)
-        states = [x]
-        offset = 0
+        # states = [x]
+        # offset = 0
         
         # for each node, receive input from all previous intermediate nodes and x
-        for i in range(self.steps):
+        # for i in range(self.steps):
             
-            weights = F.softmax(self.alpha, dim=-1)
-            s = sum(self.layers[offset + j](h, weights[offset + j]) for j, h in enumerate(states))
-            offset += len(states)
+        #     weights = F.softmax(self.alpha, dim=-1)
+        #     s = sum(self.layers[offset + j](h, weights[offset + j]) for j, h in enumerate(states))
+        #     offset += len(states)
             
-            # append one state since s is the elem-wise addition of all output
-            states.append(s)
+        #     # append one state since s is the elem-wise addition of all output
+        #     states.append(s)
 
-        pooled_states = [self.global_pooling(h) for h in states[-2:]]
-        cnn_out = torch.cat(pooled_states, dim=-1)
+        # pooled_states = [self.global_pooling(h) for h in states[-2:]]
+        # cnn_out = torch.cat(pooled_states, dim=-1)
         
         # cnn_out = self.global_pooling(states[-1])
         
-        cnn_out = cnn_out.view(cnn_out.size(0), -1)
+        # cnn_out = cnn_out.view(cnn_out.size(0), -1)
         # cnn_gate_out = self.sigmoid(self.cnn_gate(cnn_out))
         # cnn_out = cnn_out * cnn_gate_out
         # print(cnn_out.shape)
