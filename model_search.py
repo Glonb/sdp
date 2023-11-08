@@ -58,7 +58,7 @@ class Network(nn.Module):
         # self.bilstm = nn.LSTM(input_size=self.c, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
         self.gru = nn.GRU(input_size=self.c, hidden_size=128, bidirectional=False, batch_first=True)
         self.dropout = nn.Dropout(0.2)
-        self.tr_gru = nn.GRU(input_size=18, hidden_size=128, batch_first=True)
+        self.tr_gru = nn.GRU(input_size=18, hidden_size=48, batch_first=True)
         self.tr_dropout = nn.Dropout(0.2)
         
         # adaptive pooling output
@@ -90,21 +90,21 @@ class Network(nn.Module):
         input = x.permute(0, 2, 1)
         trf = trf.unsqueeze(1)
         # print(input.shape)
-        # states = [x]
-        # offset = 0
+        states = [x]
+        offset = 0
         
         # for each node, receive input from all previous intermediate nodes and x
-        # for i in range(self.steps):
+        for i in range(self.steps):
             
-        #     weights = F.softmax(self.alpha, dim=-1)
-        #     s = sum(self.layers[offset + j](h, weights[offset + j]) for j, h in enumerate(states))
-        #     offset += len(states)
+            weights = F.softmax(self.alpha, dim=-1)
+            s = sum(self.layers[offset + j](h, weights[offset + j]) for j, h in enumerate(states))
+            offset += len(states)
             
-        #     # append one state since s is the elem-wise addition of all output
-        #     states.append(s)
+            # append one state since s is the elem-wise addition of all output
+            states.append(s)
 
-        # pooled_states = [self.global_pooling(h) for h in states[-2:]]
-        # cnn_out = torch.cat(pooled_states, dim=-1)
+        pooled_states = [self.global_pooling(h) for h in states[-2:]]
+        cnn_out = torch.cat(pooled_states, dim=-1)
         
         # cnn_out = self.global_pooling(states[-1])
         
@@ -126,7 +126,7 @@ class Network(nn.Module):
         # trf_gate_out = self.sigmoid(self.tr_gate(trf_out))
         # trf_out = trf_out * trf_gate_out
         
-        out = torch.cat([trf_out, gru_out], dim=-1)
+        out = torch.cat([cnn_out, trf_out, gru_out], dim=-1)
         # print(out.shape)
         
         logits = self.fc(out)
