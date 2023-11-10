@@ -65,8 +65,7 @@ class CNNModel(nn.Module):
 
 
 # 模型实例化
-embedding_dim = 40
-model = CNNModel(embedding_dim).to(device)
+model = CNNModel(args.input_dim).to(device)
 print(f'Total param size: {utils.count_parameters_in_MB(model)} MB')
 
 # 定义损失函数和优化器
