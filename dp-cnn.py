@@ -58,8 +58,8 @@ class CNNModel(nn.Module):
 
 # 模型实例化
 embedding_dim = 40
-model = CNNModel(embedding_dim)
+model = CNNModel(embedding_dim).to(device)
 
 # 定义损失函数和优化器
-criterion = nn.BCELoss()
+criterion = nn.BCELoss().to(device)
 optimizer = optim.Adam(model.parameters(), lr=0.001)
