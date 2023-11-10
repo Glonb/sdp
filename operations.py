@@ -1,5 +1,6 @@
 import  torch
 import  torch.nn as nn
+import torch.nn.init as init
 import  torch.nn.functional as F
 # OPS is a set of layers with same input/output channel.
 
@@ -49,6 +50,12 @@ class ConvReLU(nn.Module):
             nn.Conv1d(C_in, C_out, kernel_size, stride=stride),
             nn.ReLU()
         )
+
+        # 对卷积层进行权重初始化
+        if hasattr(self.op[0], 'weight'):
+            init.kaiming_uniform_(self.op[0].weight, nonlinearity='relu')
+        if hasattr(self.op[0], 'bias') and self.op[0].bias is not None:
+            init.zeros_(self.op[0].bias)
 
     def forward(self, x):
         return self.op(x)
