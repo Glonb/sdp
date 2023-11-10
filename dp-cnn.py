@@ -1,8 +1,9 @@
-import torch
-import torch.nn as nn
-import torch.optim as optim
-from torch.utils.data import DataLoader
-from my_dataset import MyDataset
+import   torch
+import   torch.nn as nn
+import   torch.optim as optim
+import   utils
+from     torch.utils.data import DataLoader
+from     my_dataset import MyDataset
 
 # 检查 GPU 可用性
 if torch.cuda.is_available():
@@ -59,6 +60,7 @@ class CNNModel(nn.Module):
 # 模型实例化
 embedding_dim = 40
 model = CNNModel(embedding_dim).to(device)
+print(f'Total param size: {utils.count_parameters_in_MB(model)} MB')
 
 # 定义损失函数和优化器
 criterion = nn.BCELoss().to(device)
