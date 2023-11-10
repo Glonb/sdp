@@ -71,3 +71,85 @@ print(f'Total param size: {utils.count_parameters_in_MB(model)} MB')
 # 定义损失函数和优化器
 criterion = nn.BCELoss().to(device)
 optimizer = optim.Adam(model.parameters(), lr=0.001)
+
+# 加载训练集和测试集
+data_loc = '/kaggle/input/sdp-own/'
+train_data = MyDataset(data_loc + args.train_data + '_train.pt', data_loc + args.train_data + '_train.csv')
+test_data = MyDataset(data_loc + args.test_data + '_test.pt', data_loc + args.test_data + '_test.csv')
+
+train_dataloader = DataLoader(train_data, batch_size=args.batchsz, shuffle=True)
+test_dataloader = DataLoader(test_data, batch_size=args.batchsz, shuffle=True)
+
+start_training_time = time.time()
+
+# 训练模型和预测
+for epoch in range(args.epochs):
+    model.train()
+    # lr = optimizer.param_groups[0]['lr']
+    losses = utils.AverageMeter()
+    precision = utils.AverageMeter()
+    recall = utils.AverageMeter()
+    f_measure = utils.AverageMeter()
+    g_measure = utils.AverageMeter()
+    mcc = utils.AverageMeter()
+
+    for i, (emb_data, tr_data, label) in enumerate(train_dataloader):
+        emb_data = emb_data.to(device)
+        tr_data = tr_data.to(device)
+        label = label.to(device)
+
+        optimizer.zero_grad()
+        output = model(emb_data, tr_data)
+        loss = criterion(output, label)
+
+        loss.backward()
+        optimizer.step()
+
+        prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(output, label)
+        losses.update(loss.item(), args.batchsz)
+        precision.update(prec, args.batchsz)
+        recall.update(rec, args.batchsz)
+        f_measure.update(f1, args.batchsz)
+        g_measure.update(g1, args.batchsz)
+        mcc.update(MCC, args.batchsz)
+
+    print(f'Epoch {epoch + 1}/{args.epochs}, Loss: {losses.avg:.3f}, Precision: {precision.avg:.3f}, Recall: {recall.avg:.3f}, F1 Score: {f_measure.avg:.3f}')
+
+end_training_time = time.time()
+
+training_time = end_training_time - start_training_time
+print(f"模型训练时间：{training_time}秒")
+
+start_testing_time = time.time()
+
+model.eval
+with torch.no_grad():
+    losses = utils.AverageMeter()
+    precision = utils.AverageMeter()
+    recall = utils.AverageMeter()
+    f_measure = utils.AverageMeter()
+    g_measure = utils.AverageMeter()
+    mcc = utils.AverageMeter()
+
+    for i, (emb_data, tr_data, label) in enumerate(test_dataloader):
+        emb_data = emb_data.to(device)
+        tr_data = tr_data.to(device)
+        label = label.to(device)
+
+        output = model(emb_data, tr_data)
+        loss = criterion(output, label)
+
+        prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(output, label)
+        losses.update(loss.item(), args.batchsz)
+        precision.update(prec, args.batchsz)
+        recall.update(rec, args.batchsz)
+        f_measure.update(f1, args.batchsz)
+        g_measure.update(g1, args.batchsz)
+        mcc.update(MCC, args.batchsz)
+
+    print(f'Test Loss: {losses.avg:.3f}, Precision: {precision.avg:.3f}, Recall: {recall.avg:.3f}, F1: {f_measure.avg:.3f}, G1: {g_measure.avg:.3f}, MCC: {mcc.avg:.3f}')
+
+end_testing_time = time.time()
+
+testing_time = end_testing_time - start_testing_time
+print(f"模型测试时间：{testing_time}秒")
