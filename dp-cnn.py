@@ -4,6 +4,12 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from my_dataset import MyDataset
 
+# 检查 GPU 可用性
+if torch.cuda.is_available():
+    device = torch.device("cuda")
+else:
+    device = torch.device("cpu")
+
 
 class CNNModel(nn.Module):
     def __init__(self, embed_dim):
