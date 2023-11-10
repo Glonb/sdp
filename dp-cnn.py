@@ -20,7 +20,7 @@ class CNNModel(nn.Module):
         self.conv = nn.Conv1d(in_channels=embed_dim, out_channels=10, kernel_size=5)
 
         # 最大池化层
-        self.pool = nn.MaxPool1d(kernel_size=5, stride=5, padding=2)
+        self.pool = nn.AdaptiveMaxPool1d(1)
 
         # ReLU激活函数
         self.relu = nn.ReLU()
@@ -37,19 +37,17 @@ class CNNModel(nn.Module):
     def forward(self, emb_data, tr_data):
 
         # 卷积和池化
-        conv_output = self.relu(self.pool(self.conv(emb_data)))
+        conv_out = self.relu(self.pool(self.conv(emb_data)))
+        flat_out = conv_out.view(conv_out.size(0), -1)
 
         # 全连接层
-        fc_output = self.relu(self.fc(conv_output))
-
-        # Flatten
-        flattened = fc_output.view(fc_output.size(0), -1)
+        fc_output = self.relu(self.fc(flat_out))
 
         # 连接第二个输入
-        concatenated = torch.cat((flattened, tr_data), dim=1)
+        cat_out = torch.cat((fc_output, tr_data), dim=-1)
 
         # 输出层
-        output = self.output_layer(concatenated)
+        output = self.output_layer(cat_out)
 
         # 使用Sigmoid激活函数输出
         output = self.sigmoid(output)
