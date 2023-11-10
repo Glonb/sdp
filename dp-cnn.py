@@ -5,6 +5,15 @@ import   utils
 from     torch.utils.data import DataLoader
 from     my_dataset import MyDataset
 
+
+parser = argparse.ArgumentParser("DP-CNN")
+parser.add_argument('--train_data', type=str, default='ant15', help='train dataset')
+parser.add_argument('--test_data', type=str, default='ant16', help='test dataset')
+parser.add_argument('--input_dim', type=int, default=40, help='input dim')
+parser.add_argument('--batchsz', type=int, default=32, help='batch size')
+parser.add_argument('--epochs', type=int, default=15, help='num of training epochs')
+args = parser.parse_args()
+
 # 检查 GPU 可用性
 if torch.cuda.is_available():
     device = torch.device("cuda")
