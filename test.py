@@ -54,17 +54,17 @@ def main():
     genotype = eval("genotypes.%s" % args.arch)
     logging.info('Load genotype: %s', genotype)
     print('Load genotype:', genotype)
+  
     model = Network(args.channels, args.hiddensz, genotype).cuda()
     utils.load(model, args.exp_path)
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
 
     criterion = nn.BCELoss().cuda()
-    # criterion = GH_Loss().cuda()
   
-    test_prec, test_rec, test_f1 = infer(test_queue, model, criterion)
+    test_f1 = infer(test_queue, model, criterion)
     
-    print('test_precision: ', test_prec.item())
+    print('test_f1: ', test_f1.item())
 
 
 def infer(test_queue, model, criterion):
@@ -108,7 +108,7 @@ def infer(test_queue, model, criterion):
                              step, losses.avg, precision.avg, recall.avg, fpr.avg, fnr.avg,
                              f_measure.avg, g_measure.avg, mcc.avg)
   
-    return precision.avg, recall.avg, f_measure.avg
+    return f_measure.avg
 
 
 if __name__ == '__main__':
