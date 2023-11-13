@@ -73,17 +73,17 @@ def main():
     train_data = MyDataset(data_path + args.data + '_train.pt', data_path + args.data + '_train.csv')
 
     train_queue = torch.utils.data.DataLoader(
-        train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
+        train_data, batch_size=args.batchsz, shuffle=True, pin_memory=False, num_workers=2)
     valid_queue = torch.utils.data.DataLoader(
-        train_data, batch_size=args.batchsz, shuffle=True, pin_memory=True, num_workers=2)
+        train_data, batch_size=args.batchsz, shuffle=True, pin_memory=False, num_workers=2)
 
     criterion = nn.BCELoss().to(device)
-    # criterion = GH_Loss().to(device)
     model = Network(args.channels, args.layers, args.hiddensz, criterion).to(device)
 
     logging.info("Total param size = %f MB", utils.count_parameters_in_MB(model))
 
-    optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
+    # optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
+    optimizer = optim.Adam(model.parameters(), lr=args.lr)
 
     arch = Arch(model, args)
 
@@ -95,14 +95,15 @@ def main():
 
         genotype = model.genotype()
         logging.info('Genotype: %s', genotype)
+        print('Genotype: %s' %genotype)
 
         # training
-        train_prec, train_rec, train_f1 = train(train_queue, valid_queue, model, arch, criterion, optimizer, lr)
-        print('train precision: %.5f' %train_prec.item())
+        train_f1 = train(train_queue, valid_queue, model, arch, criterion, optimizer, lr)
+        print('train f1_score: %.5f' %train_f1.item())
 
         # validation
-        valid_prec, valid_rec, valid_f1 = infer(valid_queue, model, criterion)
-        print('valid precision: %.5f' %valid_prec.item())
+        valid_f1 = infer(valid_queue, model, criterion)
+        print('valid f1_score: %.5f' %valid_f1.item())
 
 
 def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
@@ -158,7 +159,7 @@ def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
                          step, losses.avg, precision.avg, recall.avg, fpr.avg, 
                          fnr.avg, f_measure.avg, g_measure.avg, mcc.avg)
 
-    return precision.avg, recall.avg, f_measure.avg
+    return f_measure.avg
 
 
 def infer(valid_queue, model, criterion):
@@ -201,7 +202,7 @@ def infer(valid_queue, model, criterion):
                              step, losses.avg, precision.avg, recall.avg, fpr.avg,
                              fnr.avg, f_measure.avg, g_measure.avg, mcc.avg)
   
-    return precision.avg, recall.avg, f_measure.avg
+    return f_measure.avg
 
 
 if __name__ == '__main__':
