@@ -16,16 +16,15 @@ class MixedLayer(nn.Module):
             
             # create corresponding layer
             layer = OPS[primitive](c)
-            
             self.layers.append(layer)
 
     def forward(self, x, weights):
+        max_length = x.size(-1)
         # for i,layer in enumerate(self.layers):
         #     print(layer(x).shape)
         out = [w * layer(x) for w, layer in zip(weights, self.layers)]
 
         # max_length = max(tensor.size(-1) for tensor in out)
-        max_length = 1600
         padded_tensors = [F.pad(tensor, (0, max_length - tensor.size(-1))) for tensor in out]
         output = sum(padded_tensors)
         
@@ -58,14 +57,13 @@ class Network(nn.Module):
         # self.bilstm = nn.LSTM(input_size=self.c, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
         self.gru = nn.GRU(input_size=self.c, hidden_size=128, bidirectional=False, batch_first=True)
         self.dropout = nn.Dropout(0.2)
-        self.tr_gru = nn.GRU(input_size=18, hidden_size=48, batch_first=True)
+        self.tr_gru = nn.GRU(input_size=20, hidden_size=88, batch_first=True)
         self.tr_dropout = nn.Dropout(0.2)
         
         # adaptive pooling output
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
 
-        # self.cnn_gate = nn.Linear(c * 2, c * 2)
-        # self.tr_gate = nn.Linear(48, 48)
+        # self.gate = nn.Linear(out_dim, out_dim)
         self.sigmoid = nn.Sigmoid()
         self.fc = nn.Linear(out_dim, 1)
 
@@ -89,7 +87,6 @@ class Network(nn.Module):
     def forward(self, x, trf):
         input = x.permute(0, 2, 1)
         trf = trf.unsqueeze(1)
-        # print(input.shape)
         states = [x]
         offset = 0
         
@@ -103,14 +100,11 @@ class Network(nn.Module):
             # append one state since s is the elem-wise addition of all output
             states.append(s)
 
-        pooled_states = [self.global_pooling(h) for h in states[-2:]]
-        cnn_out = torch.cat(pooled_states, dim=-1)
+        # pooled_states = [self.global_pooling(h) for h in states[-2:]]
+        # cnn_out = torch.cat(pooled_states, dim=-1)
         
-        # cnn_out = self.global_pooling(states[-1])
-        
+        cnn_out = self.global_pooling(states[-1])
         cnn_out = cnn_out.view(cnn_out.size(0), -1)
-        # cnn_gate_out = self.sigmoid(self.cnn_gate(cnn_out))
-        # cnn_out = cnn_out * cnn_gate_out
         # print(cnn_out.shape)
         
         # bl_out, (h_n, c_n) = self.bilstm(input)
@@ -126,7 +120,9 @@ class Network(nn.Module):
         # trf_gate_out = self.sigmoid(self.tr_gate(trf_out))
         # trf_out = trf_out * trf_gate_out
         
-        out = torch.cat([cnn_out, trf_out, gru_out], dim=-1)
+        out = torch.cat([cnn_out, gru_out, trf_out], dim=-1)
+        # cat_gate_out = self.sigmoid(self.gate(out))
+        # cat_out = cat_gate_out * out
         # print(out.shape)
         
         logits = self.fc(out)
@@ -150,7 +146,7 @@ class Network(nn.Module):
             n = 1
             start = 0
             for i in range(self.steps): # for each node
-                idx = i // 2 + 1
+                idx = 1
                 end = start + n
                 W = weights[start:end].copy()
                 edges = sorted(range(i + 1), # i+1 is the number of connection for node i
