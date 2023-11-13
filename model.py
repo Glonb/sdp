@@ -10,16 +10,16 @@ class Network(nn.Module):
         super(Network, self).__init__()
         
         self.hidden_size = hidden_size
-        out_dim = 256
+        out_dim = 128
 
         op_names, indices = zip(*genotype.geno)
         concat = genotype.geno_concat
         self._compile(C, op_names, indices, concat)
 
         # self.bilstm = nn.LSTM(input_size=C, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
-        self.gru = nn.GRU(input_size=C, hidden_size=128, bidirectional=False, batch_first=True)
+        self.gru = nn.GRU(input_size=C, hidden_size=64, bidirectional=False, batch_first=True)
         self.dropout = nn.Dropout(0.2)
-        self.tr_gru = nn.GRU(input_size=20, hidden_size=88, batch_first=True)
+        self.tr_gru = nn.GRU(input_size=20, hidden_size=24, batch_first=True)
         self.tr_dropout = nn.Dropout(0.2)
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
         # self.gate = nn.Linear(out_dim, out_dim)
