@@ -20,9 +20,9 @@ class Network(nn.Module):
         # self.gru = nn.GRU(input_size=C, hidden_size=88, bidirectional=False, batch_first=True)
         # self.dropout = nn.Dropout(0.2)
         self.tr_gru = nn.GRU(input_size=20, hidden_size=88, batch_first=True)
-        self.tr_dropout = nn.Dropout(0.1)
+        self.tr_dropout = nn.Dropout(0.3)
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
-        # self.gate = nn.Linear(out_dim, out_dim)
+        self.gate = nn.Linear(out_dim, out_dim)
         self.sigmoid = nn.Sigmoid()
         self.fc = nn.Linear(out_dim, 1)
 
@@ -68,8 +68,8 @@ class Network(nn.Module):
         trf_out = trf_out[:, -1, :]
        
         out = torch.cat([cnn_out, trf_out], dim=-1)
-        # cat_gate_out = self.sigmoid(self.gate(out))
-        # cat_out = cat_gate_out * out
+        cat_gate_out = self.sigmoid(self.gate(out))
+        out = cat_gate_out * out
         logits = self.fc(out)
         output = self.sigmoid(logits)
         
