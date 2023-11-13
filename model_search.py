@@ -43,7 +43,7 @@ class Network(nn.Module):
         self.criterion = criterion
         
         # out_dim = c * 2 + 2 * hidden_size + 48
-        out_dim = 256
+        out_dim = 128
         
         self.layers = nn.ModuleList()
 
@@ -55,9 +55,9 @@ class Network(nn.Module):
                 self.layers.append(layer)
 
         # self.bilstm = nn.LSTM(input_size=self.c, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
-        self.gru = nn.GRU(input_size=self.c, hidden_size=128, bidirectional=False, batch_first=True)
+        self.gru = nn.GRU(input_size=self.c, hidden_size=64, bidirectional=False, batch_first=True)
         self.dropout = nn.Dropout(0.2)
-        self.tr_gru = nn.GRU(input_size=20, hidden_size=88, batch_first=True)
+        self.tr_gru = nn.GRU(input_size=20, hidden_size=24, batch_first=True)
         self.tr_dropout = nn.Dropout(0.2)
         
         # adaptive pooling output
