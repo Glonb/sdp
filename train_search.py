@@ -95,7 +95,7 @@ def main():
 
         genotype = model.genotype()
         logging.info('Genotype: %s', genotype)
-        print('Genotype: %s' %genotype)
+        print(f'Genotype: {genotype}')
 
         # training
         train_f1 = train(train_queue, valid_queue, model, arch, criterion, optimizer, lr)
