@@ -63,7 +63,7 @@ class Network(nn.Module):
         # adaptive pooling output
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
 
-        # self.gate = nn.Linear(out_dim, out_dim)
+        self.gate = nn.Linear(out_dim, out_dim)
         self.sigmoid = nn.Sigmoid()
         self.fc = nn.Linear(out_dim, 1)
 
@@ -121,8 +121,8 @@ class Network(nn.Module):
         # trf_out = trf_out * trf_gate_out
         
         out = torch.cat([cnn_out, trf_out], dim=-1)
-        # cat_gate_out = self.sigmoid(self.gate(out))
-        # cat_out = cat_gate_out * out
+        cat_gate_out = self.sigmoid(self.gate(out))
+        out = cat_gate_out * out
         # print(out.shape)
         
         logits = self.fc(out)
