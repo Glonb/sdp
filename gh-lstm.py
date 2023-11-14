@@ -66,9 +66,9 @@ class MyModel(nn.Module):
 
         # 全连接层
         fc_output = self.fc(merged_out)
-        output = self.sigmoid(fc_output)
+        # output = self.sigmoid(fc_output)
 
-        return output
+        return fc_output
 
 
 # 加载训练集和测试集
@@ -84,7 +84,7 @@ model = MyModel(input_dim=args.input_dim, hidden_dim=128).to(device)
 print(f'Total param size: {utils.count_parameters_in_MB(model)} MB')
 
 # 定义损失函数
-criterion = nn.BCELoss().to(device)
+criterion = nn.BCEWithLogitsLoss().to(device)
 # criterion = utils.GH_Loss().to(device)
 
 # 定义优化器
