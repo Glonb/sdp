@@ -68,7 +68,7 @@ def main():
     logging.info('GPU device = %d' % args.gpu)
     logging.info("args = %s", args)
 
-    data_path = '/kaggle/input/sdp-own/'
+    data_path = '/kaggle/input/new-sdp/'
     train_data = MyDataset(data_path + args.data + '_train.pt', data_path + args.data + '_train.csv')
 
     train_queue = torch.utils.data.DataLoader(
