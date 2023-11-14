@@ -9,8 +9,8 @@ from      my_dataset import MyDataset
 
 
 parser = argparse.ArgumentParser("DP-CNN")
-parser.add_argument('--train_data', type=str, default='ant15', help='train dataset')
-parser.add_argument('--test_data', type=str, default='ant16', help='test dataset')
+parser.add_argument('--train_data', type=str, default='ant-1.5', help='train dataset')
+parser.add_argument('--test_data', type=str, default='ant-1.6', help='test dataset')
 parser.add_argument('--input_dim', type=int, default=40, help='input dim')
 parser.add_argument('--batchsz', type=int, default=32, help='batch size')
 parser.add_argument('--epochs', type=int, default=15, help='num of training epochs')
@@ -75,9 +75,9 @@ criterion = nn.BCELoss().to(device)
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 # 加载训练集和测试集
-data_loc = '/kaggle/input/sdp-own/'
-train_data = MyDataset(data_loc + args.train_data + '_train.pt', data_loc + args.train_data + '_train.csv')
-test_data = MyDataset(data_loc + args.test_data + '_test.pt', data_loc + args.test_data + '_test.csv')
+data_loc = '/kaggle/input/new-sdp/'
+train_data = MyDataset(data_loc + args.train_data + '_train.pt', data_loc + args.train_data + '.csv')
+test_data = MyDataset(data_loc + args.test_data + '_test.pt', data_loc + args.test_data + '.csv')
 
 train_dataloader = DataLoader(train_data, batch_size=args.batchsz, shuffle=True)
 test_dataloader = DataLoader(test_data, batch_size=args.batchsz, shuffle=True)
