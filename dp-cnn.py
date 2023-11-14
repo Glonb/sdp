@@ -71,7 +71,7 @@ model = CNNModel(args.input_dim).to(device)
 print(f'Total param size: {utils.count_parameters_in_MB(model)} MB')
 
 # 定义损失函数和优化器
-criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor(2.79)).to(device)
+criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor(8.678)).to(device)
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 # 加载训练集和测试集
