@@ -43,7 +43,7 @@ class CNNModel(nn.Module):
         self.output_layer = nn.Linear(120, 1)
 
         # Sigmoid激活函数
-        self.sigmoid = nn.Sigmoid()
+        # self.sigmoid = nn.Sigmoid()
 
     def forward(self, emb_data, tr_data):
 
@@ -61,7 +61,7 @@ class CNNModel(nn.Module):
         output = self.output_layer(cat_out)
 
         # 使用Sigmoid激活函数输出
-        output = self.sigmoid(output)
+        # output = self.sigmoid(output)
 
         return output
 
@@ -71,7 +71,7 @@ model = CNNModel(args.input_dim).to(device)
 print(f'Total param size: {utils.count_parameters_in_MB(model)} MB')
 
 # 定义损失函数和优化器
-criterion = nn.BCELoss().to(device)
+criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor(2.79)).to(device)
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 # 加载训练集和测试集
