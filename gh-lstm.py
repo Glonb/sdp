@@ -84,7 +84,7 @@ model = MyModel(input_dim=args.input_dim, hidden_dim=128).to(device)
 print(f'Total param size: {utils.count_parameters_in_MB(model)} MB')
 
 # 定义损失函数
-criterion = nn.BCEWithLogitsLoss().to(device)
+criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor(8.678)).to(device)
 # criterion = utils.GH_Loss().to(device)
 
 # 定义优化器
