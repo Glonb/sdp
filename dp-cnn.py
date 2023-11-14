@@ -31,13 +31,13 @@ class CNNModel(nn.Module):
         self.conv = nn.Conv1d(in_channels=embed_dim, out_channels=10, kernel_size=5)
 
         # 最大池化层
-        self.pool = nn.AdaptiveMaxPool1d(10)
+        self.pool = nn.AdaptiveMaxPool1d(1)
 
         # ReLU激活函数
         self.relu = nn.ReLU()
 
         # 全连接层
-        self.fc = nn.Linear(100, 100)
+        self.fc = nn.Linear(10, 100)
 
         # 输出层
         self.output_layer = nn.Linear(120, 1)
