@@ -43,7 +43,7 @@ class Network(nn.Module):
         self.criterion = criterion
         
         # out_dim = c * 2 + 2 * hidden_size + 48
-        out_dim = 128
+        out_dim = 80
         
         self.layers = nn.ModuleList()
 
@@ -57,12 +57,12 @@ class Network(nn.Module):
         # self.bilstm = nn.LSTM(input_size=self.c, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
         # self.gru = nn.GRU(input_size=self.c, hidden_size=64, bidirectional=False, batch_first=True)
         # self.dropout = nn.Dropout(0.2)
-        self.tr_gru = nn.GRU(input_size=20, hidden_size=88, batch_first=True)
-        self.tr_dropout = nn.Dropout(0.3)
+        # self.tr_gru = nn.GRU(input_size=20, hidden_size=88, batch_first=True)
+        # self.tr_dropout = nn.Dropout(0.3)
         
         # adaptive pooling output
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
-
+        self.tr_fc = nn.Linear(20, 40)
         self.gate = nn.Linear(out_dim, out_dim)
         self.sigmoid = nn.Sigmoid()
         self.fc = nn.Linear(out_dim, 1)
@@ -86,7 +86,7 @@ class Network(nn.Module):
 
     def forward(self, x, trf):
         input = x.permute(0, 2, 1)
-        trf = trf.unsqueeze(1)
+        # trf = trf.unsqueeze(1)
         states = [x]
         offset = 0
         
@@ -115,10 +115,11 @@ class Network(nn.Module):
         # gru_out = gru_out[:, -1, :]
         # gru_out = torch.cat((h_n[0], h_n[1]), dim=-1)
 
-        trf_out, _ = self.tr_gru(self.tr_dropout(trf))
-        trf_out = trf_out[:, -1, :]
+        # trf_out, _ = self.tr_gru(self.tr_dropout(trf))
+        # trf_out = trf_out[:, -1, :]
         # trf_gate_out = self.sigmoid(self.tr_gate(trf_out))
         # trf_out = trf_out * trf_gate_out
+        trf_out = self.tr_fc(trf)
         
         out = torch.cat([cnn_out, trf_out], dim=-1)
         cat_gate_out = self.sigmoid(self.gate(out))
