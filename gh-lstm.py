@@ -88,7 +88,7 @@ criterion = nn.BCELoss().to(device)
 # criterion = utils.GH_Loss().to(device)
 
 # 定义优化器
-optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=0.001)
+optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-4)
 
 start_training_time = time.time()
 
