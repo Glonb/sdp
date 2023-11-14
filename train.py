@@ -11,7 +11,6 @@ import  torchvision.datasets as dset
 import  torch.backends.cudnn as cudnn
 from    model import Network
 from    my_dataset import MyDataset
-from    utils import GH_Loss
 
 parser = argparse.ArgumentParser("SDP")
 parser.add_argument('--data', type=str, default='xalan25', help='dataset')
@@ -65,7 +64,7 @@ def main():
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
 
-    criterion = nn.BCELoss().cuda()
+    criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor(2.79)).cuda()
   
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
 
