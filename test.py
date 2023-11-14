@@ -8,7 +8,6 @@ import  torch.nn as nn
 import  genotypes
 import  torchvision.datasets as dset
 import  torch.backends.cudnn as cudnn
-from    utils import GH_Loss
 from    model import Network
 from    my_dataset import MyDataset
 
@@ -60,7 +59,7 @@ def main():
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
 
-    criterion = nn.BCELoss().cuda()
+    criterion = nn.BCEWithLogitsLoss().cuda()
   
     test_f1 = infer(test_queue, model, criterion)
     
