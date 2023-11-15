@@ -88,7 +88,10 @@ def infer(test_queue, model, criterion):
             loss = criterion(logits, target)
 
             batchsz = x.size(0)
-            prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(logits, target)
+
+            m = nn.Sigmoid()
+          
+            prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(m(logits), target)
             losses.update(loss.item(), batchsz)
             precision.update(prec, batchsz)
             recall.update(rec, batchsz)
