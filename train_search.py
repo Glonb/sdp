@@ -76,7 +76,7 @@ def main():
     valid_queue = torch.utils.data.DataLoader(
         train_data, batch_size=args.batchsz, shuffle=True, pin_memory=False, num_workers=2)
 
-    criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor(2.79)).to(device)
+    criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor(14.06)).to(device)
     model = Network(args.channels, args.layers, args.hiddensz, criterion).to(device)
 
     logging.info("Total param size = %f MB", utils.count_parameters_in_MB(model))
