@@ -117,7 +117,9 @@ for epoch in range(args.epochs):
         loss.backward()
         optimizer.step()
 
-        prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(output, label)
+        m = nn.Sigmoid()
+        
+        prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(m(output), label)
         losses.update(loss.item(), args.batchsz)
         precision.update(prec, args.batchsz)
         recall.update(rec, args.batchsz)
@@ -153,7 +155,9 @@ with torch.no_grad():
         output = model(sce, trf)
         loss = criterion(output, label)
 
-        prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(output, label)
+        m = nn.Sigmoid()
+        
+        prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(m(output), label)
         losses.update(loss.item(), args.batchsz)
         precision.update(prec, args.batchsz)
         recall.update(rec, args.batchsz)
