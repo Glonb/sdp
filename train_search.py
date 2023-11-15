@@ -138,7 +138,9 @@ def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
         nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
         optimizer.step()
 
-        prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(logits, target)
+        m = nn.Sigmoid()
+      
+        prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(m(logits), target)
         losses.update(loss.item(), batchsz)
         precision.update(prec, batchsz)
         recall.update(rec, batchsz)
@@ -181,7 +183,9 @@ def infer(valid_queue, model, criterion):
             logits = model(x, trf)
             loss = criterion(logits, target)
 
-            prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(logits, target)
+            m = nn.Sigmoid()
+          
+            prec, rec, FPR, FNR, f1, g1, MCC = utils.metrics(m(logits), target)
             losses.update(loss.item(), batchsz)
             precision.update(prec, batchsz)
             recall.update(rec, batchsz)
