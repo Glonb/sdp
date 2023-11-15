@@ -31,7 +31,7 @@ class MyModel(nn.Module):
         # LSTM层
         self.sce_lstm = nn.LSTM(input_size=input_dim, hidden_size=hidden_dim, batch_first=True)
         self.sce_dropout = nn.Dropout(p=0.2)
-        self.promise_lstm = nn.LSTM(input_size=20, hidden_size=hidden_dim, batch_first=True)
+        self.promise_lstm = nn.LSTM(input_size=18, hidden_size=hidden_dim, batch_first=True)
         self.promise_dropout = nn.Dropout(p=0.2)
 
         # 全连接层
