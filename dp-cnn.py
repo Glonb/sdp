@@ -70,10 +70,6 @@ class CNNModel(nn.Module):
 model = CNNModel(args.input_dim).to(device)
 print(f'Total param size: {utils.count_parameters_in_MB(model)} MB')
 
-# 定义损失函数和优化器
-criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor(8.678)).to(device)
-optimizer = optim.Adam(model.parameters(), lr=0.001)
-
 # 加载训练集和测试集
 data_loc = '/kaggle/input/new-sdp/'
 train_data = MyDataset(data_loc + args.train_data + '_train.pt', data_loc + args.train_data + '.csv')
@@ -81,6 +77,21 @@ test_data = MyDataset(data_loc + args.test_data + '_test.pt', data_loc + args.te
 
 train_dataloader = DataLoader(train_data, batch_size=args.batchsz, shuffle=True)
 test_dataloader = DataLoader(test_data, batch_size=args.batchsz, shuffle=True)
+
+df = pd.read_csv(data_loc + args.train_data + '.csv')
+labels = df['bug'].values.reshape(-1, 1)
+
+# 计算正类别和负类别的样本数量
+num_positive = (labels == 1).sum()
+num_negative = (labels == 0).sum()
+
+# 计算 pos_weight，避免除零错误
+pos_weight = torch.tensor([num_negative / max(num_positive, 1)], dtype=torch.float)
+print(pos_weight)
+
+# 定义损失函数和优化器
+criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight).to(device)
+optimizer = optim.Adam(model.parameters(), lr=0.001, , weight_decay=1e-4)
 
 start_training_time = time.time()
 
