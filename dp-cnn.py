@@ -91,7 +91,7 @@ print(pos_weight)
 
 # 定义损失函数和优化器
 criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight).to(device)
-optimizer = optim.Adam(model.parameters(), lr=0.001, , weight_decay=1e-4)
+optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-4)
 
 start_training_time = time.time()
 
