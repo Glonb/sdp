@@ -10,7 +10,7 @@ class Network(nn.Module):
         super(Network, self).__init__()
         
         self.hidden_size = hidden_size
-        out_dim = 168
+        out_dim = 128 + C
 
         op_names, indices = zip(*genotype.geno)
         concat = genotype.geno_concat
