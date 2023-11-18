@@ -41,7 +41,7 @@ class Network(nn.Module):
         self.criterion = criterion
         
         # out_dim = c * 2 + 2 * hidden_size + 48
-        out_dim = 168
+        out_dim = 128 + c
         
         self.layers = nn.ModuleList()
 
