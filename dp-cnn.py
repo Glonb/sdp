@@ -12,7 +12,7 @@ from      my_dataset import MyDataset
 parser = argparse.ArgumentParser("DP-CNN")
 parser.add_argument('--train_data', type=str, default='ant-1.5', help='train dataset')
 parser.add_argument('--test_data', type=str, default='ant-1.6', help='test dataset')
-parser.add_argument('--input_dim', type=int, default=30, help='input dim')
+parser.add_argument('--input_dim', type=int, default=40, help='input dim')
 parser.add_argument('--batchsz', type=int, default=32, help='batch size')
 parser.add_argument('--epochs', type=int, default=15, help='num of training epochs')
 args = parser.parse_args()
