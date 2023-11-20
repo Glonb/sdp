@@ -63,8 +63,17 @@ def main():
     model = Network(args.channels, args.hiddensz, genotype).cuda()
 
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
-
-    criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor(0.528)).cuda()
+    df = pd.read_csv(data_path + args.data + '.csv')
+    labels = df['bug'].values.reshape(-1, 1)
+    
+    # 计算正类别和负类别的样本数量
+    num_positive = (labels == 1).sum()
+    num_negative = (labels == 0).sum()
+    
+    # 计算 pos_weight，避免除零错误
+    pos_weight = torch.tensor([num_negative / max(num_positive, 1)], dtype=torch.float)
+    print(pos_weight)
+    criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight).cuda()
   
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
 
