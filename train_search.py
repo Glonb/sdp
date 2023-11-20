@@ -76,7 +76,17 @@ def main():
     valid_queue = torch.utils.data.DataLoader(
         train_data, batch_size=args.batchsz, shuffle=True, pin_memory=False, num_workers=2)
 
-    criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor(0.528)).to(device)
+    df = pd.read_csv(data_path + args.data + '.csv')
+    labels = df['bug'].values.reshape(-1, 1)
+    
+    # 计算正类别和负类别的样本数量
+    num_positive = (labels == 1).sum()
+    num_negative = (labels == 0).sum()
+    
+    # 计算 pos_weight，避免除零错误
+    pos_weight = torch.tensor([num_negative / max(num_positive, 1)], dtype=torch.float)
+    print(pos_weight)
+    criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight).to(device)
     model = Network(args.channels, args.layers, args.hiddensz, criterion).to(device)
 
     logging.info("Total param size = %f MB", utils.count_parameters_in_MB(model))
