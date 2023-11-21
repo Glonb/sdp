@@ -79,7 +79,7 @@ class CNNModel(nn.Module):
 
 # 模型实例化
 model = CNNModel(args.input_dim).to(device)
-print(f'Total param size: {utils.count_parameters_in_MB(model)} MB')
+# print(f'Total param size: {utils.count_parameters_in_MB(model)} MB')
 
 # 加载训练集和测试集
 data_loc = '/kaggle/input/new-sdp/'
