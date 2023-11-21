@@ -26,7 +26,7 @@ parser.add_argument('--channels', type=int, default=40, help='num of init channe
 parser.add_argument('--layers', type=int, default=4, help='total number of layers')
 parser.add_argument('--hiddensz', type=int, default=64, help='number of hidden_size in bilstm')
 parser.add_argument('--exp_path', type=str, default='exp/sdp', help='experiment name')
-parser.add_argument('--seed', type=int, default=5, help='random seed')
+parser.add_argument('--seed', type=int, default=42, help='random seed')
 parser.add_argument('--arch', type=str, default='SDP', help='which architecture to use')
 parser.add_argument('--grad_clip', type=float, default=5, help='gradient clipping')
 args = parser.parse_args()
