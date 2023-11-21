@@ -1,6 +1,6 @@
 #!/bin/bash
 
-projects=('ant', 'camel', 'ivy', 'jedit', 'log4j', 'lucene', 'poi', 'synapse', 'velocity', 'xalan', 'xerces')
+# projects=('ant', 'camel', 'ivy', 'jedit', 'log4j', 'lucene', 'poi', 'synapse', 'velocity', 'xalan', 'xerces')
 
 declare -A versions=(
     ['ant']: '1.3' '1.4' '1.5' '1.6' '1.7'
@@ -28,10 +28,10 @@ for key in "${!versions[@]}"; do
     echo "Key: $key"
     
     # 遍历值数组，每次取相邻的两个值
-    for ((i=0; i<${#values_array[@]}-1; i++)); do
-        value1=${values_array[$i]}
-        value2=${values_array[$i+1]}
-        echo "  Values: $value1, $value2"
-    done
+    # for ((i=0; i<${#values_array[@]}-1; i++)); do
+    #     value1=${values_array[$i]}
+    #     value2=${values_array[$i+1]}
+    #     echo "  Values: $value1, $value2"
+    # done
 done
 # python gh-lstm.py --train_data xerces-1.2 --test_data xerces-1.3 --batchsz 256
