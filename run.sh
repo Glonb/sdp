@@ -28,8 +28,8 @@ for key in "${!versions[@]}"; do
     for ((i=0; i<${#values_array[@]}-1; i++)); do
         value1=${values_array[$i]}
         value2=${values_array[$i+1]}
-        train_data="$key-$value1"
-        test_data="$key-$value2"
-        python gh-lstm.py --train_data train_data --test_data test_data --batchsz 256
+        # train_data="$key-$value1"
+        # test_data="$key-$value2"
+        python gh-lstm.py --train_data "$key-$value1" --test_data "$key-$value2" --batchsz 256
     done
 done
