@@ -157,8 +157,6 @@ for epoch in range(args.epochs):
     logging.info('Epoch:%03d loss:%.3f prec:%.3f recall:%.3f fpr:%.3f fnr:%.3f f1:%.3f g1:%.3f mcc:%.3f', 
                          epoch+1, losses.avg, precision.avg, recall.avg, fpr.avg, 
                          fnr.avg, f_measure.avg, g_measure.avg, mcc.avg)
-    if epoch % args.report_freq == 0:
-        print(f'Epoch {epoch + 1}/{args.epochs}, Loss: {losses.avg:.3f}, Precision: {precision.avg:.3f}, Recall: {recall.avg:.3f}, F1 Score: {f_measure.avg:.3f}')
 
 end_training_time = time.time()
 
@@ -204,7 +202,7 @@ with torch.no_grad():
     logging.info('Test loss:%.3f prec:%.3f recall:%.3f fpr:%.3f fnr:%.3f f1:%.3f g1:%.3f mcc:%.3f', 
                          losses.avg, precision.avg, recall.avg, fpr.avg, 
                          fnr.avg, f_measure.avg, g_measure.avg, mcc.avg)
-    # print(f'Test Loss: {losses.avg:.3f}, Precision: {precision.avg:.3f}, Recall: {recall.avg:.3f}, F1: {f_measure.avg:.3f}, G1: {g_measure.avg:.3f}, MCC: {mcc.avg:.3f}')
+    print(f'Test Loss: {losses.avg:.3f}, Precision: {precision.avg:.3f}, Recall: {recall.avg:.3f}, F1: {f_measure.avg:.3f}')
 
 end_testing_time = time.time()
 
