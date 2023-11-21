@@ -83,8 +83,8 @@ print(f'Total param size: {utils.count_parameters_in_MB(model)} MB')
 
 # 加载训练集和测试集
 data_loc = '/kaggle/input/new-sdp/'
-train_data = MyDataset(data_loc + args.train_data + '_train.pt', data_loc + args.train_data + '.csv')
-test_data = MyDataset(data_loc + args.test_data + '_test.pt', data_loc + args.test_data + '.csv')
+train_data = MyDataset(data_loc + 'data/' + args.train_data + '_train.pt', data_loc + args.train_data + '.csv')
+test_data = MyDataset(data_loc + 'data/' +args.test_data + '_test.pt', data_loc + args.test_data + '.csv')
 
 train_dataloader = DataLoader(train_data, batch_size=args.batchsz, shuffle=True)
 test_dataloader = DataLoader(test_data, batch_size=args.batchsz, shuffle=True)
