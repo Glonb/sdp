@@ -90,7 +90,7 @@ test_data = MyDataset(data_loc + args.test_data + '_test.pt', data_loc + args.te
 
 train_dataloader = DataLoader(train_data, batch_size=args.batchsz, shuffle=True)
 test_dataloader = DataLoader(test_data, batch_size=args.batchsz, shuffle=True)
-logging.info('Project %s -> %s start!', args.train_data, args.test_data)
+logging.info('________________Project %s -> %s________________', args.train_data, args.test_data)
 
 # 创建模型实例
 model = MyModel(input_dim=args.input_dim, hidden_dim=128).to(device)
