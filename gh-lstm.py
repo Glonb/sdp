@@ -90,7 +90,7 @@ test_data = MyDataset(data_loc + args.test_data + '_test.pt', data_loc + args.te
 
 train_dataloader = DataLoader(train_data, batch_size=args.batchsz, shuffle=True)
 test_dataloader = DataLoader(test_data, batch_size=args.batchsz, shuffle=True)
-logging.info('________________Project %s -> %s________________', args.train_data, args.test_data)
+logging.info('________________________Project %s -> %s________________________', args.train_data, args.test_data)
 
 # 创建模型实例
 model = MyModel(input_dim=args.input_dim, hidden_dim=128).to(device)
@@ -161,7 +161,7 @@ for epoch in range(args.epochs):
 end_training_time = time.time()
 
 training_time = end_training_time - start_training_time
-logging.info('Train time:%.3f s', training_time)
+logging.info('Train time:%.3fs', training_time)
 # print(f"模型训练时间：{training_time}秒")
 
 start_testing_time = time.time()
@@ -207,5 +207,5 @@ with torch.no_grad():
 end_testing_time = time.time()
 
 testing_time = end_testing_time - start_testing_time
-logging.info('Test time:%.3f s', testing_time)
+logging.info('Test time:%.3fs', testing_time)
 # print(f"模型测试时间：{testing_time}秒")
