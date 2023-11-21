@@ -15,16 +15,17 @@ parser.add_argument('--test_data', type=str, default='ant-1.6', help='test datas
 parser.add_argument('--input_dim', type=int, default=40, help='input dim')
 parser.add_argument('--batchsz', type=int, default=2048, help='batch size')
 parser.add_argument('--report_freq', type=float, default=50, help='report frequency')
+parser.add_argument('--log_path', type=str, default='gh-lstm', help='log path')
 parser.add_argument('--epochs', type=int, default=200, help='num of training epochs')
 args = parser.parse_args()
 
 args.exp_path += str(args.gpu)
-utils.create_exp_dir(args.exp_path)
+utils.create_exp_dir(args.log_path)
 
 log_format = '%(asctime)s %(message)s'
 logging.basicConfig(stream=sys.stdout, level=logging.INFO,
                     format=log_format, datefmt='%m/%d %H:%M:%S %p')
-fh = logging.FileHandler(os.path.join(args.exp_path, 'log.txt'))
+fh = logging.FileHandler(os.path.join(args.log_path, 'log.txt'))
 fh.setFormatter(logging.Formatter(log_format))
 logging.getLogger().addHandler(fh)
 
