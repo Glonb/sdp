@@ -19,7 +19,6 @@ parser.add_argument('--log_path', type=str, default='gh-lstm', help='log path')
 parser.add_argument('--epochs', type=int, default=200, help='num of training epochs')
 args = parser.parse_args()
 
-args.exp_path += str(args.gpu)
 utils.create_exp_dir(args.log_path)
 
 log_format = '%(asctime)s %(message)s'
