@@ -28,7 +28,7 @@ parser.add_argument('--layers', type=int, default=4, help='total number of layer
 parser.add_argument('--hiddensz', type=int, default=64, help='hidden size of bilstm')
 parser.add_argument('--dropout_prob', type=float, default=0.2, help='dropout probability')
 parser.add_argument('--exp_path', type=str, default='search', help='experiment name')
-parser.add_argument('--seed', type=int, default=2, help='random seed')
+parser.add_argument('--seed', type=int, default=42, help='random seed')
 parser.add_argument('--train_portion', type=float, default=0.5, help='portion of training/val splitting')
 parser.add_argument('--arch_lr', type=float, default=3e-4, help='learning rate for arch encoding')
 parser.add_argument('--arch_wd', type=float, default=1e-3, help='weight decay for arch encoding')
