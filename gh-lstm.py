@@ -14,6 +14,7 @@ parser.add_argument('--train_data', type=str, default='ant-1.5', help='train dat
 parser.add_argument('--test_data', type=str, default='ant-1.6', help='test dataset')
 parser.add_argument('--input_dim', type=int, default=40, help='input dim')
 parser.add_argument('--batchsz', type=int, default=2048, help='batch size')
+parser.add_argument('--report_freq', type=float, default=50, help='report frequency')
 parser.add_argument('--epochs', type=int, default=200, help='num of training epochs')
 args = parser.parse_args()
 
