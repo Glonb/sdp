@@ -17,7 +17,7 @@ declare -A versions=(
 )
 
 # 遍历关联数组的键
-for key in "${versions[@]}"; do
+for key in "${!versions[@]}"; do
     # # 获取关联数组中的值
     # values=${versions[$key]}
     
