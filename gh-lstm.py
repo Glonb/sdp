@@ -93,6 +93,7 @@ test_dataloader = DataLoader(test_data, batch_size=args.batchsz, shuffle=True)
 
 # 创建模型实例
 model = MyModel(input_dim=args.input_dim, hidden_dim=128).to(device)
+logging.info("Total param size = %f MB", utils.count_parameters_in_MB(model))
 print(f'Total param size: {utils.count_parameters_in_MB(model)} MB')
 
 # 定义损失函数
@@ -149,12 +150,17 @@ for epoch in range(args.epochs):
         g_measure.update(g1, args.batchsz)
         mcc.update(MCC, args.batchsz)
 
-    print(f'Epoch {epoch + 1}/{args.epochs}, Loss: {losses.avg:.3f}, Precision: {precision.avg:.3f}, Recall: {recall.avg:.3f}, F1 Score: {f_measure.avg:.3f}')
+    logging.info('Epoch:%03d loss:%.3f prec:%.3f recall:%.3f fpr:%.3f fnr:%.3f f1:%.3f g1:%.3f mcc:%.3f', 
+                         epoch+1, losses.avg, precision.avg, recall.avg, fpr.avg, 
+                         fnr.avg, f_measure.avg, g_measure.avg, mcc.avg)
+    if epoch % args.report_freq == 0:
+        print(f'Epoch {epoch + 1}/{args.epochs}, Loss: {losses.avg:.3f}, Precision: {precision.avg:.3f}, Recall: {recall.avg:.3f}, F1 Score: {f_measure.avg:.3f}')
 
 end_training_time = time.time()
 
 training_time = end_training_time - start_training_time
-print(f"模型训练时间：{training_time}秒")
+logging.info('Train time:%.3f', training_time)
+# print(f"模型训练时间：{training_time}秒")
 
 start_testing_time = time.time()
 
@@ -187,9 +193,13 @@ with torch.no_grad():
         g_measure.update(g1, args.batchsz)
         mcc.update(MCC, args.batchsz)
 
-    print(f'Test Loss: {losses.avg:.3f}, Precision: {precision.avg:.3f}, Recall: {recall.avg:.3f}, F1: {f_measure.avg:.3f}, G1: {g_measure.avg:.3f}, MCC: {mcc.avg:.3f}')
+    logging.info('Test loss:%.3f prec:%.3f recall:%.3f fpr:%.3f fnr:%.3f f1:%.3f g1:%.3f mcc:%.3f', 
+                         losses.avg, precision.avg, recall.avg, fpr.avg, 
+                         fnr.avg, f_measure.avg, g_measure.avg, mcc.avg)
+    # print(f'Test Loss: {losses.avg:.3f}, Precision: {precision.avg:.3f}, Recall: {recall.avg:.3f}, F1: {f_measure.avg:.3f}, G1: {g_measure.avg:.3f}, MCC: {mcc.avg:.3f}')
 
 end_testing_time = time.time()
 
 testing_time = end_testing_time - start_testing_time
-print(f"模型测试时间：{testing_time}秒")
+logging.info('Test time:%.3f', testing_time)
+# print(f"模型测试时间：{testing_time}秒")
