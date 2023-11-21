@@ -43,7 +43,7 @@ class MyModel(nn.Module):
         # LSTM层
         self.sce_lstm = nn.LSTM(input_size=input_dim, hidden_size=hidden_dim, batch_first=True)
         self.sce_dropout = nn.Dropout(p=0.2)
-        self.promise_lstm = nn.LSTM(input_size=20, hidden_size=hidden_dim, batch_first=True)
+        self.promise_lstm = nn.LSTM(input_size=18, hidden_size=hidden_dim, batch_first=True)
         self.promise_dropout = nn.Dropout(p=0.2)
 
         # 全连接层
@@ -97,7 +97,7 @@ model = MyModel(input_dim=args.input_dim, hidden_dim=128).to(device)
 # print(f'Total param size: {utils.count_parameters_in_MB(model)} MB')
 
 # 定义损失函数
-df = pd.read_csv(data_loc + 'data/' + args.train_data + '.csv')
+df = pd.read_csv(data_loc + args.train_data + '.csv')
 labels = df['bug'].values.reshape(-1, 1)
 
 # 计算正类别和负类别的样本数量
