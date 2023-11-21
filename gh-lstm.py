@@ -24,7 +24,7 @@ utils.create_exp_dir(args.log_path)
 
 log_format = '%(asctime)s %(message)s'
 logging.basicConfig(stream=sys.stdout, level=logging.INFO,
-                    format=log_format, datefmt='%m/%d %H:%M:%S %p')
+                    format=log_format)
 fh = logging.FileHandler(os.path.join(args.log_path, 'log.txt'))
 fh.setFormatter(logging.Formatter(log_format))
 logging.getLogger().addHandler(fh)
