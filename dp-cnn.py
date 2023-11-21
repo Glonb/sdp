@@ -99,7 +99,7 @@ num_negative = (labels == 0).sum()
 
 # 计算 pos_weight，避免除零错误
 pos_weight = torch.tensor([num_negative / max(num_positive, 1)], dtype=torch.float)
-print(pos_weight)
+# print(pos_weight)
 
 # 定义损失函数和优化器
 criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight).to(device)
