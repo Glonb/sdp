@@ -94,7 +94,7 @@ logging.info('________________________________Project %s -> %s__________________
 
 # 创建模型实例
 model = MyModel(input_dim=args.input_dim, hidden_dim=128).to(device)
-print(f'Total param size: {utils.count_parameters_in_MB(model)} MB')
+# print(f'Total param size: {utils.count_parameters_in_MB(model)} MB')
 
 # 定义损失函数
 df = pd.read_csv(data_loc + args.train_data + '.csv')
@@ -106,7 +106,7 @@ num_negative = (labels == 0).sum()
 
 # 计算 pos_weight，避免除零错误
 pos_weight = torch.tensor([num_negative / max(num_positive, 1)], dtype=torch.float)
-print(pos_weight)
+# print(pos_weight)
 criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight).to(device)
 # criterion = utils.GH_Loss().to(device)
 
