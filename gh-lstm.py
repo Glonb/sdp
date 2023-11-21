@@ -18,6 +18,16 @@ parser.add_argument('--report_freq', type=float, default=50, help='report freque
 parser.add_argument('--epochs', type=int, default=200, help='num of training epochs')
 args = parser.parse_args()
 
+args.exp_path += str(args.gpu)
+utils.create_exp_dir(args.exp_path)
+
+log_format = '%(asctime)s %(message)s'
+logging.basicConfig(stream=sys.stdout, level=logging.INFO,
+                    format=log_format, datefmt='%m/%d %H:%M:%S %p')
+fh = logging.FileHandler(os.path.join(args.exp_path, 'log.txt'))
+fh.setFormatter(logging.Formatter(log_format))
+logging.getLogger().addHandler(fh)
+
 # 检查 GPU 可用性
 if torch.cuda.is_available():
     device = torch.device("cuda")
