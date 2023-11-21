@@ -88,7 +88,7 @@ test_data = MyDataset(data_loc + args.test_data + '_test.pt', data_loc + args.te
 
 train_dataloader = DataLoader(train_data, batch_size=args.batchsz, shuffle=True)
 test_dataloader = DataLoader(test_data, batch_size=args.batchsz, shuffle=True)
-logging.info('_________________________________Project %s -> %s________________________________', train_data, test_data)
+logging.info('_________________________________Project %s -> %s________________________________', args.train_data, args.test_data)
 
 df = pd.read_csv(data_loc + args.train_data + '.csv')
 labels = df['bug'].values.reshape(-1, 1)
