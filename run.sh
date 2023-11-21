@@ -18,11 +18,11 @@ declare -A versions=(
 
 # 遍历关联数组的键
 for key in "${versions[@]}"; do
-    # 获取关联数组中的值
-    values=${versions[$key]}
+    # # 获取关联数组中的值
+    # values=${versions[$key]}
     
-    # 将值分割为数组
-    values_array=($values)
+    # # 将值分割为数组
+    # values_array=($values)
     
     # 输出键
     echo "Key: $key"
