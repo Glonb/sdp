@@ -1,6 +1,7 @@
 #!/bin/bash
 
-projects =('ant', 'camel', 'ivy', 'jedit', 'log4j', 'lucene', 'poi', 'synapse', 'velocity', 'xalan', 'xerces')
+projects=('ant', 'camel', 'ivy', 'jedit', 'log4j', 'lucene', 'poi', 'synapse', 'velocity', 'xalan', 'xerces')
+
 declare -A versions=(
     ['ant']: '1.3' '1.4' '1.5' '1.6' '1.7'
     ['camel']: '1.2' '1.4' '1.6'
