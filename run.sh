@@ -25,13 +25,14 @@ for key in "${!versions[@]}"; do
     values_array=($values)
     
     # 输出键
-    echo "Key: $key"
+    # echo "Key: $key"
     
     # 遍历值数组，每次取相邻的两个值
     for ((i=0; i<${#values_array[@]}-1; i++)); do
         value1=${values_array[$i]}
         value2=${values_array[$i+1]}
-        echo "  Values: $value1, $value2"
+        echo "$key-$value1"
+        echo "$key-$value2"
     done
 done
 # python gh-lstm.py --train_data xerces-1.2 --test_data xerces-1.3 --batchsz 256
