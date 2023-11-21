@@ -22,7 +22,7 @@ args = parser.parse_args()
 
 utils.create_exp_dir(args.log_path)
 
-log_format = '%(asctime)s %(message)s'
+log_format = '%(message)s'
 logging.basicConfig(stream=sys.stdout, level=logging.INFO,
                     format=log_format)
 fh = logging.FileHandler(os.path.join(args.log_path, 'log.txt'))
