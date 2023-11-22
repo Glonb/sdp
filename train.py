@@ -65,6 +65,7 @@ def main():
     genotype = get_Genotype()
     model = Network(args.channels, args.hiddensz, genotype).cuda()
 
+    print('param size:% .6f' % utils.count_parameters_in_MB(model))
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
     df = pd.read_csv(data_path + args.data + '.csv')
     labels = df['bug'].values.reshape(-1, 1)
