@@ -13,12 +13,13 @@ from    my_dataset import MyDataset
 from    genotypes import get_Genotype
 
 parser = argparse.ArgumentParser("SDP")
-parser.add_argument('--data', type=str, default='xalan25', help='dataset')
+parser.add_argument('--data', type=str, default='ant-1.5', help='dataset')
 parser.add_argument('--batchsz', type=int, default=16, help='batch size')
 parser.add_argument('--report_freq', type=float, default=10, help='report frequency')
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
 parser.add_argument('--channels', type=int, default=40, help='num of init channels')
 parser.add_argument('--layers', type=int, default=4, help='total number of layers')
+parser.add_argument('--dropout_prob', type=float, default=0.2, help='dropout probability')
 parser.add_argument('--exp_path', type=str, default='exp/sdp-train/trained.pt', help='path of pretrained model')
 parser.add_argument('--hiddensz', type=int, default=64, help='number of hidden_size in bilstm')
 parser.add_argument('--seed', type=int, default=42, help='random seed')
@@ -56,7 +57,7 @@ def main():
     logging.info('Load genotype: %s', genotype)
     print('Load genotype:', genotype)
   
-    model = Network(args.channels, args.hiddensz, genotype).cuda()
+    model = Network(args.channels, args.hiddensz, args.dropout_prob, genotype).cuda()
     utils.load(model, args.exp_path)
 
     print('param size:% .6f' % utils.count_parameters_in_MB(model))
@@ -64,9 +65,9 @@ def main():
 
     criterion = nn.BCEWithLogitsLoss().cuda()
   
-    test_f1 = infer(test_queue, model, criterion)
+    test_prec, test_recall, test_f1 = infer(test_queue, model, criterion)
     
-    print('test_f1: ', test_f1.item())
+    print('test_prec: %.3f, test_recall: %.3f, test_f1: %.3f' % test_prec.item() % test_recall.item() % test_f1.item())
 
 
 def infer(test_queue, model, criterion):
@@ -113,7 +114,7 @@ def infer(test_queue, model, criterion):
                              step, losses.avg, precision.avg, recall.avg, fpr.avg, fnr.avg,
                              f_measure.avg, g_measure.avg, mcc.avg)
   
-    return f_measure.avg
+    return precision.avg, recall.avg, f_measure.avg
 
 
 if __name__ == '__main__':
