@@ -102,7 +102,7 @@ def main():
         print('Epoch: %d' %epoch)
 
         genotype = model.genotype()
-        update_Genotype(genotype)
+        set_Genotype(genotype)
         logging.info('Genotype: %s', genotype)
         # print(f'Genotype: {genotype}')
 
