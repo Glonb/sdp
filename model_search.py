@@ -31,13 +31,14 @@ class MixedLayer(nn.Module):
 
 class Network(nn.Module):
     
-    def __init__(self, c, steps, hidden_size, criterion):
+    def __init__(self, c, steps, hidden_size, dropout_prob, criterion):
         
         super(Network, self).__init__()
 
         self.c = c
         self.steps = steps 
         self.hidden_size = hidden_size
+        self.dropout_prob = dropout_prob
         self.criterion = criterion
         
         # out_dim = c * 2 + 2 * hidden_size + 48
@@ -56,7 +57,7 @@ class Network(nn.Module):
         # self.gru = nn.GRU(input_size=self.c, hidden_size=64, bidirectional=False, batch_first=True)
         # self.dropout = nn.Dropout(0.2)
         self.tr_gru = nn.GRU(input_size=20, hidden_size=128, batch_first=True)
-        self.tr_dropout = nn.Dropout(0.2)
+        self.tr_dropout = nn.Dropout(self.dropout_prob)
         
         # adaptive pooling output
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
