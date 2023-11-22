@@ -44,7 +44,7 @@ def main():
     logging.info("args = %s", args)
 
     data_path = '/kaggle/input/new-sdp/'
-    test_data = MyDataset(data_path + args.data + '_test.pt', data_path + args.data + '.csv')
+    test_data = MyDataset(data_path + 'data/' + args.data + '_test.pt', data_path + args.data + '.csv')
 
     test_queue = torch.utils.data.DataLoader(
         test_data, batch_size=args.batchsz, 
