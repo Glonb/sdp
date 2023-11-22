@@ -6,10 +6,11 @@ from    operations import *
 
 class Network(nn.Module):
 
-    def __init__(self, C, hidden_size, genotype):
+    def __init__(self, C, hidden_size, dropout_prob, genotype):
         super(Network, self).__init__()
         
         self.hidden_size = hidden_size
+        self.dropout_prob = dropout_prob
         out_dim = 128 + C
 
         op_names, indices = zip(*genotype.geno)
@@ -20,7 +21,7 @@ class Network(nn.Module):
         # self.gru = nn.GRU(input_size=C, hidden_size=88, bidirectional=False, batch_first=True)
         # self.dropout = nn.Dropout(0.2)
         self.tr_gru = nn.GRU(input_size=20, hidden_size=128, batch_first=True)
-        self.tr_dropout = nn.Dropout(0.2)
+        self.tr_dropout = nn.Dropout(self.dropout_prob)
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
         
         self.gate = nn.Linear(out_dim, out_dim)
