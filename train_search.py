@@ -108,11 +108,11 @@ def main():
 
         # training
         train_f1 = train(train_queue, valid_queue, model, arch, criterion, optimizer, lr)
-        print('train f1_score: %.5f' %train_f1.item())
+        # print('train f1_score: %.5f' %train_f1.item())
 
         # validation
         valid_f1 = infer(valid_queue, model, criterion)
-        print('valid f1_score: %.5f' %valid_f1.item())
+        # print('valid f1_score: %.5f' %valid_f1.item())
 
 
 def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
