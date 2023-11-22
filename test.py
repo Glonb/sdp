@@ -59,6 +59,7 @@ def main():
     model = Network(args.channels, args.hiddensz, genotype).cuda()
     utils.load(model, args.exp_path)
 
+    print('param size:% .6f' % utils.count_parameters_in_MB(model))
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
 
     criterion = nn.BCEWithLogitsLoss().cuda()
