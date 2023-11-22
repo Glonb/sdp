@@ -44,6 +44,8 @@ SDP_Genotype = Genotype(geno=[], geno_concat=[])
 def set_Genotype(new_genotype):
     global SDP_Genotype
     SDP_Genotype = new_genotype
+    with open("genotype_history.txt", "a") as file:
+        file.write(str(genotype) + "\n")
 
 def get_Genotype():
     return SDP_Genotype
