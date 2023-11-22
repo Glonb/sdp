@@ -37,10 +37,10 @@ PRIMITIVES = [
 
 # SDP_Genotype = Genotype(geno=[('conv_6_2', 0), ('conv_6_2', 0), ('max_pool_7', 1), ('conv_6_1', 0)], geno_concat=range(1, 5))
 # SDP = SDP_Genotype
-
+global SDP_Genotype
 # 初始化 SDP_Genotype
 SDP_Genotype = Genotype(geno=[], geno_concat=[])
-global SDP_Genotype
+
 
 def set_Genotype(new_genotype):
     # global SDP_Genotype
