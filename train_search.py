@@ -11,7 +11,7 @@ import  pandas as pd
 from    model_search import Network
 from    arch import Arch
 from    my_dataset import MyDataset
-
+from    genotypes import set_Genotype, get_Genotype
 
 parser = argparse.ArgumentParser("SDP")
 parser.add_argument('--data', type=str, default='xalan25', help='dataset')
@@ -102,6 +102,7 @@ def main():
         print('Epoch: %d' %epoch)
 
         genotype = model.genotype()
+        update_Genotype(genotype)
         logging.info('Genotype: %s', genotype)
         # print(f'Genotype: {genotype}')
 
