@@ -39,7 +39,8 @@ PRIMITIVES = [
 # SDP = SDP_Genotype
 
 # 初始化 SDP_Genotype
-global SDP_Genotype = Genotype(geno=[], geno_concat=[])
+SDP_Genotype = Genotype(geno=[], geno_concat=[])
+global SDP_Genotype
 
 def set_Genotype(new_genotype):
     # global SDP_Genotype
