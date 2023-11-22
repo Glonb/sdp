@@ -12,7 +12,7 @@ import  torchvision.datasets as dset
 import  torch.backends.cudnn as cudnn
 from    model import Network
 from    my_dataset import MyDataset
-from    genotypes import set_Genotype, get_Genotype
+from    genotypes import get_Genotype
 
 parser = argparse.ArgumentParser("SDP")
 parser.add_argument('--data', type=str, default='xalan25', help='dataset')
