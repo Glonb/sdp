@@ -45,5 +45,8 @@ for key in "${!versions[@]}"; do
         echo "________project ${key}_${value1}_${value2} start!________"
         python gh-lstm.py --train_data "$key-$value1" --test_data "$key-$value2" --batchsz 256
         # python dp-cnn.py --train_data "$key-$value1" --test_data "$key-$value2"
+        # python train_search.py --data "$key-$value1" --epochs 20
+        # python train.py --data "$key-$value1" --epochs 1
+        # python test.py --data "$key-$value2"
     done
 done
