@@ -48,4 +48,5 @@ def set_Genotype(new_genotype):
         file.write(str(new_genotype) + "\n")
 
 def get_Genotype():
+    print(SDP_Genotype)
     return SDP_Genotype
