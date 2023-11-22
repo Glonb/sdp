@@ -67,7 +67,8 @@ def main():
   
     test_prec, test_recall, test_f1 = infer(test_queue, model, criterion)
     
-    print('test_prec: %.3f, test_recall: %.3f, test_f1: %.3f' % test_prec.item() % test_recall.item() % test_f1.item())
+    # print('test_prec: %.3f, test_recall: %.3f, test_f1: %.3f' % test_prec.item() % test_recall.item() % test_f1.item())
+    print(f'Precision: {test_prec:.3f}, Recall: {test_recall:.3f}, F1: {test_f1:.3f}')
 
 
 def infer(test_queue, model, criterion):
