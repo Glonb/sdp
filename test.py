@@ -10,6 +10,7 @@ import  torchvision.datasets as dset
 import  torch.backends.cudnn as cudnn
 from    model import Network
 from    my_dataset import MyDataset
+from    genotype import set_Genotype, get_Genotype
 
 parser = argparse.ArgumentParser("SDP")
 parser.add_argument('--data', type=str, default='xalan25', help='dataset')
@@ -50,7 +51,8 @@ def main():
         test_data, batch_size=args.batchsz, 
         shuffle=True, pin_memory=True, num_workers=2)
 
-    genotype = eval("genotypes.%s" % args.arch)
+    # genotype = eval("genotypes.%s" % args.arch)
+    genotype = get_Genotype()
     logging.info('Load genotype: %s', genotype)
     print('Load genotype:', genotype)
   
