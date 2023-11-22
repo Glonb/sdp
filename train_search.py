@@ -99,7 +99,7 @@ def main():
 
         lr = optimizer.param_groups[0]['lr']
         logging.info('Epoch: %d lr: %e', epoch, lr)
-        print('Epoch: %d' %epoch)
+        # print('Epoch: %d' %epoch)
 
         genotype = model.genotype()
         set_Genotype(genotype)
