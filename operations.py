@@ -6,7 +6,7 @@ import  torch.nn.functional as F
 
 
 OPS = {
-    'skip_connect':    lambda C: Identity(),
+    # 'skip_connect':    lambda C: Identity(),
     'conv_3_1':        lambda C: ConvReLU(C, C, 3, 1),
     'conv_4_1':        lambda C: ConvReLU(C, C, 4, 1),
     'conv_5_1':        lambda C: ConvReLU(C, C, 5, 1),
@@ -14,9 +14,7 @@ OPS = {
     'conv_7_1':        lambda C: ConvReLU(C, C, 7, 1),
     'conv_9_1':        lambda C: ConvReLU(C, C, 9, 1),
     'conv_3_2':        lambda C: ConvReLU(C, C, 3, 2),
-    'conv_4_2':        lambda C: ConvReLU(C, C, 4, 2),
     'conv_5_2':        lambda C: ConvReLU(C, C, 5, 2),
-    'conv_6_2':        lambda C: ConvReLU(C, C, 6, 2),
     'conv_7_2':        lambda C: ConvReLU(C, C, 7, 2),
     'conv_9_2':        lambda C: ConvReLU(C, C, 9, 2),
     'conv_5_3':        lambda C: ConvReLU(C, C, 5, 3),
