@@ -77,6 +77,8 @@ class CNNModel(nn.Module):
         return output
 
 
+logging.info('_________________________________Project %s -> %s________________________________', args.train_data, args.test_data)
+
 # 模型实例化
 model = CNNModel(args.input_dim).to(device)
 # print(f'Total param size: {utils.count_parameters_in_MB(model)} MB')
@@ -89,7 +91,6 @@ test_data = MyDataset(data_loc + 'data/' +args.test_data + '_test.pt', data_loc 
 
 train_dataloader = DataLoader(train_data, batch_size=args.batchsz, shuffle=True)
 test_dataloader = DataLoader(test_data, batch_size=args.batchsz, shuffle=True)
-logging.info('_________________________________Project %s -> %s________________________________', args.train_data, args.test_data)
 
 df = pd.read_csv(data_loc + args.train_data + '.csv')
 labels = df['bug'].values.reshape(-1, 1)
