@@ -43,8 +43,8 @@ for key in "${!versions[@]}"; do
         value1=${values_array[$i]}
         value2=${values_array[$i+1]}
         echo "________project ${key}_${value1}_${value2} start!________"
-        # python gh-lstm.py --train_data "$key-$value1" --test_data "$key-$value2" --batchsz 256
-        python dp-cnn.py --train_data "$key-$value1" --test_data "$key-$value2"
+        python gh-lstm.py --train_data "$key-$value1" --test_data "$key-$value2" --batchsz 256
+        # python dp-cnn.py --train_data "$key-$value1" --test_data "$key-$value2"
         # python train_search.py --data "$key-$value1" --epochs 20
         # echo "search finished!"
         # python train.py --data "$key-$value1" --epochs 1
