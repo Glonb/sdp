@@ -94,6 +94,7 @@ logging.info('________________________________Project %s -> %s__________________
 
 # 创建模型实例
 model = MyModel(input_dim=args.input_dim, hidden_dim=128).to(device)
+logging.info("Param Size = %f MB", utils.count_parameters_in_MB(model))
 # print(f'Total param size: {utils.count_parameters_in_MB(model)} MB')
 
 # 定义损失函数
@@ -154,9 +155,10 @@ for epoch in range(args.epochs):
         g_measure.update(g1, args.batchsz)
         mcc.update(MCC, args.batchsz)
 
-    logging.info('Epoch:%03d loss:%.3f prec:%.3f recall:%.3f fpr:%.3f fnr:%.3f f1:%.3f g1:%.3f mcc:%.3f', 
-                         epoch+1, losses.avg, precision.avg, recall.avg, fpr.avg, 
-                         fnr.avg, f_measure.avg, g_measure.avg, mcc.avg)
+    if epoch % args.report_freq == 0:
+        logging.info('Epoch:%03d loss:%.3f prec:%.3f recall:%.3f fpr:%.3f fnr:%.3f f1:%.3f g1:%.3f mcc:%.3f', 
+                             epoch+1, losses.avg, precision.avg, recall.avg, fpr.avg, 
+                             fnr.avg, f_measure.avg, g_measure.avg, mcc.avg)
 
 end_training_time = time.time()
 
