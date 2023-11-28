@@ -64,10 +64,15 @@ def main():
     logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
 
     criterion = nn.BCEWithLogitsLoss().cuda()
-  
-    test_prec, test_recall, test_f1 = infer(test_queue, model, criterion)
+
+    start_test_time = time.time()
     
-    # print('test_prec: %.3f, test_recall: %.3f, test_f1: %.3f' % test_prec.item() % test_recall.item() % test_f1.item())
+    test_prec, test_recall, test_f1 = infer(test_queue, model, criterion)
+
+    end_test_time = time.time()
+    test_time = end_test_time - start_test_time
+    logging.info('Test time:%.3fs', test_time)
+    
     print(f'Precision: {test_prec:.3f}, Recall: {test_recall:.3f}, F1: {test_f1:.3f}')
 
 
