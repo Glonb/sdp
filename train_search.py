@@ -62,7 +62,7 @@ def main():
     used = int(used)
 
     logging.info('Total GPU memory: %d used: %d', total, used)
-    print('Total GPU mem:', total, 'used:', used)
+    # print('Total GPU mem:', total, 'used:', used)
 
     logging.info('GPU device = %d' % args.gpu)
     logging.info("args = %s", args)
@@ -84,7 +84,7 @@ def main():
     
     # 计算 pos_weight，避免除零错误
     pos_weight = torch.tensor([num_negative / max(num_positive, 1)], dtype=torch.float)
-    print(pos_weight)
+    # print(pos_weight)
     criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight).to(device)
     model = Network(args.channels, args.layers, args.hiddensz, args.dropout_prob, criterion).to(device)
 
