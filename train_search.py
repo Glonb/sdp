@@ -94,6 +94,8 @@ def main():
 
     arch = Arch(model, args)
 
+    start_search_time = time.time()
+
     for epoch in range(args.epochs):
 
         lr = optimizer.param_groups[0]['lr']
@@ -112,6 +114,10 @@ def main():
         # validation
         valid_f1 = infer(valid_queue, model, criterion)
         # print('valid f1_score: %.5f' %valid_f1.item())
+
+    end_search_time = time.time()
+    search_time = end_search_time - start_search_time
+    logging.info('Search time:%.3fs', search_time)
 
 
 def train(train_queue, valid_queue, model, arch, criterion, optimizer, lr):
