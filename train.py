@@ -76,11 +76,13 @@ def main():
     
     # 计算 pos_weight，避免除零错误
     pos_weight = torch.tensor([num_negative / max(num_positive, 1)], dtype=torch.float)
-    print(pos_weight)
+    # print(pos_weight)
     criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight).cuda()
   
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
 
+    start_training_time = time.time()
+  
     for epoch in range(args.epochs):
 
         lr = optimizer.param_groups[0]['lr']
@@ -93,6 +95,10 @@ def main():
         print('valid f1_score: %.5f' %valid_f1.item())
       
         utils.save(model, os.path.join(args.save, 'trained.pt'))
+
+    end_training_time = time.time()
+    training_time = end_training_time - start_training_time
+    logging.info('Train time:%.3fs', training_time)
 
 
 def train(train_queue, model, criterion, optimizer):
