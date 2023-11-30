@@ -93,7 +93,7 @@ def main():
         valid_f1 = infer(valid_queue, model, criterion)
         print('valid f1_score: %.5f' %valid_f1.item())
       
-        utils.save(model, os.path.join(args.save, 'trained.pt'))
+        utils.save(model, os.path.join(args.exp_path, 'trained.pt'))
 
     end_training_time = time.time()
     training_time = end_training_time - start_training_time
