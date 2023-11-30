@@ -27,19 +27,18 @@ parser.add_argument('--channels', type=int, default=40, help='num of init channe
 parser.add_argument('--layers', type=int, default=4, help='total number of layers')
 parser.add_argument('--hiddensz', type=int, default=64, help='number of hidden_size in bilstm')
 parser.add_argument('--dropout_prob', type=float, default=0.2, help='dropout probability')
-parser.add_argument('--exp_path', type=str, default='exp/sdp', help='experiment name')
+parser.add_argument('--exp_path', type=str, default='log/train', help='experiment name')
 parser.add_argument('--seed', type=int, default=42, help='random seed')
 parser.add_argument('--arch', type=str, default='SDP', help='which architecture to use')
 parser.add_argument('--grad_clip', type=float, default=5, help='gradient clipping')
 args = parser.parse_args()
 
-args.save = args.exp_path + '-train'
-utils.create_exp_dir(args.save)
+utils.create_exp_dir(args.exp_path)
 
 log_format = '%(asctime)s %(message)s'
 logging.basicConfig(stream=sys.stdout, level=logging.INFO,
                     format=log_format, datefmt='%m/%d %I:%M:%S %p')
-fh = logging.FileHandler(os.path.join(args.save, 'log.txt'))
+fh = logging.FileHandler(os.path.join(args.exp_path, 'train_log.txt'))
 fh.setFormatter(logging.Formatter(log_format))
 logging.getLogger().addHandler(fh)
 
