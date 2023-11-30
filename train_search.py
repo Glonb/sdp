@@ -27,20 +27,19 @@ parser.add_argument('--channels', type=int, default=40, help='num of channels')
 parser.add_argument('--layers', type=int, default=4, help='total number of layers')
 parser.add_argument('--hiddensz', type=int, default=64, help='hidden size of bilstm')
 parser.add_argument('--dropout_prob', type=float, default=0.2, help='dropout probability')
-parser.add_argument('--exp_path', type=str, default='search', help='experiment name')
+parser.add_argument('--exp_path', type=str, default='log/search', help='experiment name')
 parser.add_argument('--seed', type=int, default=42, help='random seed')
 parser.add_argument('--arch_lr', type=float, default=3e-4, help='learning rate for arch encoding')
 parser.add_argument('--arch_wd', type=float, default=1e-3, help='weight decay for arch encoding')
 parser.add_argument('--grad_clip', type=float, default=5, help='gradient clipping')
 args = parser.parse_args()
 
-args.exp_path += str(args.gpu)
 utils.create_exp_dir(args.exp_path)
 
 log_format = '%(asctime)s %(message)s'
 logging.basicConfig(stream=sys.stdout, level=logging.INFO,
                     format=log_format, datefmt='%m/%d %H:%M:%S %p')
-fh = logging.FileHandler(os.path.join(args.exp_path, 'log.txt'))
+fh = logging.FileHandler(os.path.join(args.exp_path, 'search_log.txt'))
 fh.setFormatter(logging.Formatter(log_format))
 logging.getLogger().addHandler(fh)
 
