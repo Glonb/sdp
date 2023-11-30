@@ -47,7 +47,7 @@ for key in "${!versions[@]}"; do
         # python dp-cnn.py --train_data "$key-$value1" --test_data "$key-$value2"
         python train_search.py --data "$key-$value1" --epochs 20 --layers 3
         echo "search finished!"
-        python train.py --data "$key-$value1" --epochs 3 --layers 3
+        python train.py --data "$key-$value1" --epochs 1 --layers 3
         python test.py --data "$key-$value2" --layers 3
     done
 done
