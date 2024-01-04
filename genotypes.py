@@ -21,6 +21,7 @@ PRIMITIVES = [
     'conv_5_2',
     'conv_6_2',
     'conv_7_2',
+    'skip_connect'
     # 'conv_5_3',
     # 'conv_7_3'
     # 'sep_conv_3_1',
