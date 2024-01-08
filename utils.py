@@ -52,7 +52,7 @@ class GH_Loss(torch.nn.Module):
 
         # Define theta function
         def theta(t):
-            return (torch.sign(t) + 1) / 2
+            return (torch.sign(t) + 1.) / 2.
 
         # Move tensors to the same device (GPU or CPU)
         # y_true = y_true.to(y_pred.device)
