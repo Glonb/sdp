@@ -97,7 +97,6 @@ model = MyModel(input_dim=args.input_dim, hidden_dim=128).to(device)
 logging.info("Param Size = %f MB", utils.count_parameters_in_MB(model))
 # print(f'Total param size: {utils.count_parameters_in_MB(model)} MB')
 
-# 定义损失函数
 df = pd.read_csv(data_loc + args.train_data + '.csv')
 labels = df['bug'].values.reshape(-1, 1)
 
