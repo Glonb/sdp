@@ -14,13 +14,9 @@ PRIMITIVES = [
     'conv_3_1',
     'conv_4_1',
     'conv_5_1',
-    'conv_6_1',
-    'conv_7_1',
     'conv_3_2',
     'conv_4_2',
-    'conv_5_2',
-    'conv_6_2',
-    'conv_7_2'
+    'conv_5_2'
     # 'conv_5_3',
     # 'conv_7_3'
     # 'sep_conv_3_1',
