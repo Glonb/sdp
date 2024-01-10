@@ -47,10 +47,10 @@ class Network(nn.Module):
             
             # for each i, it connects with all previous output
             for j in range(1 + i):
-                layer = MixedLayer(c)
+                layer = MixedLayer(self.c)
                 self.layers.append(layer)
 
-            c //= 2
+            self.c //= 2
 
         self.tr_gru = nn.GRU(input_size=20, hidden_size=2*self.hidden_size, batch_first=True)
         self.tr_dropout = nn.Dropout(self.dropout_prob)
