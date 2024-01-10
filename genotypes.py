@@ -5,7 +5,7 @@ Genotype = namedtuple('Genotype', 'geno geno_concat')
 
 # 可选操作
 PRIMITIVES = [
-    # 'skipconnect',
+    # 'skip_connect',
     # 'max_pool_3',
     # 'max_pool_5',
     # 'max_pool_7',
