@@ -36,7 +36,7 @@ class Network(nn.Module):
         for name, index in zip(op_names, indices):
             op = OPS[name](C)
             self._ops += [op]
-            C /= 2
+            C //= 2
         self._indices = indices
 
     def forward(self, x, trf):
