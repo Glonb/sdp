@@ -19,7 +19,7 @@ parser.add_argument('--report_freq', type=float, default=10, help='report freque
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
 parser.add_argument('--channels', type=int, default=40, help='num of init channels')
 parser.add_argument('--layers', type=int, default=4, help='total number of layers')
-parser.add_argument('--dropout_prob', type=float, default=0.2, help='dropout probability')
+parser.add_argument('--dropout_prob', type=float, default=0.5, help='dropout probability')
 parser.add_argument('--model_path', type=str, default='log/train/trained.pt', help='path of pretrained model')
 parser.add_argument('--exp_path', type=str, default='log/test', help='path of log file')
 parser.add_argument('--hiddensz', type=int, default=64, help='number of hidden_size in bilstm')
