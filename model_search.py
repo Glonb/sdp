@@ -14,7 +14,6 @@ class MixedLayer(nn.Module):
     
         for primitive in PRIMITIVES:
             
-            # create corresponding layer
             layer = OPS[primitive](c)
             self.layers.append(layer)
 
@@ -22,7 +21,6 @@ class MixedLayer(nn.Module):
         max_length = x.size(-1)
         out = [w * layer(x) for w, layer in zip(weights, self.layers)]
 
-        # max_length = max(tensor.size(-1) for tensor in out)
         padded_tensors = [F.pad(tensor, (0, max_length - tensor.size(-1))) for tensor in out]
         output = sum(padded_tensors)
         
@@ -54,9 +52,6 @@ class Network(nn.Module):
 
             c /= 2
 
-        # self.bilstm = nn.LSTM(input_size=self.c, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
-        # self.gru = nn.GRU(input_size=self.c, hidden_size=64, bidirectional=False, batch_first=True)
-        # self.dropout = nn.Dropout(0.2)
         self.tr_gru = nn.GRU(input_size=20, hidden_size=2*self.hidden_size, batch_first=True)
         self.tr_dropout = nn.Dropout(self.dropout_prob)
         
@@ -75,7 +70,7 @@ class Network(nn.Module):
         with torch.no_grad():
             # initialize to smaller value
             self.alpha.mul_(1e-3)
-        self._arch_parameters = [self.alpha,]
+        self._arch_parameters = [self.alpha]
 
     def new(self):
         
@@ -99,40 +94,23 @@ class Network(nn.Module):
             
             # append one state since s is the elem-wise addition of all output
             states.append(s)
-
-        # pooled_states = [self.global_pooling(h) for h in states[-2:]]
-        # cnn_out = torch.cat(pooled_states, dim=-1)
         
         cnn_out = self.global_pooling(states[-1])
         cnn_out = cnn_out.view(cnn_out.size(0), -1)
-        # print(cnn_out.shape)
-        
-        # bl_out, (h_n, c_n) = self.bilstm(input)
-        # bilstm_out = torch.cat((h_n[0], h_n[1]), dim=-1) 
-        # print(bilstm_out.shape)
-        
-        # gru_out, _ = self.gru(self.dropout(input))
-        # gru_out = gru_out[:, -1, :]
-        # gru_out = torch.cat((h_n[0], h_n[1]), dim=-1)
 
         trf_out, _ = self.tr_gru(self.tr_dropout(trf))
         trf_out = trf_out[:, -1, :]
-        # trf_gate_out = self.sigmoid(self.tr_gate(trf_out))
-        # trf_out = trf_out * trf_gate_out
         
         out = torch.cat([cnn_out, trf_out], dim=-1)
         cat_gate_out = self.sigmoid(self.gate(out))
         out = cat_gate_out * out
-        # print(out.shape)
         
         logits = self.fc(out)
-        # output = self.sigmoid(logits)
         
         return logits
 
     def loss(self, x, trf, target):
         logits = self(x, trf)
-        # print(logits.shape)
         return self.criterion(logits, target.float())
 
 
