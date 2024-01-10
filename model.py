@@ -17,9 +17,6 @@ class Network(nn.Module):
         concat = genotype.geno_concat
         self._compile(C, op_names, indices, concat)
 
-        # self.bilstm = nn.LSTM(input_size=C, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
-        # self.gru = nn.GRU(input_size=C, hidden_size=88, bidirectional=False, batch_first=True)
-        # self.dropout = nn.Dropout(0.2)
         self.tr_gru = nn.GRU(input_size=20, hidden_size=2*self.hidden_size, batch_first=True)
         self.tr_dropout = nn.Dropout(self.dropout_prob)
         self.global_pooling = nn.AdaptiveMaxPool1d(1)
@@ -52,19 +49,8 @@ class Network(nn.Module):
             h = op(h)
             states += [h]
 
-        # pooled_states = [self.global_pooling(h) for h in states[-4:]]
-        # first_out = pooled_states[0] + pooled_states[1]
-        # second_out = pooled_states[2] + pooled_states[3]
-        # cnn_out = torch.cat((first_out, second_out), dim=1)
-
         cnn_out = self.global_pooling(states[-1])
         cnn_out = cnn_out.view(cnn_out.size(0), -1)
-
-        # sum_out, (h_n, c_n) = self.bilstm(input)
-        # bilstm_out = torch.cat((h_n[0], h_n[1]), dim=-1)
-        # gru_out, _ = self.gru(self.dropout(input))
-        # gru_out = gru_out[:, -1, :]
-        # gru_out = torch.cat((h_n[0], h_n[1]), dim=-1)
 
         trf_out, _ = self.tr_gru(self.tr_dropout(trf))
         trf_out = trf_out[:, -1, :]
@@ -73,6 +59,5 @@ class Network(nn.Module):
         cat_gate_out = self.sigmoid(self.gate(out))
         out = cat_gate_out * out
         logits = self.fc(out)
-        # output = self.sigmoid(logits)
         
         return logits
