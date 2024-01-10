@@ -19,15 +19,6 @@ PRIMITIVES = [
     'conv_5_2'
     # 'conv_5_3',
     # 'conv_7_3'
-    # 'sep_conv_3_1',
-    # 'sep_conv_5_1',
-    # 'sep_conv_7_1',
-    # 'sep_conv_3_2',
-    # 'sep_conv_5_2',
-    # 'sep_conv_7_2',
-    # 'dil_conv_3_1',
-    # 'dil_conv_5_1',
-    # 'dil_conv_7_1'
 ]
 
 # SDP_Genotype = Genotype(geno=[('conv_6_2', 0), ('conv_6_2', 0), ('max_pool_7', 1), ('conv_6_1', 0)], geno_concat=range(1, 5))
