@@ -52,6 +52,8 @@ class Network(nn.Module):
                 layer = MixedLayer(c)
                 self.layers.append(layer)
 
+            c /= 2
+
         # self.bilstm = nn.LSTM(input_size=self.c, hidden_size=self.hidden_size, bidirectional=True, batch_first=True)
         # self.gru = nn.GRU(input_size=self.c, hidden_size=64, bidirectional=False, batch_first=True)
         # self.dropout = nn.Dropout(0.2)
