@@ -50,7 +50,7 @@ class Network(nn.Module):
                 layer = MixedLayer(c)
                 self.layers.append(layer)
 
-            c /= 2
+            c //= 2
 
         self.tr_gru = nn.GRU(input_size=20, hidden_size=2*self.hidden_size, batch_first=True)
         self.tr_dropout = nn.Dropout(self.dropout_prob)
