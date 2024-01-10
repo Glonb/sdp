@@ -26,7 +26,7 @@ parser.add_argument('--epochs', type=int, default=10, help='num of training epoc
 parser.add_argument('--channels', type=int, default=40, help='num of init channels')
 parser.add_argument('--layers', type=int, default=4, help='total number of layers')
 parser.add_argument('--hiddensz', type=int, default=64, help='number of hidden_size in bilstm')
-parser.add_argument('--dropout_prob', type=float, default=0.2, help='dropout probability')
+parser.add_argument('--dropout_prob', type=float, default=0.5, help='dropout probability')
 parser.add_argument('--exp_path', type=str, default='log/train', help='experiment name')
 parser.add_argument('--seed', type=int, default=42, help='random seed')
 parser.add_argument('--arch', type=str, default='SDP', help='which architecture to use')
