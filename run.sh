@@ -16,6 +16,9 @@ declare -A versions=(
     ['xerces']='1.1 1.2 1.3'
 )
 
+order=('ant' 'camel' 'ivy' 'jedit' 'log4j' 'lucene'
+'poi' 'synapse' 'xalan' 'xerces')
+
 # declare -A versions=(
 #     ['ant']='1.3 1.4 1.5 1.6 1.7'
 #     ['camel']='1.2 1.4 1.6'
@@ -31,7 +34,7 @@ declare -A versions=(
 # )
 
 # 遍历关联数组的键
-for key in "${!versions[@]}"; do
+for key in "${order[@]}"; do
     # 获取关联数组中的值
     values=${versions[$key]}
     
