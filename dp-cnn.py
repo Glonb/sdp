@@ -59,7 +59,7 @@ class CNNModel(nn.Module):
     def forward(self, emb_data, tr_data):
 
         # 卷积和池化
-        conv_out = self.relu(self.pool(self.conv(emb_data)))
+        conv_out = self.pool(self.relu(self.conv(emb_data)))
         flat_out = conv_out.view(conv_out.size(0), -1)
 
         # 全连接层
